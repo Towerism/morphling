@@ -2,7 +2,8 @@ include(gtest)
 
 set(GTEST_LIBS
   gtest
-  gtest_main
+  gmock
+  gmock_main
   )
 
 set(TEST_LIBS
