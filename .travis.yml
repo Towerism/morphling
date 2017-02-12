@@ -2,8 +2,11 @@ language: cpp
 addons:
   apt:
     sources:
+      - george-edison55-precise-backports # CMake 3.2
       - ubuntu-toolchain-r-test
     packages:
+      - cmake-data
+      - cmake
       - gcc-5
       - g++-5
 
