@@ -2,20 +2,17 @@ language: cpp
 addons:
   apt:
     sources:
-      - george-edison55-precise-backports # CMake 3.2
+      - george-edison55-precise-backports
       - ubuntu-toolchain-r-test
     packages:
       - cmake-data
       - cmake
       - gcc-5
       - g++-5
-
 env:
   - COMPONENT=game-server
-  # TODO configure ci for web server component
-
 script: ci/script.sh
-# TODO set up tests and run them in script.sh
-
 notifications:
   email: false
+  slack:
+    secure: y23F95YjhGODdbl+67iR7whyl2gogc58vsHY9R4Km7zGF23ol4vs7MDtughK7IJ/uiTqHRYr/+AJSAmMvWPiXoNtC2S5D6FJUA4FDohMi6vOmtR0GzyLUImFqLp6y5k+WASO3v0Th7uWSTeEPJS25sa1yclhA3aze0bN33bzJFgbLbCUhlqhWrZwgFQHB3hx7WKryYEjv+Br5BUKtecroJ9xMdQmFe2UDY5V5E5lMv4149MyCaxDLNx88XCzQN2dhuq1ewcYc/IiFd1HVS7haBC33uHEZKHng7jUgykJBs71cbA0hRfZNCKZ/GZCoB8MedfW5yCukwWFu5G/4abz4hBSaZmZYyHp4QgGbg/S8NB9nARaCEwItP+yYJTVeM8tesnmD30UniNZfBiVK/9FNwL4sB5mfQtEIh/XSneZUuhE0bqJ+qLcC4SY/on2SgF7LKud19e1YZaIE98CprDMCft7TAeveAk7manxa22nhQYGAWihfP29Kkn/u2NzRgWliJ4+u92wBn5amJPqYrjbf2mIZbj/ZacHoyf4TjQmXXjRbyGYkAk1s8i7rIW/cJT+AyiEeWRqUJrWw0rZ1Z1mDd16WlHyoFnxPMspHaGMuGNvE1cHztg3TdSBseiluf/ZaGZoSSoyJX4xdkl61CCjuwSXGsC/0PVGeEYRkG1uM0w=
