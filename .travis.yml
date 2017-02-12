@@ -1,0 +1,18 @@
+language: cpp
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-5
+      - g++-5
+
+env:
+  - COMPONENT=game-server
+  # TODO configure ci for web server component
+
+script: ci/script.sh
+# TODO set up tests and run them in script.sh
+
+notifications:
+  email: false
