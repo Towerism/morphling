@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+.././database/stub.h
+
+.././serverstate/stub.h
+
+/home/mfracker/csce/482/morphling/game-server/gamelogic/stub.cc
+stub.h
+/home/mfracker/csce/482/morphling/game-server/gamelogic/stub.h
+database/stub.h
+-
+serverstate/stub.h
+-
+
+/home/mfracker/csce/482/morphling/game-server/gamelogic/stub.h
+

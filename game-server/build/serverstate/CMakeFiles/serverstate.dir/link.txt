@@ -1,0 +1,2 @@
+/usr/bin/ar qc libserverstate.a  CMakeFiles/serverstate.dir/stub.cc.o
+/usr/bin/ranlib libserverstate.a

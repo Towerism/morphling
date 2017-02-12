@@ -1,0 +1,15 @@
+/home/mfracker/csce/482/morphling/game-server/build/CMakeFiles/rebuild_cache.dir
+/home/mfracker/csce/482/morphling/game-server/build/CMakeFiles/edit_cache.dir
+/home/mfracker/csce/482/morphling/game-server/build/CMakeFiles/morphling-game-server.dir
+/home/mfracker/csce/482/morphling/game-server/build/serverstate/CMakeFiles/edit_cache.dir
+/home/mfracker/csce/482/morphling/game-server/build/serverstate/CMakeFiles/rebuild_cache.dir
+/home/mfracker/csce/482/morphling/game-server/build/serverstate/CMakeFiles/serverstate.dir
+/home/mfracker/csce/482/morphling/game-server/build/database/CMakeFiles/rebuild_cache.dir
+/home/mfracker/csce/482/morphling/game-server/build/database/CMakeFiles/edit_cache.dir
+/home/mfracker/csce/482/morphling/game-server/build/database/CMakeFiles/database.dir
+/home/mfracker/csce/482/morphling/game-server/build/gamelogic/CMakeFiles/edit_cache.dir
+/home/mfracker/csce/482/morphling/game-server/build/gamelogic/CMakeFiles/rebuild_cache.dir
+/home/mfracker/csce/482/morphling/game-server/build/gamelogic/CMakeFiles/gamelogic.dir
+/home/mfracker/csce/482/morphling/game-server/build/networking/CMakeFiles/edit_cache.dir
+/home/mfracker/csce/482/morphling/game-server/build/networking/CMakeFiles/rebuild_cache.dir
+/home/mfracker/csce/482/morphling/game-server/build/networking/CMakeFiles/networking.dir

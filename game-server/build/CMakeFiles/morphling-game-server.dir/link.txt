@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++11  -Wall -Wextra -Wpedantic   CMakeFiles/morphling-game-server.dir/main.cc.o  -o morphling-game-server -rdynamic serverstate/libserverstate.a database/libdatabase.a gamelogic/libgamelogic.a networking/libnetworking.a 

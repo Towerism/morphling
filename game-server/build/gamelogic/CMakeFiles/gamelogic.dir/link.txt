@@ -1,0 +1,2 @@
+/usr/bin/ar qc libgamelogic.a  CMakeFiles/gamelogic.dir/stub.cc.o
+/usr/bin/ranlib libgamelogic.a
