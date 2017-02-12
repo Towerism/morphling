@@ -4,19 +4,22 @@ project(morphling-game-server)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
+option(TEST "Enable testing" OFF)
+
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 
-include_directories(.)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_subdirectory(serverstate)
-add_subdirectory(database)
-add_subdirectory(gamelogic)
-add_subdirectory(networking)
+include_directories(server)
+add_subdirectory(server)
 
-add_executable(${PROJECT_NAME} main.cc)
-target_link_libraries(${PROJECT_NAME}
-  serverstate
-  database
-  gamelogic
-  networking
-  )
+if (${TEST})
+  enable_testing()
+  add_subdirectory(test EXCLUDE_FROM_ALL)
+  add_custom_target(build-tests)
+
+  add_test(NAME unit COMMAND $<TARGET_FILE:morphling-test-unit>)
+  add_dependencies(build-tests morphling-test-unit)
+endif()
