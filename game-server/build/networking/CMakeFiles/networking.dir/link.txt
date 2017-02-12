@@ -1,2 +1,0 @@
-/usr/bin/ar qc libnetworking.a  CMakeFiles/networking.dir/stub.cc.o
-/usr/bin/ranlib libnetworking.a
