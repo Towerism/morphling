@@ -30,3 +30,6 @@
 
 # Project Specific
 game-server/build
+
+# Compilation Database
+compile_commands.json
