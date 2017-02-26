@@ -12,6 +12,7 @@ set(TEST_LIBS
   database
   serverstate
   ${GTEST_LIBS}
+  ${THIRD_PARTY_LIBS}
   )
 
 if (${TEST})

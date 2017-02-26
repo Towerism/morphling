@@ -13,6 +13,12 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+find_package(CURL)
+if (CURL_FOUND)
+  include_directories(${CURL_INCLUDE_DIRS})
+  set(THIRD_PARTY_LIBS ${CURL_LIBRARIES})
+endif()
+
 include_directories(server)
 add_subdirectory(server)
 

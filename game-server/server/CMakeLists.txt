@@ -9,4 +9,5 @@ target_link_libraries(${PROJECT_NAME}
   database
   gamelogic
   networking
+  ${THIRD_PARTY_LIBS}
   )
