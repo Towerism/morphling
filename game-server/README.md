@@ -3,6 +3,7 @@
 - CMake 2.8.12
 - GCC 6
 - libcurl
+
 ## Building
 To build the game server, you must create the build tree, generate the build
 files, and then run `make`.
