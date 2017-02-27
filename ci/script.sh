@@ -2,7 +2,7 @@
 set -ev
 
 if [ "${COMPONENT}" == "game-server" ]; then
-    export CXX=g++-5
+    export CXX=g++-7
     cd game-server
     mkdir -p build && cd build
     cmake -DTEST=ON ..
