@@ -1,0 +1,56 @@
+{
+    "games": { // list of games in progress
+        "-hash": { // gameid hash
+            "player1": "playerid1", // playerid hash
+            "player2": "playerid2", // playerid hash
+            "score": "playerid" // playerid or null
+        },
+        ...
+    },
+    "players": { // list of players
+        "-hash": { // player id hash
+            "name": "Demo Name", // real name (string)
+            "score": 0 // current number of wins (int)
+        },
+        ...
+    },
+    "states": { // list of games (gameid)
+        "-hash": { // gameid hash
+            "0": { // first board state of the game
+                "0": "_,_,_", // rows of board
+                "1": "_,x,_",
+                "2": "_,_,_"
+            },
+            ... // rest of the board states
+        },
+        ... // rest of the games
+    },
+    "settings": { // list of settings for the board game
+        "delay": 0.5, // minimum delay between moves
+        "timeout": 2.0, // maximum time for an agent to make a move
+        "board": { // game board specific settings
+            "width": 3,
+            "height": 3,
+            "image": "http://localhost/image.png"
+        },
+        "tokens": { // game pieces settings
+            "x": {
+                "width": 1,
+                "height": 1,
+                "image": "http://localhost/image_x.png"
+            },
+            "o": {
+                "width": 1,
+                "height": 1,
+                "image": "http://localhost/image_o.png"
+            },
+            "_": {
+                "width": 1,
+                "height": 1,
+                "image": "http://localhost/image__.png"
+            }
+        }
+    }
+}
+
+            
