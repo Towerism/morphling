@@ -1,3 +1,3 @@
 add_library(unit OBJECT
-  test_stub.cc
+  test_gamelogic_model.cc
   )
