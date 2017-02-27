@@ -7,8 +7,8 @@ addons:
     packages:
     - cmake-data
     - cmake
-    - gcc-5
-    - g++-5
+    - gcc-6
+    - g++-6
 env:
 - COMPONENT=game-server
 script: ci/script.sh
