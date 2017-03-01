@@ -8,7 +8,7 @@ namespace Morphling::Gamelogic {
   public:
     virtual ~Rule() = default;
 
-    virtual bool check(Model* model);
+    virtual bool check(Model* model) = 0;
   };
 
 }
