@@ -24,8 +24,8 @@ namespace Morphling::Gamelogic {
     // malformed or the parsed action is illegal.
     bool receive_action(std::string action_string);
 
-    const Player* get_current_player() const { model->get_current_player(); }
-    Player* get_current_player() { model->get_current_player(); }
+    const Player* get_current_player() const { return model->get_current_player(); }
+    Player* get_current_player() { return model->get_current_player(); }
   private:
     Model* model;
   };
