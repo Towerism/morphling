@@ -9,9 +9,9 @@ namespace Morphling::Gamelogic {
     return gamepiece;
   }
 
-  void Board2D::set(int i, int j, Game_object* game_object) {
+  void Board2D::set(int i, int j, gamepiece_t game_object) {
     if (check_dimensions(i, j)) {
-      board[i * width + j] = gamepiece_t(game_object);
+      board[i * width + j] = game_object;
     }
   }
 

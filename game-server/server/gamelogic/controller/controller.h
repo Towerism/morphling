@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include <model/model.h>
@@ -7,16 +8,14 @@
 #include "action.h"
 
 namespace Morphling::Gamelogic {
-  class Controller
-  {
+  class Controller {
   public:
+    typedef std::shared_ptr<Action> action_t;
 
     Controller(Model* model) : model(model) {}
     virtual ~Controller() = default;
 
-    virtual void update() = 0;
-
-    virtual Action* parse_action(std::string action_string) = 0;
+    virtual action_t parse_action(std::string action_string) = 0;
 
     // Returns true if action was received successfully
     // Returns false otherwise.
@@ -26,7 +25,9 @@ namespace Morphling::Gamelogic {
 
     const Player* get_current_player() const { return model->get_current_player(); }
     Player* get_current_player() { return model->get_current_player(); }
-  private:
+
+  protected:
+    virtual void execute_action(action_t action) = 0;
     Model* model;
   };
 

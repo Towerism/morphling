@@ -1,5 +1,7 @@
 #pragma once
 
+#include <model/player.h>
+
 #include <string>
 
 namespace Morphling::Gamelogic {

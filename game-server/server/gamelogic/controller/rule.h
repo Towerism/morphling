@@ -9,6 +9,8 @@ namespace Morphling::Gamelogic {
     virtual ~Rule() = default;
 
     virtual bool check(Model* model) = 0;
+
+    virtual std::string get_message() const = 0;
   };
 
 }

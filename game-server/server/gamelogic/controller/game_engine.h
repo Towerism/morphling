@@ -9,18 +9,17 @@ namespace Morphling::Gamelogic {
   public:
     virtual ~Game_engine();
 
-    // called just before the game begins
-    virtual void initialize() = 0;
+    virtual Controller* initialize() = 0;
 
-    // called just after the game ends
-    virtual void end() = 0;
+    bool is_game_over() { return model->is_game_over(); }
 
-    // begin the game
-    void play();
+    Player* get_winner() { return model->get_winner(); };
 
   protected:
     void set_model(Model* model) { this->model = model; }
     void set_controller(Controller* controller) { this->controller = controller; }
+
+    Model* get_model() { return model; }
 
   private:
     Model* model;

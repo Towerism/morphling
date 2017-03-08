@@ -13,7 +13,8 @@ namespace Morphling::Gamelogic {
     virtual ~Board2D();
 
     gamepiece_t get(int i, int j);
-    void set(int i, int j, Game_object* game_object);
+    void set(int i, int j, Game_object* game_object) { set(i, j, gamepiece_t(game_object)); }
+    void set(int i, int j, gamepiece_t game_object);
 
     int get_width() const { return width; }
     int get_height() const { return height; }
