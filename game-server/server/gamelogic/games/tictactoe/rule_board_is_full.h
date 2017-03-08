@@ -1,7 +1,7 @@
 #pragma once
 
-#include <controller/rule.h>
-#include <model/model.h>
+#include <gamelogic/controller/rule.h>
+#include <gamelogic/model/model.h>
 
 
 namespace Morphling::Gamelogic::Tictactoe {

@@ -1,7 +1,5 @@
 add_library(gamelogic INTERFACE)
 
-include_directories(.)
-
 add_subdirectory(controller)
 add_subdirectory(model)
 add_subdirectory(games)

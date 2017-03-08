@@ -1,6 +1,6 @@
-#include <controller/action.h>
-#include <model/model.h>
-#include <model/player.h>
+#include <gamelogic/controller/action.h>
+#include <gamelogic/model/model.h>
+#include <gamelogic/model/player.h>
 
 namespace Morphling::Gamelogic::Tictactoe {
   class Tictactoe_model;

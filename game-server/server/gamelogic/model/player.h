@@ -1,6 +1,6 @@
 #pragma once
 
-#include <model/player.h>
+#include <gamelogic/model/player.h>
 
 #include <string>
 

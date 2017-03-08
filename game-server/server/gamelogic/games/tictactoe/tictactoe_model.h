@@ -1,7 +1,7 @@
 #pragma once
 
-#include <model/model.h>
-#include <model/gameobject/board2d.h>
+#include <gamelogic/model/model.h>
+#include <gamelogic/model/gameobject/board2d.h>
 #include "rule_has_alignment.h"
 #include "rule_board_is_full.h"
 

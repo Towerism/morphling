@@ -1,6 +1,6 @@
 #pragma once
 
-#include <model/model.h>
+#include <gamelogic/model/model.h>
 
 namespace Morphling::Gamelogic {
   class Action {

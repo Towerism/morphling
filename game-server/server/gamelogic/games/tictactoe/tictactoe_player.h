@@ -1,7 +1,8 @@
 #pragma once
 
 #include <memory>
-#include <model/player.h>
+
+#include <gamelogic/model/player.h>
 
 #include "gamepiece.h"
 

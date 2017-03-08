@@ -1,6 +1,6 @@
 #pragma once
 
-#include <model/gameobject/game_object.h>
+#include <gamelogic/model/gameobject/game_object.h>
 
 namespace Morphling::Gamelogic::Tictactoe {
   class Gamepiece : public Game_object {

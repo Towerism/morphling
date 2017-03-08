@@ -1,6 +1,6 @@
 #pragma once
 
-#include <controller/controller.h>
+#include <gamelogic/controller/controller.h>
 
 namespace Morphling::Gamelogic::Tictactoe {
   class Tictactoe_model;

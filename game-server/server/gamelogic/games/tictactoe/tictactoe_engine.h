@@ -1,8 +1,8 @@
 #pragma once
 
-#include <controller/game_engine.h>
-#include <model/model.h>
-#include <model/player.h>
+#include <gamelogic/controller/game_engine.h>
+#include <gamelogic/model/model.h>
+#include <gamelogic/model/player.h>
 
 #include "tictactoe_player.h"
 

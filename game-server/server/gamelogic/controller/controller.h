@@ -3,8 +3,8 @@
 #include <memory>
 #include <string>
 
-#include <model/model.h>
-#include <model/player.h>
+#include <gamelogic/model/model.h>
+#include <gamelogic/model/player.h>
 #include "action.h"
 
 namespace Morphling::Gamelogic {
