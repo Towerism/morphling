@@ -8,7 +8,7 @@ namespace Morphling::Gamelogic::Tictactoe {
   bool Action_mark::is_legal(Model* model) {
     auto tictactoe_model = dynamic_cast<Tictactoe_model*>(model);
     if (tictactoe_model != nullptr) {
-      return is_legal_real(tictactoe_model);
+      return is_space_free(tictactoe_model);
     }
     return false;
   }
@@ -20,7 +20,7 @@ namespace Morphling::Gamelogic::Tictactoe {
     }
   }
 
-  bool Action_mark::is_legal_real(Tictactoe_model* model) {
+  bool Action_mark::is_space_free(Tictactoe_model* model) {
     return model->get_element(x, y) == nullptr;
   }
 
