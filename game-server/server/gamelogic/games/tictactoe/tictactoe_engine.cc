@@ -4,9 +4,9 @@
 #include "tictactoe_model.h"
 
 namespace Morphling::Gamelogic::Tictactoe {
-  Controller* Tictactoe_engine::initialize() {
-    auto p1 = new Tictactoe_player("Player 1", new Gamepiece('X'));
-    auto p2 = new Tictactoe_player("Player 2", new Gamepiece('O'));
+  Controller* Tictactoe_engine::initialize(std::string p1_name, std::string p2_name) {
+    auto p1 = new Tictactoe_player(p1_name, new Gamepiece('X'));
+    auto p2 = new Tictactoe_player(p2_name, new Gamepiece('O'));
 
     Tictactoe_model* model = new Tictactoe_model;
     Tictactoe_controller* controller = new Tictactoe_controller(model);
@@ -16,7 +16,7 @@ namespace Morphling::Gamelogic::Tictactoe {
 
     set_model(model);
     set_controller(controller);
-    
+
     return controller;
   }
 }

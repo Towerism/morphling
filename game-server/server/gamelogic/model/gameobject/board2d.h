@@ -10,7 +10,7 @@ namespace Morphling::Gamelogic {
     typedef std::vector<gamepiece_t> board_t;
 
     Board2D(int height, int width) : height(height), width(width), board(height * width) {}
-    virtual ~Board2D();
+    virtual ~Board2D() = default;
 
     gamepiece_t get(int i, int j);
     void set(int i, int j, Game_object* game_object) { set(i, j, gamepiece_t(game_object)); }

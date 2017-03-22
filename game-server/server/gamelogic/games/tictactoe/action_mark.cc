@@ -16,7 +16,7 @@ namespace Morphling::Gamelogic::Tictactoe {
   void Action_mark::execute(Model* model) {
     auto tictactoe_model = dynamic_cast<Tictactoe_model*>(model);
     if (tictactoe_model != nullptr) {
-      execute(model);
+      execute_real(tictactoe_model);
     }
   }
 

@@ -6,3 +6,7 @@ add_library(gamelogic_games_tictactoe
   rule_board_is_full.cc
   action_mark.cc
   )
+
+target_link_libraries(gamelogic_games_tictactoe
+  gamelogic
+  )

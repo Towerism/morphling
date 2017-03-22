@@ -7,4 +7,4 @@ add_subdirectory(games)
 target_link_libraries(gamelogic INTERFACE
   gamelogic_controller
   gamelogic_model
-  gamelogic_games)
+  )

@@ -8,6 +8,8 @@ namespace Morphling::Gamelogic::Tictactoe {
 
   Player* Tictactoe_model::get_winner() {
     Player* winner = nullptr;
+    if (has_alignment.check(this))
+      winner = get_current_player();
     return winner;
   }
 

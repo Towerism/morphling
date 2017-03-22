@@ -7,9 +7,9 @@ namespace Morphling::Gamelogic {
   class Game_engine
   {
   public:
-    virtual ~Game_engine();
+    virtual ~Game_engine() = default;
 
-    virtual Controller* initialize() = 0;
+    virtual Controller* initialize(std::string p1_name, std::string p2_name) = 0;
 
     bool is_game_over() { return model->is_game_over(); }
 

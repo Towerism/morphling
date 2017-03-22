@@ -11,6 +11,7 @@ set(TEST_LIBS
   networking
   database
   serverstate
+  gamelogic_games_tictactoe
   ${GTEST_LIBS}
   ${THIRD_PARTY_LIBS}
   )
