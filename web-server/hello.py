@@ -21,6 +21,25 @@ def testing():
     #return "<h1>This is another testing page</h1>"
     return '<h3>' + str(result) + '<h3>'
 
+@app.route('/bootstrap')
+def bootstrap():
+    return render_template('index.html')
+
+@app.route('/Game.html')
+def game():
+    return render_template('Game.html')
+
+@app.route('/Settings.html')
+def settings():
+    return render_template('Settings.html')
+
+@app.route('/Ranking.html')
+def ranking():
+    return render_template('Ranking.html')
+
+@app.route('/Bracket.html')
+def bracket():
+    return render_template('Bracket.html')
 #count = 0
 #
 #@app.route('/api/put', methods=['GET', 'POST'])
@@ -38,5 +57,3 @@ def testing():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
