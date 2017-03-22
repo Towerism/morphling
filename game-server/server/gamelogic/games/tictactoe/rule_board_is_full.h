@@ -13,6 +13,6 @@ namespace Morphling::Gamelogic::Tictactoe {
     std::string get_message() const override;
 
   private:
-    bool check_real(Tictactoe_model* model);
+    bool check_board_is_full(Tictactoe_model* model);
   };
 }

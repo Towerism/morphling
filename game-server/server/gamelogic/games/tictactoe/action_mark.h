@@ -15,7 +15,7 @@ namespace Morphling::Gamelogic::Tictactoe {
     int x, y;
 
     bool is_legal_real(Tictactoe_model* model);
-    void execute_real(Tictactoe_model* model);
+    void mark_space(Tictactoe_model* model);
   };
 }
 

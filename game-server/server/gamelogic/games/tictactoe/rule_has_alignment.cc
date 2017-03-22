@@ -8,12 +8,12 @@ namespace Morphling::Gamelogic::Tictactoe {
     bool result = false;
     auto tictactoe_model = dynamic_cast<Tictactoe_model*>(model);
     if (tictactoe_model != nullptr) {
-      result = check_real(tictactoe_model);
+      result = check_has_alignment(tictactoe_model);
     }
     return result;
   }
 
-  bool Rule_has_alignment::check_real(Tictactoe_model* model) {
+  bool Rule_has_alignment::check_has_alignment(Tictactoe_model* model) {
     return check_line(model, 0, 0, 0, 1, 0, 2) ||
       check_line(model, 1, 0, 1, 1, 1, 2) ||
       check_line(model, 2, 0, 2, 1, 2, 2) ||

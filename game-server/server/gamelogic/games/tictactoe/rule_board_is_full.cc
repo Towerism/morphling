@@ -8,12 +8,12 @@ namespace Morphling::Gamelogic::Tictactoe {
     bool result = false;
     auto tictactoe_model = dynamic_cast<Tictactoe_model*>(model);
     if (tictactoe_model != nullptr) {
-      result = check_real(tictactoe_model);
+      result = check_board_is_full(tictactoe_model);
     }
     return result;
   }
 
-  bool Rule_board_is_full::check_real(Tictactoe_model* model) {
+  bool Rule_board_is_full::check_board_is_full(Tictactoe_model* model) {
     bool result = true;
     for (int i = 0; i < 3; ++i) {
       for (int j = 0; j < 3; ++j) {

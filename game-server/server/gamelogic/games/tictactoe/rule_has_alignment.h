@@ -13,7 +13,7 @@ namespace Morphling::Gamelogic::Tictactoe {
     std::string get_message() const override;
 
   private:
-    bool check_real(Tictactoe_model* model);
+    bool check_has_alignment(Tictactoe_model* model);
     bool check_line(Tictactoe_model* model, int x1, int y1, int x2, int y2,
                     int x3, int y3);
     bool check_equal_positions(Tictactoe_model* model, int x1, int x2, int y1,

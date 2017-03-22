@@ -16,7 +16,7 @@ namespace Morphling::Gamelogic::Tictactoe {
   void Action_mark::execute(Model* model) {
     auto tictactoe_model = dynamic_cast<Tictactoe_model*>(model);
     if (tictactoe_model != nullptr) {
-      execute_real(tictactoe_model);
+      mark_space(tictactoe_model);
     }
   }
 
@@ -24,7 +24,7 @@ namespace Morphling::Gamelogic::Tictactoe {
     return model->get_element(x, y) == nullptr;
   }
 
-  void Action_mark::execute_real(Tictactoe_model* model) {
+  void Action_mark::mark_space(Tictactoe_model* model) {
     auto player = dynamic_cast<Tictactoe_player*>(model->get_current_player());
     if (player != nullptr) {
       auto gamepiece = player->get_gamepiece();
