@@ -1,3 +1,5 @@
+#pragma once
+
 #include <curl/curl.h>
 #include <thirdparty/json.hpp>
 
@@ -114,4 +116,4 @@ public:
     );
 }; // end class firebase
 
-}; // end namespace Morphling::database
+} // end namespace Morphling::database
