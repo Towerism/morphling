@@ -29,17 +29,18 @@ class GCPSServer {
 private:
     std::atomic_bool running;
 
-    const char* port;
+    int port;
     int sockfd;
     std::thread connection_thread;
 
     void connection_handler();
-
+    // return the port number as a const char* for getaddrinfo
+    const char* port_str() { return std::to_string(port).c_str(); }
 public:
     GCPSServer();
     ~GCPSServer();
 
-    bool start(const char* port_no);
+    bool start(int port_no = 55555);
     bool stop();
 
     bool is_running() { return running; }

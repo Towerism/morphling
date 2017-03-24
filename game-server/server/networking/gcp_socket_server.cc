@@ -4,7 +4,7 @@ using namespace Morphling::Networking;
 
 GCPSServer::GCPSServer(): 
     running(false),
-    port("55555"),
+    port(55555),
     sockfd(-1),
     connection_thread()
 { }
@@ -17,7 +17,7 @@ GCPSServer::~GCPSServer()
     }
 }
 
-bool GCPSServer::start(const char* port_no = "55555")
+bool GCPSServer::start(int port_no)
 {
     // check if the connection_handler is running already
     if (running) {
@@ -35,7 +35,7 @@ bool GCPSServer::start(const char* port_no = "55555")
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
 
-    if ((rv = getaddrinfo(NULL, port, &hints, &result)) != 0) {
+    if ((rv = getaddrinfo(NULL, port_str(), &hints, &result)) != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
         freeaddrinfo(result); // all done with this structure
         return false;
@@ -61,7 +61,7 @@ bool GCPSServer::start(const char* port_no = "55555")
     running = true;
 
     // run the socket accept in a thread
-    connection_thread = std::move(std::thread(&GCPSServer::connection_handler,this));
+    connection_thread = std::thread(&GCPSServer::connection_handler,this);
 
     return true;
 }
@@ -83,7 +83,6 @@ void GCPSServer::connection_handler()
     socklen_t sin_size;
     int newfd;
 
-    printf("server: waiting for connections...\n");
     while (running) {  // main accept() loop
         sin_size = sizeof(their_addr);
         newfd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
