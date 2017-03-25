@@ -1,11 +1,15 @@
 // GCPSServer - Game Client Protocol Socket Server
 #pragma once
 
+#include <networking/gcp_socket.h>
+
 #include <atomic>
-#include <memory>
 #include <iostream>
+#include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
+#include <vector>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -23,7 +27,6 @@
 namespace Morphling::Networking {
 
 const int MAX_BACKLOG = 64;
-const int MAX_MESSAGE = 2048;
 
 class GCPSServer {
 private:
@@ -31,19 +34,27 @@ private:
 
     int port;
     int sockfd;
+
     std::thread connection_thread;
+    std::mutex client_list_mutex;
+    std::vector<std::thread> client_list;
+
+    // Functions
 
     void connection_handler();
-    // return the port number as a const char* for getaddrinfo
-    const char* port_str() { return std::to_string(port).c_str(); }
+    void client_handler(int fd);
+    void client_wait();
+
+    bool send(std::string msg);
 public:
     GCPSServer();
     ~GCPSServer();
 
     bool start(int port_no = 55555);
     bool stop();
-
     bool is_running() { return running; }
+    int get_port() const { return port; }
+
 }; // end class GCPSServer
 
 } // end namespace Morphling::Networking
