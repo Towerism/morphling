@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from firebase import firebase
+import json
 #from form import MyForm
 
 app = Flask(__name__)
@@ -27,7 +28,19 @@ def bootstrap():
 
 @app.route('/Game.html')
 def game():
-    return render_template('Game.html')
+    boardJSON = '{ "states": { "-hash": { "0": { "0": "_,_,_", "1": "_,x,_", "2": "_,_,_" } } } }'
+    playersJSON = '{ "players": { "-hash1": { "name": "Demo Name", "score": 0 }, "-hash2": { "name": "Demo Name 2", "score": 0 } } }'
+
+    boardData = json.loads(boardJSON)
+    gameState = []
+    rows = str(boardData["states"]["-hash"]["0"]).split(',')
+    for r in rows:
+        processRow(r,gameState)
+
+    playersData = json.loads(playersJSON)
+    player1 = playersData["players"]["-hash1"]
+    player2 = playersData["players"]["-hash2"]
+    return render_template('Game.html',gameState=gameState, player1=player1, player2=player2)
 
 @app.route('/Settings.html')
 def settings():
@@ -40,6 +53,16 @@ def ranking():
 @app.route('/Bracket.html')
 def bracket():
     return render_template('Bracket.html')
+
+def processRow(row,gameState):
+    for i in row:
+        if i == '_':
+            gameState.append("")
+        elif i == 'x':
+            gameState.append("X")
+        elif i == 'o':
+            gameState.append("O")
+
 #count = 0
 #
 #@app.route('/api/put', methods=['GET', 'POST'])
