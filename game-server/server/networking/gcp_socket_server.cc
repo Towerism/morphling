@@ -28,14 +28,16 @@ bool GCPSServer::start(int port_no)
 
     struct addrinfo hints;
     struct addrinfo* result;
+    struct sockaddr_storage sock_addr;
+    socklen_t s_size;
     int rv;
 
     memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC;
+    hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
 
-    if ((rv = getaddrinfo(NULL, port_str(), &hints, &result)) != 0) {
+    if ((rv = getaddrinfo(NULL, std::to_string(port).c_str(), &hints, &result)) != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
         freeaddrinfo(result); // all done with this structure
         return false;
@@ -49,6 +51,16 @@ bool GCPSServer::start(int port_no)
         perror("server: bind");
         freeaddrinfo(result); // all done with this structure
         return false;
+    }
+    // get the port number if we asked the OS for one
+    if (port == 0) {
+        s_size = sizeof(sock_addr);
+        if ((rv = getsockname(sockfd,(struct sockaddr *)&sock_addr,&s_size)) == -1) {
+            perror("server: getsockname");
+            freeaddrinfo(result); // all done with this structure
+            return false;
+        }
+        port = ((struct sockaddr_in*)&sock_addr)->sin_port;
     }
     freeaddrinfo(result); // all done with this structure
 
@@ -73,6 +85,8 @@ bool GCPSServer::stop() {
     close(sockfd);
     // join the connection_handler thread
     connection_thread.join();
+    // join the rest of the threads that are left
+    client_wait();
 
     return !running;
 }
@@ -87,15 +101,37 @@ void GCPSServer::connection_handler()
         sin_size = sizeof(their_addr);
         newfd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
         if (newfd == -1) {
-            perror("accept");
+            // only print an error if the server is still running
+            if (running) {
+                perror("accept");
+            }
             continue;
         }
-        //pthread_t new_thread;
         printf("accepted new client: %d\n", newfd);
-        close(newfd);
-        /*
-        NetworkRequestChannel* newnrc = new NetworkRequestChannel(newfd);
-        pthread_create(&new_thread,NULL,connection_handler,newnrc);
-        */
+        { // lock access to the client list during addition
+            std::unique_lock<std::mutex> lock(client_list_mutex);
+            client_list.push_back(std::thread(&GCPSServer::client_handler,this,newfd));
+        }
+    }
+}
+
+void GCPSServer::client_handler(int fd) {
+    GCPSocket sock(fd);
+    std::string msg;
+    while (running) {
+        if (sock.connected()) {
+            msg = sock.sread();
+            sock.swrite(msg);
+        } else {
+            break;
+        }
+    }
+    // no need to close socket, GCPSocket deconstructor will handle it
+}
+
+void GCPSServer::client_wait() {
+    std::unique_lock<std::mutex> lock(client_list_mutex);
+    for (auto& t: client_list) {
+        t.join();
     }
 }
