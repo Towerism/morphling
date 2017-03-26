@@ -30,18 +30,20 @@ private:
     std::atomic_bool _connected;
 
     bool dns(std::string hostname, int port, struct sockaddr_in* server);
+    bool swrite(std::string msg);
 public:
     GCPSocket();
-    GCPSocket(int sockfd);
     ~GCPSocket();
+
+    bool connected() { return _connected; }
 
     bool connect(std::string hostname, int port);
     void disconnect();
-    std::string sread();
-    bool swrite(std::string msg);
-    void send_auth();
 
-    bool connected() { return _connected; }
+    //TODO(devincarr): make private once sending/reading functions are fully defined
+    std::string sread();
+    void send_auth(std::string auth);
+
 }; //end class GCPSocket
 
 } // end namespace Morphling::Networking

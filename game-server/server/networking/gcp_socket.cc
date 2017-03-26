@@ -19,13 +19,13 @@ GCPSocket::GCPSocket(): _connected(false) {
     fcntl(_sockfd, F_SETFL, O_ASYNC);
 }
 
-GCPSocket::GCPSocket(int sockfd): _sockfd(sockfd), _connected(true)
-{ }
-
-
 GCPSocket::~GCPSocket() {
     disconnect();
 }
+
+// ======================================================================
+// Private Functions
+// ======================================================================
 
 bool GCPSocket::dns(std::string hostname, int port, struct sockaddr_in* server) {
     // structure used in DNS lookups
@@ -50,40 +50,6 @@ bool GCPSocket::dns(std::string hostname, int port, struct sockaddr_in* server) 
 
 	// mark finish of DNS
     return true;
-}
-
-bool GCPSocket::connect(std::string hostname, int port) {
-    // if already connected, don't connect again
-    if (_connected) { return false; }
-
-    sockaddr_in addr;
-
-    if (!dns(hostname,port,&addr)) {
-        printf("Could not resolve hostname");
-        return false;
-    }
-
-    if (::connect(_sockfd, (sockaddr*)&addr, sizeof(addr)) == -1) {
-        perror("Could not connect to hostname");
-        close(_sockfd);
-        return false;
-    }
-
-    _connected = true;
-    return _connected;
-}
-
-void GCPSocket::disconnect() {
-    if (_connected) {
-        close(_sockfd);
-        _connected = false;
-    }
-}
-
-void GCPSocket::send_auth() {
-    if (_connected) {
-        swrite("Hello\n");
-    }
 }
 
 std::string GCPSocket::sread() {
@@ -130,3 +96,43 @@ bool GCPSocket::swrite(std::string msg) {
 
     return true;
 }
+
+// ======================================================================
+// Public Functions
+// ======================================================================
+
+bool GCPSocket::connect(std::string hostname, int port) {
+    // if already connected, don't connect again
+    if (_connected) { return false; }
+
+    sockaddr_in addr;
+
+    if (!dns(hostname,port,&addr)) {
+        printf("Could not resolve hostname");
+        return false;
+    }
+
+    if (::connect(_sockfd, (sockaddr*)&addr, sizeof(addr)) == -1) {
+        perror("Could not connect to hostname");
+        close(_sockfd);
+        return false;
+    }
+
+    _connected = true;
+    return _connected;
+}
+
+void GCPSocket::disconnect() {
+    if (_connected) {
+        close(_sockfd);
+        _connected = false;
+    }
+}
+
+void GCPSocket::send_auth(std::string auth) {
+    if (_connected) {
+        swrite("AUTH:"+auth+"\n");
+    }
+}
+
+
