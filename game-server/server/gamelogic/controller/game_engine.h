@@ -13,7 +13,7 @@ namespace Morphling::Gamelogic {
 
     bool is_game_over() { return model->is_game_over(); }
 
-    Player* get_winner() { return model->get_winner(); };
+    Game_result get_result() { return model->get_result(); };
 
   protected:
     void set_model(Model* model) { this->model = model; }

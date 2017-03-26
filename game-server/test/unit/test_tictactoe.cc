@@ -28,8 +28,7 @@ TEST_F(TictactoeTests, PlayerOneWins) {
   EXPECT_TRUE(controller->receive_action("2 0"));
 
   EXPECT_TRUE(engine.is_game_over());
-  ASSERT_NE(nullptr, engine.get_winner());
-  EXPECT_EQ(p1_name, engine.get_winner()->get_name());
+  EXPECT_EQ(Game_result::Player_one, engine.get_result());
 }
 
 TEST_F(TictactoeTests, PlayerTwoWins) {
@@ -41,8 +40,7 @@ TEST_F(TictactoeTests, PlayerTwoWins) {
   EXPECT_TRUE(controller->receive_action("1 2"));
 
   EXPECT_TRUE(engine.is_game_over());
-  ASSERT_NE(nullptr, engine.get_winner());
-  EXPECT_EQ(p2_name, engine.get_winner()->get_name());
+  EXPECT_EQ(Game_result::Player_two, engine.get_result());
 }
 
 TEST_F(TictactoeTests, TieGame) {
@@ -57,5 +55,17 @@ TEST_F(TictactoeTests, TieGame) {
   EXPECT_TRUE(controller->receive_action("2 2"));
 
   EXPECT_TRUE(engine.is_game_over());
-  EXPECT_EQ(nullptr, engine.get_winner());
+  EXPECT_EQ(Game_result::Tie, engine.get_result());
+}
+
+TEST_F(TictactoeTests, UndeterminedGame) {
+  EXPECT_TRUE(controller->receive_action("0 0"));
+  EXPECT_TRUE(controller->receive_action("1 1"));
+  EXPECT_TRUE(controller->receive_action("0 1"));
+  EXPECT_TRUE(controller->receive_action("0 2"));
+  EXPECT_TRUE(controller->receive_action("2 0"));
+  EXPECT_TRUE(controller->receive_action("1 0"));
+
+  EXPECT_FALSE(engine.is_game_over());
+  EXPECT_EQ(Game_result::Undetermined, engine.get_result());
 }

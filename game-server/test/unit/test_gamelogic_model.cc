@@ -6,7 +6,7 @@ using namespace Morphling::Gamelogic;
 
 class ModelImpl : public Model {
   bool is_game_over() override { return false; }
-  Player* get_winner() override { return nullptr; }
+  bool check_win_condition() override { return false; }
 };
 
 class ModelTest : public ::testing::Test {

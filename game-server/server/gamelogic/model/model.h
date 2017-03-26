@@ -3,13 +3,18 @@
 #include "player.h"
 
 namespace Morphling::Gamelogic {
+  enum class Game_result {
+    Player_one, Player_two, Tie, Undetermined
+  };
+
   class Model {
   public:
     Model() = default;
     virtual ~Model() = default;
 
     virtual bool is_game_over() = 0;
-    virtual Player* get_winner() = 0;
+    virtual bool check_win_condition() = 0;
+    virtual Game_result get_result();
 
     Player *to_next_player();
 

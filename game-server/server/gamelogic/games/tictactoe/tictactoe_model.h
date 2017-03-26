@@ -20,7 +20,7 @@ namespace Morphling::Gamelogic::Tictactoe {
 
     bool is_game_over() override;
 
-    Player* get_winner() override;
+    bool check_win_condition() override;
 
   private:
     Board2D board;
