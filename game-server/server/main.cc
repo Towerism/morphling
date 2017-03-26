@@ -1,4 +1,4 @@
-#include <networking/gcp_socket_server.h>
+#include <networking/gcp_server.h>
 
 #include <iostream>
 
@@ -6,7 +6,7 @@ using namespace Morphling::Networking;
 
 int main(int argc, char** argv) {
 
-    GCPSServer server;
+    GCPServer server;
 
     int port;
     if (argc > 1) {

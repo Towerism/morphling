@@ -24,11 +24,9 @@ int main(int argc, char** argv) {
 
     std::cout << "GCP Socket Client started: " << std::endl;
 
-    gcp.send_auth();
+    gcp.send_auth("asdf");
 
-    std::cout << "< send_auth\n" << "> " << gcp.sread() << std::endl;
-
-    std::cout << "> " << gcp.sread() << std::endl;
+    std::cout << "< send_auth (\"AUTH:asdf\")\n" << "> " << gcp.sread() << std::endl;
 
     std::cout << "GCP Socket Client shutting down.." << std::endl;
 

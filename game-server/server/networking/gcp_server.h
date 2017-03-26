@@ -1,7 +1,9 @@
-// GCPSServer - Game Client Protocol Socket Server
+// GCPServer - Game Client Protocol Server
+// Front End to handle distributing incoming GCP client connections
+
 #pragma once
 
-#include <networking/gcp_socket.h>
+#include <networking/gcp_server_socket.h>
 
 #include <atomic>
 #include <iostream>
@@ -28,7 +30,7 @@ namespace Morphling::Networking {
 
 const int MAX_BACKLOG = 64;
 
-class GCPSServer {
+class GCPServer {
 private:
     std::atomic_bool running;
 
@@ -47,14 +49,14 @@ private:
 
     bool send(std::string msg);
 public:
-    GCPSServer();
-    ~GCPSServer();
+    GCPServer();
+    ~GCPServer();
 
     bool start(int port_no = 55555);
     bool stop();
     bool is_running() { return running; }
     int get_port() const { return port; }
 
-}; // end class GCPSServer
+}; // end class GCPServer
 
 } // end namespace Morphling::Networking

@@ -1,15 +1,15 @@
-#include <networking/gcp_socket_server.h>
+#include <networking/gcp_server.h>
 
 using namespace Morphling::Networking;
 
-GCPSServer::GCPSServer(): 
+GCPServer::GCPServer(): 
     running(false),
     port(55555),
     sockfd(-1),
     connection_thread()
 { }
 
-GCPSServer::~GCPSServer()
+GCPServer::~GCPServer()
 {
     // if the connection_handler is still running, stop it.
     if (running) {
@@ -17,7 +17,7 @@ GCPSServer::~GCPSServer()
     }
 }
 
-bool GCPSServer::start(int port_no)
+bool GCPServer::start(int port_no)
 {
     // check if the connection_handler is running already
     if (running) {
@@ -73,12 +73,12 @@ bool GCPSServer::start(int port_no)
     running = true;
 
     // run the socket accept in a thread
-    connection_thread = std::thread(&GCPSServer::connection_handler,this);
+    connection_thread = std::thread(&GCPServer::connection_handler,this);
 
     return true;
 }
 
-bool GCPSServer::stop() {
+bool GCPServer::stop() {
     // set the stop flag for the connection_handler
     running = false;
     // close the accepting socket
@@ -91,7 +91,7 @@ bool GCPSServer::stop() {
     return !running;
 }
 
-void GCPSServer::connection_handler()
+void GCPServer::connection_handler()
 {
     struct sockaddr_storage their_addr;
     socklen_t sin_size;
@@ -110,26 +110,17 @@ void GCPSServer::connection_handler()
         printf("accepted new client: %d\n", newfd);
         { // lock access to the client list during addition
             std::unique_lock<std::mutex> lock(client_list_mutex);
-            client_list.push_back(std::thread(&GCPSServer::client_handler,this,newfd));
+            client_list.push_back(std::thread(&GCPServer::client_handler,this,newfd));
         }
     }
 }
 
-void GCPSServer::client_handler(int fd) {
-    GCPSocket sock(fd);
-    std::string msg;
-    while (running) {
-        if (sock.connected()) {
-            msg = sock.sread();
-            sock.swrite(msg);
-        } else {
-            break;
-        }
-    }
-    // no need to close socket, GCPSocket deconstructor will handle it
+void GCPServer::client_handler(int fd) {
+    GCPServerSocket gcp(fd);
+    gcp.start();
 }
 
-void GCPSServer::client_wait() {
+void GCPServer::client_wait() {
     std::unique_lock<std::mutex> lock(client_list_mutex);
     for (auto& t: client_list) {
         t.join();
