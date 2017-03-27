@@ -13,6 +13,7 @@ namespace Morphling::Gamelogic {
   }
 
   Player* Model::to_next_player() {
+    ++turn;
     if (current_player == player_one) {
       current_player = player_two;
     } else {

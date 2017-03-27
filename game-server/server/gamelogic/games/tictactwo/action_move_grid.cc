@@ -16,7 +16,8 @@ namespace Morphling::Gamelogic::Tictactwo {
 
   bool Action_move_grid::is_direction_valid(Tictactwo_model* model) {
     auto origin = new_grid_origin_from_direction(model);
-    return origin.obeys_dimensions({ 5, 5 });
+    return origin.obeys_dimensions({ 5, 5 })
+      && model->get_turn() > 4;
   }
 
   Point2D Action_move_grid::new_grid_origin_from_direction(Tictactwo_model* model) {

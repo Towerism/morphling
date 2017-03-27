@@ -9,7 +9,7 @@ namespace Morphling::Gamelogic {
 
   class Model {
   public:
-    Model() = default;
+    Model() : turn(1) {}
     virtual ~Model() = default;
 
     virtual bool is_game_over() = 0;
@@ -27,9 +27,12 @@ namespace Morphling::Gamelogic {
     }
     void set_player_two(Player *player) { player_two = player; }
 
+    size_t get_turn() const { return turn; }
+
   private:
     Player *current_player = nullptr;
     Player *player_one = nullptr;
     Player *player_two = nullptr;
+    size_t turn;
   };
 }

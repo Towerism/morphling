@@ -10,11 +10,17 @@ class LegalMoveGridActionTests : public ::testing::Test {
 public:
   LegalMoveGridActionTests()
     : grid_origin(2, 2),
-      model(new Tictactwo_model(grid_origin))
-  {}
+      model(new Tictactwo_model(grid_origin)) {
+    pass_turns(4);
+  }
 
   ~LegalMoveGridActionTests() {
     delete model;
+  }
+
+  void pass_turns(int turns) {
+    for (int i = 0; i < turns; ++i)
+      model->to_next_player();
   }
 
   Point2D grid_origin;
