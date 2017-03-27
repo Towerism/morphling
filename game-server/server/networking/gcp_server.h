@@ -42,7 +42,6 @@ private:
     std::vector<std::thread> client_list;
 
     // Functions
-
     void connection_handler();
     void client_handler(int fd);
     void client_wait();

@@ -110,10 +110,27 @@ GCPServerSocket::ServerState GCPServerSocket::server_verify_auth() {
     // if the read_tag failed, disconnect
     if (std::get<0>(auth)) return Disconnect;
     // TODO(devincarr): process the AUTH and establish to the proper game server
-
-    std::cout << "Auth receieved: " << std::get<1>(auth) << std::endl;
+    playerid = std::get<1>(auth);
+    std::cout << "Auth receieved: " << playerid << std::endl;
+    
     // TODO(devincarr): return the next proper state
     return Disconnect;
+}
+
+// Wait for the next player to join. Or if this is the last player to 
+// to join, continue.
+GCPServerSocket::ServerState GCPServerSocket::server_wait_for_other(players_ready* rdy) {
+    std::unique_lock<std::mutex> lk(m_player);
+    // check if the other player has already connected
+    if (rdy->player1) {
+        rdy->player2 = true;
+        return SendWB;
+    }
+    // otherwise wait for the other player to be ready
+    cv_player.wait(lk, [rdy,this]{return rdy->player2 or not _connected;});
+    // If the reason for not waiting is not connected => Disconnect
+    if (_connected) return Disconnect;
+    else return SendWB;
 }
 
 // ======================================================================

@@ -22,10 +22,10 @@
 
 namespace Morphling::Networking {
 
-const int MAX_MESSAGE = 2048;
-
 class GCPSocket {
 private:
+    const int MAX_MESSAGE = 2048;
+    
     int _sockfd;
     std::atomic_bool _connected;
 
