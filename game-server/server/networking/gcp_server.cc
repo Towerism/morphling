@@ -60,7 +60,7 @@ bool GCPServer::start(int port_no)
             freeaddrinfo(result); // all done with this structure
             return false;
         }
-        port = ((struct sockaddr_in*)&sock_addr)->sin_port;
+        port = ntohs(((struct sockaddr_in*)&sock_addr)->sin_port);
     }
     freeaddrinfo(result); // all done with this structure
 

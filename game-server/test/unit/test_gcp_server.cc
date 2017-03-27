@@ -7,7 +7,7 @@ using namespace Morphling::Networking;
 class GCPServerTest : public ::testing::Test {
 protected:
     GCPServerTest() {
-        EXPECT_TRUE(server.start(55555));
+        EXPECT_TRUE(server.start(0));
         EXPECT_TRUE(server.is_running());
     }
 
