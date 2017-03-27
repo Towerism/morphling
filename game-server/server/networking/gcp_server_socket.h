@@ -2,7 +2,9 @@
 #pragma once
 
 #include <atomic>
+#include <condition_variable>
 #include <memory>
+#include <mutex>
 #include <iostream>
 #include <string>
 #include <tuple>
@@ -25,12 +27,19 @@
 
 namespace Morphling::Networking {
 
-const int MAX_MESSAGE = 2048;
+// TODO(devincarr): Make this a part of the Game state later
+struct players_ready {
+    bool player1;
+    bool player2;
+};
 
 class GCPServerSocket {
 private:
+    const int MAX_MESSAGE = 2048;
+    
     int _sockfd;
     std::atomic_bool _connected;
+    std::string playerid;
 
     // Direct Socket Functions
     enum SocketReturn {
@@ -47,9 +56,17 @@ private:
     // State functions
     enum ServerState {
         VerifyAuth,
+        WaitForOtherPlayer,
+        SendWB,
+        WaitForMove,
+        VerifyMove,
+        SendMove,
         Disconnect
     };
+    std::mutex m_player;
+    std::condition_variable cv_player;
     ServerState server_verify_auth();
+    ServerState server_wait_for_other(players_ready* rdy);
 
 public:
     GCPServerSocket(int sockfd);
