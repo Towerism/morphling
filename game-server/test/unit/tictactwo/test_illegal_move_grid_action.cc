@@ -37,7 +37,7 @@ TEST(IllegalMoveGridActionTests, TooFarLeft) {
 }
 
 TEST(IllegalMoveGridActionTests, TooFarRight) {
-  Point2D grid_origin(4, 1);
+  Point2D grid_origin(2, 1);
   Tictactwo_model model(grid_origin);
   pass_turns(model, 4);
   Action_move_grid action(Action_move_grid::Direction::Right);
@@ -55,7 +55,7 @@ TEST(IllegalMoveGridActionTests, TooFarUp) {
 }
 
 TEST(IllegalMoveGridActionTests, TooFarDown) {
-  Point2D grid_origin(1, 4);
+  Point2D grid_origin(1, 2);
   Tictactwo_model model(grid_origin);
   pass_turns(model, 4);
   Action_move_grid action(Action_move_grid::Direction::Down);

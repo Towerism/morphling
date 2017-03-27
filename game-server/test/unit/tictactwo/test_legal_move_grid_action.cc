@@ -9,7 +9,7 @@ using Morphling::Gamelogic::Point2D;
 class LegalMoveGridActionTests : public ::testing::Test {
 public:
   LegalMoveGridActionTests()
-    : grid_origin(2, 2),
+    : grid_origin(1, 1),
       model(new Tictactwo_model(grid_origin)) {
     pass_turns(4);
   }
@@ -33,7 +33,7 @@ TEST_F(LegalMoveGridActionTests, MoveGridUp) {
   EXPECT_TRUE(action.is_legal(model));
   action.execute(model);
 
-  EXPECT_EQ(Point2D(2, 1),model->get_grid_origin());
+  EXPECT_EQ(Point2D(1, 0),model->get_grid_origin());
 }
 
 TEST_F(LegalMoveGridActionTests, MoveGridDown) {
@@ -42,7 +42,7 @@ TEST_F(LegalMoveGridActionTests, MoveGridDown) {
   EXPECT_TRUE(action.is_legal(model));
   action.execute(model);
 
-  EXPECT_EQ(Point2D(2, 3),model->get_grid_origin());
+  EXPECT_EQ(Point2D(1, 2),model->get_grid_origin());
 }
 
 TEST_F(LegalMoveGridActionTests, MoveGridLeft) {
@@ -51,7 +51,7 @@ TEST_F(LegalMoveGridActionTests, MoveGridLeft) {
   EXPECT_TRUE(action.is_legal(model));
   action.execute(model);
 
-  EXPECT_EQ(Point2D(1, 2),model->get_grid_origin());
+  EXPECT_EQ(Point2D(0, 1),model->get_grid_origin());
 }
 
 TEST_F(LegalMoveGridActionTests, MoveGridRight) {
@@ -60,7 +60,7 @@ TEST_F(LegalMoveGridActionTests, MoveGridRight) {
   EXPECT_TRUE(action.is_legal(model));
   action.execute(model);
 
-  EXPECT_EQ(Point2D(3, 2),model->get_grid_origin());
+  EXPECT_EQ(Point2D(2, 1),model->get_grid_origin());
 }
 
 TEST_F(LegalMoveGridActionTests, MoveGridUpLeft) {
@@ -69,7 +69,7 @@ TEST_F(LegalMoveGridActionTests, MoveGridUpLeft) {
   EXPECT_TRUE(action.is_legal(model));
   action.execute(model);
 
-  EXPECT_EQ(Point2D(1, 1),model->get_grid_origin());
+  EXPECT_EQ(Point2D(0, 0),model->get_grid_origin());
 }
 
 TEST_F(LegalMoveGridActionTests, MoveGridUpRight) {
@@ -78,7 +78,7 @@ TEST_F(LegalMoveGridActionTests, MoveGridUpRight) {
   EXPECT_TRUE(action.is_legal(model));
   action.execute(model);
 
-  EXPECT_EQ(Point2D(3, 1),model->get_grid_origin());
+  EXPECT_EQ(Point2D(2, 0),model->get_grid_origin());
 }
 
 TEST_F(LegalMoveGridActionTests, MoveGridDownLeft) {
@@ -87,7 +87,7 @@ TEST_F(LegalMoveGridActionTests, MoveGridDownLeft) {
   EXPECT_TRUE(action.is_legal(model));
   action.execute(model);
 
-  EXPECT_EQ(Point2D(1, 3),model->get_grid_origin());
+  EXPECT_EQ(Point2D(0, 2),model->get_grid_origin());
 }
 
 TEST_F(LegalMoveGridActionTests, MoveGridDownRight) {
@@ -96,5 +96,5 @@ TEST_F(LegalMoveGridActionTests, MoveGridDownRight) {
   EXPECT_TRUE(action.is_legal(model));
   action.execute(model);
 
-  EXPECT_EQ(Point2D(3, 3),model->get_grid_origin());
+  EXPECT_EQ(Point2D(2, 2),model->get_grid_origin());
 }
