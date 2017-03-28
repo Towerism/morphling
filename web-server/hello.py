@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, session, url_for, redirect, flash
 from firebase import firebase
 import json
 #from form import MyForm
@@ -7,6 +7,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret key'
 firebase = firebase.FirebaseApplication('https://flask-experiment-e7196.firebaseio.com', None)
 new_user = 'abc abc'
+tokens = ['abs','abss']
 
 @app.route('/')
 def index():
@@ -24,23 +25,8 @@ def testing():
 
 @app.route('/bootstrap')
 def bootstrap():
+    #if not session.get('logged_in'):
     return render_template('index.html')
-
-@app.route('/Game.html')
-def game():
-    boardJSON = '{ "states": { "-hash": { "0": { "0": "_,_,_", "1": "_,x,_", "2": "_,_,_" } } } }'
-    playersJSON = '{ "players": { "-hash1": { "name": "Demo Name", "score": 0 }, "-hash2": { "name": "Demo Name 2", "score": 0 } } }'
-
-    boardData = json.loads(boardJSON)
-    gameState = []
-    rows = str(boardData["states"]["-hash"]["0"]).split(',')
-    for r in rows:
-        processRow(r,gameState)
-
-    playersData = json.loads(playersJSON)
-    player1 = playersData["players"]["-hash1"]
-    player2 = playersData["players"]["-hash2"]
-    return render_template('Game.html',gameState=gameState, player1=player1, player2=player2)
 
 @app.route('/Settings.html')
 def settings():
@@ -53,6 +39,42 @@ def ranking():
 @app.route('/Bracket.html')
 def bracket():
     return render_template('Bracket.html')
+
+@app.route('/login', methods=['GET','POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['token'] in tokens:
+            token = request.form['token']
+            session['logged_in'] = True
+            session[token] = True
+            return redirect(url_for('show_game',token=token))
+        else:
+            error = 'Invalid Token'
+            flash('Invalid Token')
+    return render_template('Login.html',error=error)
+
+@app.route('/game')
+@app.route('/Game.html')
+@app.route('/game/<token>')
+def show_game(token=None):
+    if token and session['logged_in']:
+        #TODO get initial board data and player's data from firebase
+        boardJSON = '{ "states": { "-hash": { "0": { "0": "_,_,_", "1": "_,x,_", "2": "_,_,_" } } } }'
+        playersJSON = '{ "players": { "-hash1": { "name": "Demo Name", "score": 0 }, "-hash2": { "name": "Demo Name 2", "score": 0 } } }'
+
+        boardData = json.loads(boardJSON)
+        gameState = []
+        rows = str(boardData["states"]["-hash"]["0"]).split(',')
+        for r in rows:
+            processRow(r,gameState)
+
+        playersData = json.loads(playersJSON)
+        player1 = playersData["players"]["-hash1"]
+        player2 = playersData["players"]["-hash2"]
+        return render_template('Game.html',token=token,session=session,gameState=gameState, player1=player1, player2=player2)
+    else:
+        return redirect(url_for('login'))
 
 def processRow(row,gameState):
     for i in row:

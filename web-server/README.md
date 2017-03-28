@@ -27,3 +27,5 @@ flask run
 - TODOs 
     - Integrate Flask wtf form to custom PUT requests and GET requests.
     - Write tests for different requests.
+    - Allow setting sizes of the board and the piece.
+    - Custom board and piece placements.
