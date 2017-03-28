@@ -17,7 +17,7 @@ namespace Morphling::Gamelogic::Tictactoe {
     bool result = true;
     for (int i = 0; i < 3; ++i) {
       for (int j = 0; j < 3; ++j) {
-        if (model->get_element(i, j) == nullptr)
+        if (model->get_element({i, j}) == nullptr)
           return false;
       }
     }

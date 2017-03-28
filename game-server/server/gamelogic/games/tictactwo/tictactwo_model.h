@@ -2,20 +2,19 @@
 
 #include <gamelogic/model/model.h>
 #include <gamelogic/model/point2d.h>
-#include <gamelogic/model/element_accessor.h>
 #include <gamelogic/model/gameobject/board2d.h>
 
 namespace Morphling::Gamelogic::Tictactwo {
-  class Tictactwo_model : public Model, public Element_accessor {
+  class Tictactwo_model : public Model {
   public:
     Tictactwo_model(Point2D grid_origin) : board(5, 5), grid_origin(grid_origin) {}
 
-    Board2D::gamepiece_t get_element(int i, int j) override {
-      return board.get(i, j);
+    Board2D::gamepiece_t get_element(Point2D coordinates) {
+      return board.get(coordinates);
     }
 
-    void set_element(int i, int j, Board2D::gamepiece_t game_object) override {
-      board.set(i, j, game_object);
+    void set_element(Point2D coordinates, Board2D::gamepiece_t game_object) {
+      board.set(coordinates, game_object);
     }
 
     bool is_game_over() override;

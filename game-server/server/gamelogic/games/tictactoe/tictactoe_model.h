@@ -10,12 +10,12 @@ namespace Morphling::Gamelogic::Tictactoe {
   public:
     Tictactoe_model() : board(3, 3) {}
 
-    Board2D::gamepiece_t get_element(int i, int j) {
-      return board.get(i, j);
+    Board2D::gamepiece_t get_element(Point2D coordinates) {
+      return board.get(coordinates);
     }
 
-    void set_element(int i, int j, Board2D::gamepiece_t game_object) {
-      board.set(i, j, game_object);
+    void set_element(Point2D coordinates, Board2D::gamepiece_t game_object) {
+      board.set(coordinates, game_object);
     }
 
     bool is_game_over() override;

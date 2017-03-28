@@ -21,14 +21,14 @@ namespace Morphling::Gamelogic::Tictactoe {
   }
 
   bool Action_mark::is_space_free(Tictactoe_model* model) {
-    return model->get_element(x, y) == nullptr;
+    return model->get_element({x, y}) == nullptr;
   }
 
   void Action_mark::mark_space(Tictactoe_model* model) {
     auto player = dynamic_cast<Tictactoe_player*>(model->get_current_player());
     if (player != nullptr) {
       auto gamepiece = player->get_gamepiece();
-      model->set_element(x, y, gamepiece);
+      model->set_element({x, y}, gamepiece);
     }
   }
 }

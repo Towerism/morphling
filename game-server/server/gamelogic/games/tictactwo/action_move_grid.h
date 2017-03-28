@@ -1,3 +1,5 @@
+#pragma once
+
 #include <gamelogic/controller/action.h>
 #include <gamelogic/model/point2d.h>
 
