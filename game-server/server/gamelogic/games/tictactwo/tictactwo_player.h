@@ -15,6 +15,10 @@ namespace Morphling::Gamelogic::Tictactwo {
 
     auto get_gamepiece() { return gamepiece; }
 
+    bool owns_gamepiece(Gamepiece* piece) const {
+      return gamepiece->get_representation() == piece->get_representation();
+    }
+
   private:
     std::shared_ptr<Gamepiece> gamepiece;
   };

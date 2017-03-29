@@ -15,6 +15,8 @@ namespace Morphling::Gamelogic::Tictactwo {
       return equal;
     }
 
+    char get_representation() const { return representation; };
+
   private:
     char representation;
   };

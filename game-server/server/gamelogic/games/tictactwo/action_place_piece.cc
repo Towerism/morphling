@@ -17,13 +17,13 @@ namespace Morphling::Gamelogic::Tictactwo {
   }
 
   bool Action_place_piece::is_location_available(Tictactwo_model* model) {
-    auto grid_origin = model->get_grid_origin();
-    auto grid_bound = grid_origin.get_translation({3, 3});
-    return location >= grid_origin && location < grid_bound;
+    return model->get_element(location) == nullptr;
   }
 
   bool Action_place_piece::is_location_inside_grid(Tictactwo_model* model) {
-    return model->get_element(location) == nullptr;
+    auto grid_origin = model->get_grid_origin();
+    auto grid_bound = grid_origin.get_translation({3, 3});
+    return location >= grid_origin && location < grid_bound;
   }
 
   void Action_place_piece::execute(Model* model) {
