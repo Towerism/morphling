@@ -55,6 +55,7 @@ def login():
     return render_template('Login.html',error=error)
 
 @app.route('/game')
+@app.route('/Game')
 @app.route('/Game.html')
 @app.route('/game/<token>')
 def show_game(token=None):
