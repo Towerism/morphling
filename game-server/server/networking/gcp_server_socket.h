@@ -27,6 +27,11 @@
 
 namespace Morphling::Networking {
 
+enum PlayerSide {
+    White,
+    Black
+};
+
 // TODO(devincarr): Make this a part of the Game state later
 struct players_ready {
     bool player1;
@@ -40,6 +45,7 @@ private:
     int _sockfd;
     std::atomic_bool _connected;
     std::string playerid;
+    PlayerSide playerside;
 
     // Direct Socket Functions
     enum SocketReturn {
@@ -56,9 +62,10 @@ private:
     // State functions
     enum ServerState {
         VerifyAuth,
-        WaitForOtherPlayer,
+        WaitForOtherConnect,
         SendWB,
         WaitForMove,
+        WaitForOtherMove,
         VerifyMove,
         SendMove,
         Disconnect
@@ -67,6 +74,7 @@ private:
     std::condition_variable cv_player;
     ServerState server_verify_auth();
     ServerState server_wait_for_other(players_ready* rdy);
+    ServerState server_send_side();
 
 public:
     GCPServerSocket(int sockfd);
