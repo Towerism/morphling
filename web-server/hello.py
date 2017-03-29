@@ -7,14 +7,15 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret key'
 firebase = firebase.FirebaseApplication('https://flask-experiment-e7196.firebaseio.com', None)
 new_user = 'abc abc'
-tokens = ['abs','abss']
+games = firebase.get('/games', None)
+tokens = json.dumps(games.keys())
 
 @app.route('/')
 def index():
     #result = firebase.put('/users', new_user, {'print': 'pretty'}, {'X_FANCY_HEADER': 'VERY FANCY'})
-    result = firebase.get('/rest', None)
+    result = games.keys()
     #return "<h1>Hello, world!</h1>"
-    return '<h3>' + str(result) + '<h3>'
+    return '<h3>' + json.dumps(result) + '<h3>'
 
 @app.route('/testing')
 def testing():
@@ -25,7 +26,6 @@ def testing():
 
 @app.route('/bootstrap')
 def bootstrap():
-    #if not session.get('logged_in'):
     return render_template('index.html')
 
 @app.route('/Settings.html')
@@ -59,21 +59,19 @@ def login():
 @app.route('/Game.html')
 @app.route('/game/<token>')
 def show_game(token=None):
-    if token and session['logged_in']:
-        #TODO get initial board data and player's data from firebase
-        boardJSON = '{ "states": { "-hash": { "0": { "0": "_,_,_", "1": "_,x,_", "2": "_,_,_" } } } }'
-        playersJSON = '{ "players": { "-hash1": { "name": "Demo Name", "score": 0 }, "-hash2": { "name": "Demo Name 2", "score": 0 } } }'
+    if token and session[token]:
+        state = firebase.get('/states/'+token, '0')
+        players = firebase.get('/games/'+token, None)
+        player1 = firebase.get('/players/'+players['player1'], None)
+        player2 = firebase.get('/players/'+players['player2'], None)
 
-        boardData = json.loads(boardJSON)
+        boardData = json.dumps(state)
         gameState = []
-        rows = str(boardData["states"]["-hash"]["0"]).split(',')
+        rows = str(boardData).split(',')
         for r in rows:
             processRow(r,gameState)
 
-        playersData = json.loads(playersJSON)
-        player1 = playersData["players"]["-hash1"]
-        player2 = playersData["players"]["-hash2"]
-        return render_template('Game.html',token=token,session=session,gameState=gameState, player1=player1, player2=player2)
+        return render_template('Game.html', token=token, session=session, gameState=gameState, player1=player1, player2=player2)
     else:
         return redirect(url_for('login'))
 
