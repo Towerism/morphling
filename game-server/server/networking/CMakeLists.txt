@@ -1,3 +1,5 @@
 add_library(networking
-  stub.cc
+  gcp_server.cc
+  gcp_server_socket.cc
+  gcp_socket.cc
   )

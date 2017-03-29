@@ -30,3 +30,14 @@ if (${TEST})
   add_test(NAME unit COMMAND $<TARGET_FILE:morphling-test-unit>)
   add_dependencies(build-tests morphling-test-unit)
 endif()
+
+add_subdirectory(samples)
+add_executable(gcp-test-client samples/test_gcp_socket.cc)
+target_link_libraries(gcp-test-client
+  serverstate
+  database
+  gamelogic
+  networking
+  ${THIRD_PARTY_LIBS}
+  )
+
