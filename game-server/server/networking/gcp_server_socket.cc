@@ -113,8 +113,7 @@ GCPServerSocket::ServerState GCPServerSocket::server_verify_auth() {
     playerid = std::get<1>(auth);
     std::cout << "Auth receieved: " << playerid << std::endl;
     
-    // TODO(devincarr): return the next proper state
-    return Disconnect;
+    return WaitForOtherConnect;
 }
 
 // Wait for the next player to join. Or if this is the last player to 
@@ -131,6 +130,30 @@ GCPServerSocket::ServerState GCPServerSocket::server_wait_for_other(players_read
     // If the reason for not waiting is not connected => Disconnect
     if (_connected) return Disconnect;
     else return SendWB;
+}
+
+// Send this player which side they are on based on the tournament data.
+// Then wait for either this player, or the other player to make a move
+// (white moves first).
+GCPServerSocket::ServerState GCPServerSocket::server_send_side() {
+    // send the side 
+    std::string side;
+    if (playerside == White) side = "W"; else side = "B";
+    auto ret = swrite("SIDE:"+side);
+
+    // check the send status
+    if (std::get<0>(ret) != Ok) {
+        // TODO(devincarr): check the reason for the send failure (if needed).
+        return Disconnect;
+    }
+
+    // transition to the wait step for the move if PlayerSide::White
+    if (playerside == White) {
+        return WaitForMove;
+    } else {
+        // otherwise wait for the other player to make a move
+        return WaitForOtherMove;
+    }
 }
 
 // ======================================================================
@@ -155,6 +178,24 @@ void GCPServerSocket::start() {
                 state = server_verify_auth();
                 break;
             }
+            case WaitForOtherConnect: {
+                //state = server_wait_for_other();
+                //break;
+            }
+            case SendWB: {
+                //state = server_send_side();
+                //break;
+            }
+            case WaitForMove: {
+                // TODO(devincarr): fall through for now
+            }
+            case WaitForOtherMove: {
+                // TODO(devincarr): fall through for now
+            }
+            case VerifyMove: {
+                // TODO(devincarr): fall through for now
+            }
+            default:
             case Disconnect: {
                 // exit the state machine for the Disconnect
                 break;
