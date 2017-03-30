@@ -29,6 +29,10 @@ namespace Morphling::Gamelogic {
 
     size_t get_turn() const { return turn; }
 
+  protected:
+    const Player *get_player_one() const { return player_one; }
+    const Player *get_player_two() const { return player_two; }
+
   private:
     Player *current_player = nullptr;
     Player *player_one = nullptr;

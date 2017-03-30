@@ -81,3 +81,18 @@ TEST_F(TictactwoTests, PlayerOneWinsIncludingAllActions) {
   EXPECT_TRUE(engine.is_game_over());
   EXPECT_EQ(Game_result::Player_two, engine.get_result());
 }
+
+TEST_F(TictactwoTests, PlayerTwoWinsOnPlayerOnesTurn) {
+  EXPECT_TRUE(controller->receive_action("place 0 0")); // 1
+  EXPECT_TRUE(controller->receive_action("place 1 0")); // 2
+  EXPECT_TRUE(controller->receive_action("place 0 1")); // 1
+  EXPECT_TRUE(controller->receive_action("place 1 1")); // 2
+  EXPECT_TRUE(controller->receive_action("grid 1")); // 1
+  EXPECT_TRUE(controller->receive_action("place 1 2")); // 2
+  EXPECT_TRUE(controller->receive_action("grid 1")); // 1
+  EXPECT_TRUE(controller->receive_action("grid 0")); // 2
+  EXPECT_TRUE(controller->receive_action("grid 0")); // 1
+
+  EXPECT_TRUE(engine.is_game_over());
+  EXPECT_EQ(Game_result::Player_two, engine.get_result());
+}

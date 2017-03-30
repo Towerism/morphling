@@ -22,6 +22,7 @@ namespace Morphling::Gamelogic::Tictactwo {
 
     bool is_game_over() override;
     bool check_win_condition() override;
+    Game_result get_result() override;
 
     const Point2D& get_grid_origin() const { return grid_origin; }
 
@@ -29,9 +30,12 @@ namespace Morphling::Gamelogic::Tictactwo {
       grid_origin = new_grid_origin;
     }
 
+    const Player* get_player_owning_gamepiece(Board2D::gamepiece_t game_object);
+
   private:
     Board2D board;
     Point2D grid_origin;
+    const Player* winner;
 
     Rule_board_is_full board_is_full;
     Rule_has_alignment has_alignment;

@@ -26,16 +26,24 @@ namespace Morphling::Gamelogic::Tictactwo {
 
   bool Rule_has_alignment::check_line(Tictactwo_model* model, int x1, int y1,
                                       int x2, int y2, int x3, int y3) {
-    return check_equal_positions(model, x1, y1, x2, y2)
+    bool result = check_equal_positions(model, x1, y1, x2, y2)
       && check_equal_positions(model, x2, y2, x3, y3);
+    if (result) {
+      auto gamepiece = get_adjusted_element(model, x1, y1);
+      causal_player = model->get_player_owning_gamepiece(gamepiece);
+    }
+    return result;
+  }
+
+  Board2D::gamepiece_t Rule_has_alignment::get_adjusted_element(Tictactwo_model* model, int x, int y) {
+    auto grid_origin = model->get_grid_origin();
+    auto adjusted_position = Point2D(x, y).get_translation(grid_origin);
+    return model->get_element(adjusted_position);
   }
 
   bool Rule_has_alignment::check_equal_positions(Tictactwo_model* model, int x1, int y1, int x2, int y2) {
-    auto grid_origin = model->get_grid_origin();
-    auto adjusted_position1 = Point2D(x1, y1).get_translation(grid_origin);
-    auto adjusted_position2 = Point2D(x2, y2).get_translation(grid_origin);
-    auto element1 = model->get_element(adjusted_position1);
-    auto element2 = model->get_element(adjusted_position2);
+    auto element1 = get_adjusted_element(model, x1, y1);
+    auto element2 = get_adjusted_element(model, x2, y2);
     if (element1 == nullptr || element2 == nullptr)
       return false;
     return element1->equals(element2.get());
