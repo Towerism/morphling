@@ -1,8 +1,11 @@
 #pragma once
 
+#include<iostream>
+
 namespace Morphling::Gamelogic {
   class Point2D {
   public:
+
     Point2D(int x = 0, int y = 0) : x(x), y(y) {}
 
     bool operator==(const Point2D& other) const {
@@ -30,11 +33,11 @@ namespace Morphling::Gamelogic {
     }
 
     bool operator <=(const Point2D& other) const {
-      return !(*this > other);
+      return x <= other.x && y <= other.y;
     }
 
     bool operator<(const Point2D& other) const {
-      return !(*this >= other);
+      return x < other.x && y < other.y;
     }
 
     bool obeys_dimensions(const Point2D& dimensions) const {
@@ -54,8 +57,20 @@ namespace Morphling::Gamelogic {
 
     int get_x() const { return x; }
     int get_y() const { return y; }
+
+    friend std::ostream& operator<<(std::ostream& os, const Point2D& point);
+    friend std::istream& operator>>(std::istream& is, Point2D& point);
   private:
     int x, y;
   };
 
+  inline std::ostream& operator<<(std::ostream& os, const Point2D& point) {
+    os << point.x << ' ' << point.y;
+    return os;
+  }
+
+  inline std::istream& operator>>(std::istream& is, Point2D& point) {
+    is >> point.x >> point.y;
+    return is;
+  }
 }
