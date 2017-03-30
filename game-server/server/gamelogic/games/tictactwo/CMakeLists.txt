@@ -1,5 +1,7 @@
 add_library(gamelogic_games_tictactwo
   tictactwo_model.cc
+  tictactwo_controller.cc
+  tictactwo_engine.cc
   action_move_grid.cc
   action_place_piece.cc
   action_move_piece.cc

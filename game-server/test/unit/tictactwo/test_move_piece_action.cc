@@ -50,13 +50,19 @@ TEST_F(MovePieceActionTests, IllegalToMovePieceBeforeFifthTurn) {
 }
 
 TEST_F(MovePieceActionTests, IllegalToMovePieceToLocationOutsideGrid) {
-  Action_move_piece action(from_location, {1, 1});
+  Action_move_piece action(from_location, {0, 0});
+  pass_turns(2);
+  EXPECT_FALSE(action.is_legal(&model));
+}
+
+TEST_F(MovePieceActionTests, IllegalToMovePieceFromLocationOutsideGrid) {
+  Action_move_piece action({0, 0}, to_location);
   pass_turns(2);
   EXPECT_FALSE(action.is_legal(&model));
 }
 
 TEST_F(MovePieceActionTests, IllegalToMovePieceToOccupiedSpace) {
-  Action_move_piece action(from_location, from_location);
+  Action_move_piece action(from_location, other_player_piece_location);
   pass_turns(2);
   EXPECT_FALSE(action.is_legal(&model));
 }

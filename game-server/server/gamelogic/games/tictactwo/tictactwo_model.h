@@ -4,6 +4,9 @@
 #include <gamelogic/model/point2d.h>
 #include <gamelogic/model/gameobject/board2d.h>
 
+#include "rule_has_alignment.h"
+#include "rule_board_is_full.h"
+
 namespace Morphling::Gamelogic::Tictactwo {
   class Tictactwo_model : public Model {
   public:
@@ -29,5 +32,8 @@ namespace Morphling::Gamelogic::Tictactwo {
   private:
     Board2D board;
     Point2D grid_origin;
+
+    Rule_board_is_full board_is_full;
+    Rule_has_alignment has_alignment;
   };
 }

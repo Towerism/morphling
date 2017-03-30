@@ -2,10 +2,10 @@
 
 namespace Morphling::Gamelogic::Tictactwo {
   bool Tictactwo_model::is_game_over() {
-    return false;
+    return check_win_condition() || board_is_full.check(this);
   }
 
   bool Tictactwo_model::check_win_condition() {
-    return false;
+    return has_alignment.check(this);
   }
 }

@@ -23,6 +23,7 @@ namespace Morphling::Gamelogic::Tictactwo {
     bool verify_turn_and_locations(Tictactwo_model* model);
     bool fourth_turn_has_passed(Tictactwo_model* model);
     bool from_location_belongs_to_current_player(Tictactwo_model* model);
+    bool is_from_location_inside_grid(Tictactwo_model* model);
     void move_piece(Tictactwo_model* model);
   };
 }

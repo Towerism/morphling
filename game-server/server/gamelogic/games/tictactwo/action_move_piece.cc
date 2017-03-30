@@ -15,7 +15,8 @@ namespace Morphling::Gamelogic::Tictactwo {
   bool Action_move_piece::verify_turn_and_locations(Tictactwo_model* model) {
     return fourth_turn_has_passed(model)
       && place_piece.is_legal(model)
-      && from_location_belongs_to_current_player(model);
+      && from_location_belongs_to_current_player(model)
+      && is_from_location_inside_grid(model);
   }
 
   bool Action_move_piece::fourth_turn_has_passed(Tictactwo_model* model) {
@@ -28,6 +29,12 @@ namespace Morphling::Gamelogic::Tictactwo {
     if (player == nullptr || piece == nullptr)
       return false;
     return player->owns_gamepiece(piece);
+  }
+
+  bool Action_move_piece::is_from_location_inside_grid(Tictactwo_model* model) {
+    auto grid_origin = model->get_grid_origin();
+    auto grid_bound = grid_origin.get_translation({3, 3});
+    return from_location >= grid_origin && from_location < grid_bound;
   }
 
   void Action_move_piece::execute(Model* model) {

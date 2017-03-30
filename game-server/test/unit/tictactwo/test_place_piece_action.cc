@@ -36,6 +36,30 @@ TEST_F(PlacePieceActionTests, IllegalToPlacePastEndOfGrid) {
   EXPECT_FALSE(action.is_legal(&model));
 }
 
+TEST_F(PlacePieceActionTests, IllegalToPlacePastRightOfGrid) {
+  Action_place_piece action({ 5, 2 });
+
+  EXPECT_FALSE(action.is_legal(&model));
+}
+
+TEST_F(PlacePieceActionTests, IllegalToPlacePastLeftOfGrid) {
+  Action_place_piece action({ 2, 5 });
+
+  EXPECT_FALSE(action.is_legal(&model));
+}
+
+TEST_F(PlacePieceActionTests, IllegalToPlaceAboveGrid) {
+  Action_place_piece action({ 2, 1 });
+
+  EXPECT_FALSE(action.is_legal(&model));
+}
+
+TEST_F(PlacePieceActionTests, IllegalToPlaceBelowGrid) {
+  Action_place_piece action({ 2, 5 });
+
+  EXPECT_FALSE(action.is_legal(&model));
+}
+
 TEST_F(PlacePieceActionTests, PlacingPieceOccupiesTheSpace) {
   Action_place_piece action({ 2, 3 });
 

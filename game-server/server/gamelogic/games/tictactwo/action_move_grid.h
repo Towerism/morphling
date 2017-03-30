@@ -8,10 +8,10 @@ namespace Morphling::Gamelogic::Tictactwo {
 
   class Action_move_grid : public Action {
   public:
-    enum class Direction {
-      Up, Down, Left, Right,
+    enum class Direction : int {
+      Up = 0, Down, Left, Right,
       Up_left, Up_right,
-      Down_left, Down_right
+      Down_left, Down_right, NUM_DIRECTIONS
     };
 
     Action_move_grid(Direction direction);
