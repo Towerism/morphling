@@ -17,6 +17,10 @@ namespace Morphling::Gamelogic {
 
     virtual action_t parse_action(std::string action_string) = 0;
 
+    bool is_game_over() { return model->is_game_over(); }
+
+    Game_result get_result() { return model->get_result(); };
+
     // Returns true if action was received successfully
     // Returns false otherwise.
     // Action can be recieved successfully if the action_string is

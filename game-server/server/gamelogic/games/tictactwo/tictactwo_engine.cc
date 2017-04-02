@@ -15,9 +15,6 @@ namespace Morphling::Gamelogic::Tictactwo {
     model->set_player_one(p1);
     model->set_player_two(p2);
 
-    set_model(model);
-    set_controller(controller);
-
     return controller;
   }
 }
