@@ -19,6 +19,8 @@ if (CURL_FOUND)
   set(THIRD_PARTY_LIBS ${CURL_LIBRARIES})
 endif()
 
+set(THIRD_PARTY_LIBS ${THIRD_PARTY_LIBS} pthread)
+
 include_directories(server)
 add_subdirectory(server)
 
