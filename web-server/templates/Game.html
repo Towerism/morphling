@@ -74,6 +74,7 @@
                         <p> a page for showing the game </p>
                         {% if token and session[token] %}
                         <div id="board">
+                        <div id="token" style="visibility:hidden;">{{ token }}</div>
                         <table id = "gameboard">
                           <tr id="row1">
                             <td class="square">{{ gameState[0] }}</td>
@@ -119,7 +120,7 @@
         $("#wrapper").toggleClass("toggled");
     });
     </script>
-
+    <script src={{ url_for('static', filename='js/firebase.js') }}></script>
 </body>
 
 </html>
