@@ -46,7 +46,6 @@ def login():
     if request.method == 'POST':
         if request.form['token'] in tokens:
             token = request.form['token']
-            session['logged_in'] = True
             session[token] = True
             return redirect(url_for('show_game',token=token))
         else:
