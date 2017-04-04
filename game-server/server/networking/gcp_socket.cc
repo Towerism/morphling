@@ -52,13 +52,14 @@ bool GCPSocket::dns(std::string hostname, int port, struct sockaddr_in* server) 
     return true;
 }
 
-std::string GCPSocket::sread() {
+GCPSocket::RET GCPSocket::sread()
+{
     char buffer[MAX_MESSAGE];
 
     memset(buffer, 0, MAX_MESSAGE);
 
     struct timeval r_timeout;
-    r_timeout.tv_sec = 2;
+    r_timeout.tv_sec = 4;
     r_timeout.tv_usec = 0;
     
     fd_set read_fd;
@@ -70,31 +71,67 @@ std::string GCPSocket::sread() {
         int res = recv(_sockfd, buffer, MAX_MESSAGE - 2, 0);
         if (res > 0) {
             std::string read_s = std::string(buffer);
-            return read_s;
+            // normal read
+            return std::make_tuple(Ok,read_s);
         } else {
-            printf("Bad sread(): disconnecting");
-            disconnect();
+            // bad read
+            return std::make_tuple(Error,"Error: Bad socket read");
         }
     } else if (rv == 0) {
         // timeout occured
+        return std::make_tuple(Timeout,"");
     } else {
         // error occured
-        std::cout << "Select returned: " << std::to_string(rv) << std::endl;
-        disconnect();
-        return "";
+        return std::make_tuple(Error,"Error: Socket select returned "+std::to_string(rv));
     }
-
-    return "";
 }
 
-bool GCPSocket::swrite(std::string msg) {
+GCPSocket::RET GCPSocket::sread_wait()
+{
+    char buffer[MAX_MESSAGE];
+
+    memset(buffer, 0, MAX_MESSAGE);
+
+    struct timeval r_timeout;
+    r_timeout.tv_sec = 2;
+    r_timeout.tv_usec = 0;
+
+    fd_set read_fd;
+
+    while (true) {
+    
+        FD_ZERO(&read_fd);
+        FD_SET(_sockfd, &read_fd);
+
+        int rv = select(_sockfd+1, &read_fd, nullptr, nullptr, &r_timeout);
+        if (rv > 0) {
+            int res = recv(_sockfd, buffer, MAX_MESSAGE - 2, 0);
+            if (res > 0) {
+                std::string read_s = std::string(buffer);
+                // normal read
+                return std::make_tuple(Ok,read_s);
+            } else {
+                // bad read
+                return std::make_tuple(Error,"Error: Bad socket read");
+            }
+        } else if (rv == 0) {
+            // timeout occured but we still want to wait for a response
+        } else {
+            // error occured
+            return std::make_tuple(Error,"Error: Socket select returned "+std::to_string(rv));
+        }
+    }
+}
+
+GCPSocket::RET GCPSocket::swrite(std::string msg)
+{
     if (_connected) {
         if (send(_sockfd, msg.c_str(), strlen(msg.c_str()), 0) == -1) {
-            return false;
+            return std::make_tuple(Error,std::string(strerror(errno)));
         }
     }
 
-    return true;
+    return std::make_tuple(Ok,"");
 }
 
 // ======================================================================
@@ -124,15 +161,25 @@ bool GCPSocket::connect(std::string hostname, int port) {
 
 void GCPSocket::disconnect() {
     if (_connected) {
+        // Send the disconnect code: BYE
+        auto ret = swrite("BYE\n");
         close(_sockfd);
         _connected = false;
     }
 }
 
-void GCPSocket::send_auth(std::string auth) {
+GCPSocket::RET GCPSocket::send_auth(std::string gameid, std::string name) {
+    // make sure we are still connected
     if (_connected) {
-        swrite("AUTH:"+auth+"\n");
+        auto res = swrite("GAME:"+gameid+"~NAME:"+name+"\n");
+        // make sure the swrite completed successfully
+        if (std::get<0>(res) != Ok) {
+            return res;
+        }
+        return std::make_tuple(Ok,"");
     }
+
+    return std::make_tuple(Error,"Not Connected");
 }
 
 

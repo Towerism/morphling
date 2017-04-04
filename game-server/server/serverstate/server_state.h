@@ -1,3 +1,5 @@
+#pragma once
+
 #include <unordered_map>
 #include <memory>
 
@@ -7,12 +9,16 @@ namespace Morphling::ServerState {
 
   class Server_state {
   public:
-    typedef std::unique_ptr<Game_instance> game_instance_t;
+    typedef std::shared_ptr<Game_instance> game_instance_t;
     typedef std::shared_ptr<Gamelogic::Game_engine> engine_t;
 
     Server_state(Gamelogic::Game_engine* engine) : engine(engine) {}
 
-    Game_instance* get_game(std::string id);
+    // Given a game id string, search for the game if it exists 
+    // locally in the game_map cache or in firebase. If it exists 
+    // in firebase but not locally, create it, store it, and 
+    // return it.
+    game_instance_t get_game(std::string gameid, std::string name);
     void end_game(std::string id);
 
   private:

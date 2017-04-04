@@ -5,6 +5,7 @@
 #include <memory>
 #include <iostream>
 #include <string>
+#include <tuple>
 
 #include <arpa/inet.h>
 #include <sys/types.h>
@@ -30,8 +31,15 @@ private:
     std::atomic_bool _connected;
 
     bool dns(std::string hostname, int port, struct sockaddr_in* server);
-    bool swrite(std::string msg);
 public:
+
+    enum SocketReturn {
+        Ok,
+        Error,
+        Timeout
+    };
+    typedef std::tuple<GCPSocket::SocketReturn,std::string> RET;
+
     GCPSocket();
     ~GCPSocket();
 
@@ -41,8 +49,10 @@ public:
     void disconnect();
 
     //TODO(devincarr): make private once sending/reading functions are fully defined
-    std::string sread();
-    void send_auth(std::string auth);
+    RET sread();
+    RET sread_wait();
+    RET swrite(std::string msg);
+    RET send_auth(std::string gameid, std::string name);
 
 }; //end class GCPSocket
 

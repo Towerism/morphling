@@ -1,11 +1,13 @@
 #include <networking/gcp_server.h>
 
 using namespace Morphling::Networking;
+using namespace Morphling::ServerState;
 
-GCPServer::GCPServer(): 
+GCPServer::GCPServer(Gamelogic::Game_engine* engine):
     running(false),
     port(55555),
     sockfd(-1),
+    serverstate(new Server_state(engine)),
     connection_thread()
 { }
 
@@ -107,7 +109,6 @@ void GCPServer::connection_handler()
             }
             continue;
         }
-        printf("accepted new client: %d\n", newfd);
         { // lock access to the client list during addition
             std::unique_lock<std::mutex> lock(client_list_mutex);
             client_list.push_back(std::thread(&GCPServer::client_handler,this,newfd));
@@ -116,7 +117,7 @@ void GCPServer::connection_handler()
 }
 
 void GCPServer::client_handler(int fd) {
-    GCPServerSocket gcp(fd);
+    GCPServerSocket gcp(serverstate,fd);
     gcp.start();
 }
 
