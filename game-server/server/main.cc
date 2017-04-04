@@ -1,12 +1,14 @@
 #include <networking/gcp_server.h>
+#include <gamelogic/games/tictactoe/tictactoe_engine.h>
 
 #include <iostream>
 
 using namespace Morphling::Networking;
+using namespace Morphling::Gamelogic;
 
 int main(int argc, char** argv) {
 
-    GCPServer server;
+    GCPServer server(new Tictactoe::Tictactoe_engine());
 
     int port;
     if (argc > 1) {

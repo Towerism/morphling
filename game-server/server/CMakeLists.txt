@@ -8,6 +8,7 @@ target_link_libraries(${PROJECT_NAME}
   serverstate
   database
   gamelogic
+  gamelogic_games
   networking
   ${THIRD_PARTY_LIBS}
   )
