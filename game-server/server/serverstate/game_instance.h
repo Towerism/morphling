@@ -3,6 +3,7 @@
 #include <gamelogic/controller/game_engine.h>
 #include <gamelogic/controller/controller.h>
 
+#include <atomic>
 #include <condition_variable>
 #include <memory>
 #include <mutex>
