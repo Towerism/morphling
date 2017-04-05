@@ -10,23 +10,30 @@ new_user = 'abc abc'
 games = firebase.get('/games', None)
 tokens = json.dumps(games.keys())
 
-@app.route('/')
-def index():
-    #result = firebase.put('/users', new_user, {'print': 'pretty'}, {'X_FANCY_HEADER': 'VERY FANCY'})
-    result = games.keys()
-    #return "<h1>Hello, world!</h1>"
-    return '<h3>' + json.dumps(result) + '<h3>'
+# @app.route('/')
+# def index():
+#     #result = firebase.put('/users', new_user, {'print': 'pretty'}, {'X_FANCY_HEADER': 'VERY FANCY'})
+#     result = games.keys()
+#     #return "<h1>Hello, world!</h1>"
+#     return '<h3>' + json.dumps(result) + '<h3>'
 
 @app.route('/testing')
 def testing():
     data = {'name': 'a', 'id': '0'}
     result = firebase.post('/users', data)
-    #return "<h1>This is another testing page</h1>"
     return '<h3>' + str(result) + '<h3>'
 
 @app.route('/bootstrap')
+@app.route('/')
 def bootstrap():
-    return render_template('index.html')
+    key = games.keys()
+    player1 = []
+    player2 = []
+    for k in key:
+        players = firebase.get('/games/'+k, None)
+        player1.append(str(firebase.get('/players/'+players['player1']+'/name', None)))
+        player2.append(str(firebase.get('/players/'+players['player2']+'/name', None)))
+    return render_template('index.html',players=zip(player1,player2,key))
 
 @app.route('/Settings.html')
 def settings():
@@ -58,6 +65,8 @@ def login():
 @app.route('/Game.html')
 @app.route('/game/<token>')
 def show_game(token=None):
+    if (token in tokens):
+        session[token] = True
     if token and session[token]:
         state = firebase.get('/states/'+token, '0')
         players = firebase.get('/games/'+token, None)
