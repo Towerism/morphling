@@ -24,6 +24,8 @@ int main(int argc, char** argv) {
     std::cout << "NAME:";
     std::cin >> name;
 
+    std::cout << "Connecting..." << std::endl;
+
     if (!gcp.connect("127.0.0.1",port)) {
         std::cout << "GCP Socket Client failed to start, exiting.." 
             << std::endl;

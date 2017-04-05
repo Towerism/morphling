@@ -20,6 +20,7 @@ namespace Morphling::ServerState {
     // return it.
     game_instance_t get_game(std::string gameid, std::string name);
     void end_game(std::string id);
+    void disconnect_all_games();
 
   private:
     std::unordered_map<std::string, game_instance_t> game_map;

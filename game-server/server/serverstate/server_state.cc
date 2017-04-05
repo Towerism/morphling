@@ -33,4 +33,10 @@ namespace Morphling::ServerState {
     void Server_state::end_game(std::string id) {
 
     }
+
+    void Server_state::disconnect_all_games() {
+        for (auto& game : game_map) {
+            game.second->stop_game();
+        }
+    }
 }
