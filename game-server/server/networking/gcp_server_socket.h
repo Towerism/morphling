@@ -85,8 +85,13 @@ private:
     ServerState server_verify_auth();
     ServerState server_wait_for_other();
     ServerState server_send_side();
+    ServerState server_wait_for_move();
+    ServerState server_wait_for_other_move();
     ServerState server_invalid_auth_game();
     ServerState server_invalid_auth_name();
+
+    bool wait_for_player(Morphling::ServerState::Player& player);
+    bool check_server_status(ServerState state);
 
 }; //end class GCPServerSocket
 

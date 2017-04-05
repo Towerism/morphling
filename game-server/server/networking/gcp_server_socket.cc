@@ -225,7 +225,20 @@ GCPServerSocket::ServerState GCPServerSocket::server_verify_auth() {
     }
     player = std::get<1>(check_player);
     // set the ready for the player
-    player->ready = true;
+    //player->ready = true;
+    if (player->side == White) {
+        game->player1.ready = true;
+        if (player->ready != game->player1.ready) {
+            std::cout << "error player White is " << player->side << " (expected:"
+                    << game->player1.ready << ")" << std::endl;
+        }
+    } else {
+        game->player2.ready = true;
+        if (player->ready != game->player2.ready) {
+             std::cout << "error player Black is " << player->side << " (expected:"
+                    << game->player2.ready << ")" << std::endl;
+        }
+    }
 
     // send valid authentication
     auto valid_auth = swrite("VALIDAUTH\n");
@@ -239,25 +252,39 @@ GCPServerSocket::ServerState GCPServerSocket::server_verify_auth() {
 // Wait for the next player to join. Or if this is the last player to 
 // to join, continue.
 GCPServerSocket::ServerState GCPServerSocket::server_wait_for_other() {
-    std::unique_lock<std::mutex> lk(game->move_mutex);
+    
     // check if the other player has already connected
     if (player->side == White) {
         if (game->player2.ready) {
-            return SendWB;
+            std::cout << "both ready 1" << std::endl;
+            game->move_cv.notify_all();
+            std::unique_lock<std::mutex> lkpost(game->move_post_mutex);
+            game->move_post_cv.wait(lkpost, [&]{return not game->player1.ready and not game->player2.ready;});
+        } else {
+            // otherwise wait for the other player to be ready
+            std::cout << "waiting for B" << std::endl;
+            wait_for_player(game->player2);
+            game->player2.ready = false;
+            game->player1.ready = false;
+            game->move_post_cv.notify_all();
         }
-        // otherwise wait for the other player to be ready
-        game->move_cv.wait(lk, [this]{return game->player2.ready or not _connected;});
     } else {
         if (game->player1.ready) {
-            return SendWB;
+            std::cout << "both ready 2" << std::endl;
+            game->move_cv.notify_all();
+            std::unique_lock<std::mutex> lkpost(game->move_post_mutex);
+            game->move_post_cv.wait(lkpost, [&]{return not game->player1.ready and not game->player2.ready;});
+        } else {
+            // otherwise wait for the other player to be ready
+            std::cout << "waiting for W" << std::endl;
+            wait_for_player(game->player1);
+            game->player2.ready = false;
+            game->player1.ready = false;
+            game->move_post_cv.notify_all();
         }
-        // otherwise wait for the other player to be ready
-        game->move_cv.wait(lk, [this]{return game->player1.ready or not _connected;});
     }
     
-    // If the reason for not waiting is not connected => Disconnect
-    if (not _connected) return Disconnect;
-    else return SendWB;
+    return SendWB;
 }
 
 // Send this player which side they are on based on the tournament data.
@@ -284,6 +311,31 @@ GCPServerSocket::ServerState GCPServerSocket::server_send_side() {
     }
 }
 
+GCPServerSocket::ServerState GCPServerSocket::server_wait_for_move() {
+    // wait for the player to make a move
+    auto move = sread_wait();
+    // TODO(devincarr): What happens when a Timeout occurs, is it different from Disconnect?
+    if (std::get<0>(move) == Timeout) {
+        return Disconnect;
+    }
+    if (std::get<0>(move) != Ok) {
+        return Disconnect;
+    }
+
+    // Everything is okay, verify the move
+    return VerifyMove;
+}
+
+GCPServerSocket::ServerState GCPServerSocket::server_wait_for_other_move() {
+    if (game->player_turn == White) {
+        wait_for_player(game->player1);
+    } else {
+        wait_for_player(game->player2);
+    }
+
+    return SendMove;
+}
+
 GCPServerSocket::ServerState GCPServerSocket::server_invalid_auth_game() {
     auto ret = swrite("INVALIDAUTH: GAME\n");
     // doesn't truly matter if the response was received, the client may
@@ -298,22 +350,37 @@ GCPServerSocket::ServerState GCPServerSocket::server_invalid_auth_name() {
     return Disconnect;
 }
 
+bool GCPServerSocket::wait_for_player(Player& other_player) {
+    std::unique_lock<std::mutex> lk(game->move_mutex);
+    game->move_cv.wait(lk, [&] {
+        return other_player.ready or not _connected or not game->running;
+    });
+}
+
+bool GCPServerSocket::check_server_status(ServerState state) {
+    if (game == nullptr) {
+        return state != Disconnect and _connected;
+    } else {
+        return state != Disconnect and _connected and game->running;
+    }
+}
+
 // ======================================================================
 // Public Functions
 // ======================================================================
 
 void GCPServerSocket::disconnect() {
     if (_connected) {
-        close(_sockfd);
         _connected = false;
     }
+    close(_sockfd);
 }
 
 // Entry point for the start of the server state response state machine
 void GCPServerSocket::start() {
     ServerState state = VerifyAuth;
     // enter the state machine
-    while (state != Disconnect && _connected) {
+    while (check_server_status(state)) {
         // process and transistion to the next state
         switch (state) {
             case VerifyAuth: {
@@ -328,17 +395,18 @@ void GCPServerSocket::start() {
             }
             case SendWB: {
                 //state = server_send_side();
-                state = Disconnect;
+                std::cout << "player: " << player->side << ", ready to send WB" << std::endl;
+                state = server_send_side();
                 break;
             }
             case WaitForMove: {
                 // TODO(devincarr): fall through for now
-                state = Disconnect;
+                state = server_wait_for_move();
                 break;
             }
             case WaitForOtherMove: {
                 // TODO(devincarr): fall through for now
-                state = Disconnect;
+                state = server_wait_for_other_move();
                 break;
             }
             case VerifyMove: {

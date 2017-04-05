@@ -123,6 +123,9 @@ void GCPServer::client_handler(int fd) {
 
 void GCPServer::client_wait() {
     std::unique_lock<std::mutex> lock(client_list_mutex);
+    // send disconnect to all games
+    serverstate->disconnect_all_games();
+    // rejoin all serving threads
     for (auto& t: client_list) {
         t.join();
     }
