@@ -13,6 +13,12 @@ $ cmake ..
 $ make
 ```
 
+By default the server is compiled using `Release` flags. To compile with debug
+flags, generate the build files like so:
+```
+$ cmake -DCMAKE_BUILD_TYPE=Debug
+```
+
 ## Running
 After running `make`, you can run the game server from the build tree like so:
 ```
