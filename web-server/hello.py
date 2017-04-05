@@ -33,7 +33,7 @@ def bootstrap():
         players = firebase.get('/games/'+k, None)
         player1.append(str(firebase.get('/players/'+players['player1']+'/name', None)))
         player2.append(str(firebase.get('/players/'+players['player2']+'/name', None)))
-    return render_template('index.html',players=zip(player1,player2,key))
+    return render_template('index.html',gameInfo=zip(player1,player2,key))
 
 @app.route('/Settings.html')
 def settings():
