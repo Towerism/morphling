@@ -2,7 +2,7 @@
 ## Requirements
 - CMake 2.8.12
 - GCC 6
-- libcurl
+- libcurl development headers
 
 ## Building
 To build the game server, you must create the build tree, generate the build
