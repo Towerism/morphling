@@ -6,6 +6,7 @@ if [ "${COMPONENT}" == "game-server" ]; then
     cd game-server
     mkdir -p build && cd build
     cmake -DTEST=ON ..
+    make
     make build-tests
     make test ARGS=-VV
 fi
