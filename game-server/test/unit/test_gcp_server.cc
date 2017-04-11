@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <networking/gcp_server.h>
-#include <networking/gcp_socket.h>
+#include <networking/gcp_client.h>
 #include <gamelogic/games/tictactoe/tictactoe_engine.h>
 
 using namespace Morphling::Networking;
@@ -14,9 +14,9 @@ protected:
     }
 
     GCPServer server;
-    GCPSocket clientDummy;
-    GCPSocket client1;
-    GCPSocket client2;
+    GCPClient clientDummy;
+    GCPClient client1;
+    GCPClient client2;
 };
 
 TEST_F(GCPServerTest, CanStartAndStop) {
@@ -37,13 +37,13 @@ TEST_F(GCPServerTest, ClientDisconnectFirst) {
     EXPECT_FALSE(server.is_running());
 }
 
-// TEST_F(GCPServerTest, ServerDisconnectFirst) {
-//     EXPECT_TRUE(clientDummy.connect("127.0.0.1",server.get_port()));
-//     server.stop();
-//     EXPECT_FALSE(server.is_running());
-//     clientDummy.disconnect();
-//     EXPECT_FALSE(clientDummy.connected());
-// }
+TEST_F(GCPServerTest, ServerDisconnectFirst) {
+    EXPECT_TRUE(clientDummy.connect("127.0.0.1",server.get_port()));
+    server.stop();
+    EXPECT_FALSE(server.is_running());
+    clientDummy.disconnect();
+    EXPECT_FALSE(clientDummy.connected());
+}
 
 TEST_F(GCPServerTest, OneAuthenticatedPlayer) {
     EXPECT_TRUE(server.is_running());
@@ -85,12 +85,12 @@ TEST_F(GCPServerTest, TwoAuthenticatedPlayers) {
     EXPECT_EQ(std::get<1>(res),"VALIDAUTH\n");
 
     // Disconnect
+    server.stop();
+    EXPECT_FALSE(server.is_running());
     client1.disconnect();
     EXPECT_FALSE(client1.connected());
     client2.disconnect();
     EXPECT_FALSE(client2.connected());
-    server.stop();
-    EXPECT_FALSE(server.is_running());
 }
 
 TEST_F(GCPServerTest, TwoPlayersWBStateCheck) {
@@ -125,10 +125,10 @@ TEST_F(GCPServerTest, TwoPlayersWBStateCheck) {
     EXPECT_EQ(std::get<1>(res),"SIDE:B");
 
     // Disconnect
+    server.stop();
+    EXPECT_FALSE(server.is_running());
     client1.disconnect();
     EXPECT_FALSE(client1.connected());
     client2.disconnect();
     EXPECT_FALSE(client2.connected());
-    server.stop();
-    EXPECT_FALSE(server.is_running());
 }

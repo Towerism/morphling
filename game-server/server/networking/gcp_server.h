@@ -43,11 +43,12 @@ private:
 
     std::thread connection_thread;
     std::mutex client_list_mutex;
+    std::vector<GCPServerSocket*> socket_list;
     std::vector<std::thread> client_list;
 
     // Functions
     void connection_handler();
-    void client_handler(int fd);
+    void client_handler(GCPServerSocket* gcp);
     void client_wait();
 
     bool send(std::string msg);

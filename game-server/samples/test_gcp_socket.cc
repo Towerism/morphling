@@ -1,13 +1,21 @@
-#include <networking/gcp_socket.h>
+#include <networking/gcp_client.h>
 
 #include <iostream>
 #include <tuple>
 
 using namespace Morphling::Networking;
 
+int shutdown(GCPClient& gcp, int ret) {
+    // Disconnect and shutdown
+    std::cout << "GCP Socket Client shutting down.." << std::endl;
+
+    gcp.disconnect();
+    return ret;
+}
+
 int main(int argc, char** argv) {
 
-    GCPSocket gcp;
+    GCPClient gcp;
 
     int port;
     if (argc > 1) {
@@ -38,10 +46,12 @@ int main(int argc, char** argv) {
     auto res = gcp.send_auth(game,name);
     if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
         std::cout << "> Error Write: " << std::get<1>(res) << std::endl;
+        return shutdown(gcp,1);
     }
     res = gcp.sread_wait();
     if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
         std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
+        return shutdown(gcp,1);
     }
     std::cout << "> " << std::get<1>(res) << std::endl;
 
@@ -66,10 +76,5 @@ int main(int argc, char** argv) {
         std::cout << "> " << std::get<1>(res) << std::endl;
     }
 
-    // Disconnect and shutdown
-    std::cout << "GCP Socket Client shutting down.." << std::endl;
-
-    gcp.disconnect();
-
-    return 0;
+    return shutdown(gcp,0);
 }

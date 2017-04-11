@@ -1,4 +1,4 @@
-#include "game_instance.h"
+#include <serverstate/game_instance.h>
 
 namespace Morphling::ServerState {
 
