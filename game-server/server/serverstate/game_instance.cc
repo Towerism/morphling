@@ -3,12 +3,13 @@
 namespace Morphling::ServerState {
 
     Game_instance::Game_instance(controller_t c, std::string id, std::string name1, std::string name2) :
+        controller(c),
         running(true),
         gameid(id),
         player1(Player(name1,White)),
         player2(Player(name2,Black)),
         player_turn(White),
-        controller(c)
+        invalid_moves(0)
     { }
 
     std::tuple<bool,Player*> Game_instance::check_player_name(std::string name) {
@@ -22,7 +23,9 @@ namespace Morphling::ServerState {
     }
 
     void Game_instance::stop_game() {
-        running = false;
-        move_cv.notify_all();
+        if (running) {
+            running = false;
+            move_cv.notify_all();
+        }
     }
 }

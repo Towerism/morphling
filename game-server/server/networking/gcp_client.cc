@@ -17,15 +17,17 @@ GCPClient::~GCPClient() {}
 GCPSocket::RET GCPClient::send_auth(std::string gameid, std::string name) {
     // make sure we are still connected
     if (_connected) {
-        auto res = swrite("GAME:"+gameid+"~NAME:"+name+"\n");
-        // make sure the swrite completed successfully
-        if (std::get<0>(res) != Ok) {
-            return res;
-        }
-        return std::make_tuple(Ok,"");
+        return swrite("GAME:"+gameid+"~NAME:"+name+"\n");
     }
 
     return std::make_tuple(Error,"Not Connected");
 }
 
+GCPSocket::RET GCPClient::send_move(std::string move) {
+    // make sure we are still connected
+    if (_connected) {
+        return swrite("MOVE:"+move+"\n");
+    }
 
+    return std::make_tuple(Error,"Not Connected");
+}

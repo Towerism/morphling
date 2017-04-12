@@ -12,6 +12,12 @@
 #include <string>
 #include <tuple>
 
+#if 0
+#define STATELOG(t) std::cerr << "State: " << t << std::endl;
+#else
+#define STATELOG(t) ;
+#endif
+
 namespace Morphling::Networking {
 
 class GCPServerSocket : public GCPSocket {
@@ -26,9 +32,6 @@ private:
     ServerState::Server_state::game_instance_t game;
     ServerState::Player* player;
     
-    // Direct Socket Functions
-    void send_close();
-
     // State functions
     enum ServerState {
         VerifyAuth,
@@ -38,20 +41,30 @@ private:
         WaitForOtherMove,
         VerifyMove,
         SendMove,
+        GameOver,
         InvalidAuthGame,
         InvalidAuthName,
+        InvalidMove,
         Disconnect
     };
     ServerState state;
     std::mutex m_player;
     std::condition_variable cv_player;
+
+    // Normal States
     ServerState server_verify_auth();
     ServerState server_wait_for_other();
     ServerState server_send_side();
     ServerState server_wait_for_move();
     ServerState server_wait_for_other_move();
+    ServerState server_verify_move();
+    ServerState server_send_move();
+    ServerState server_send_gameover();
+
+    // Invalid States
     ServerState server_invalid_auth_game();
     ServerState server_invalid_auth_name();
+    ServerState server_invalid_move();
 
     void wait_for_player(Morphling::ServerState::Player& player);
     bool check_server_status();

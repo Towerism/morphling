@@ -56,6 +56,7 @@ public:
     virtual void disconnect();
 
     // Socket Direct Access Functions
+    RET response;
     RET sread();
     RET sread_wait(time_t seconds = 2, size_t tries = 10);
     RET swrite(std::string msg);

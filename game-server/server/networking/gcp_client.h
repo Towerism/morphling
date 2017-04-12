@@ -19,6 +19,7 @@ public:
     ~GCPClient();
 
     GCPSocket::RET send_auth(std::string gameid, std::string name);
+    GCPSocket::RET send_move(std::string move);
 
 }; //end class GCPClient
 

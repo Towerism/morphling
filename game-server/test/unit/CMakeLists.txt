@@ -5,6 +5,7 @@ add_library(unit OBJECT
   test_tictactoe.cc
   test_firebase.cc
   test_gcp_server.cc
+  test_play.cc
   )
 
 
