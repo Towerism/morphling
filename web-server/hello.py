@@ -26,7 +26,7 @@ def testing():
 @app.route('/bootstrap')
 @app.route('/')
 def bootstrap():
-    key = games.keys()
+    key = firebase.get('/games', None).keys()
     player1 = []
     player2 = []
     for k in key:
