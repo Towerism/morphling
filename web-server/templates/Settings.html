@@ -12,10 +12,10 @@
     <title>Morphling - Settings</title>
 
     <!-- Bootstrap Core CSS -->
-    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <link href={{ url_for('static', filename='css/bootstrap.min.css') }} rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="static/css/simple-sidebar.css" rel="stylesheet">
+    <link href={{ url_for('static', filename='css/simple-sidebar.css') }} rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -24,6 +24,18 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
+      <script>
+        // Initialize Firebase
+        var config = {
+          apiKey: "AIzaSyAA5mXv5xQiWS1kbnkz8gV6mgNPb3ttVf0",
+          authDomain: "flask-experiment-e7196.firebaseapp.com",
+          databaseURL: "https://flask-experiment-e7196.firebaseio.com",
+          storageBucket: "flask-experiment-e7196.appspot.com",
+          messagingSenderId: "771513661920"
+        };
+        firebase.initializeApp(config);
+    </script>
 </head>
 
 <body>
@@ -39,16 +51,16 @@
                     </a>
                 </li>
                 <li>
-                    <a href={{ url_for('bootstrap') }}Game</a>
+                    <a href={{ url_for('bootstrap') }}>Game</a>
                 </li>
                 <li>
-                    <a href="Settings.html">Settings</a>
+                    <a href={{ url_for('settings') }}>Settings</a>
                 </li>
                 <li>
-                    <a href="Ranking.html">Ranking</a>
+                    <a href={{ url_for('ranking') }}>Ranking</a>
                 </li>
                 <li>
-                    <a href="Bracket.html">Bracket</a>
+                    <a href={{ url_for('bracket') }}>Bracket</a>
                 </li>
             </ul>
         </div>
@@ -60,7 +72,26 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h1>Settings</h1>
-                        <p> a page for settings </p>
+                        <!-- <p> a page for settings </p> -->
+                        <form style="width: 400px">
+                          <div class="form-group">
+                            <label for="delay">Delay</label>
+                            <input type="number" class="form-control" value="0.5" id="delay" placeholder="s">
+                          </div>
+                          <div class="form-group">
+                            <label for="timeout">Timeout</label>
+                            <input type="number" class="form-control" value="2.0" id="timeout" placeholder="s">
+                          </div>
+                          <button type="submit" class="btn btn-primary" id="update-setting">Submit</button>
+                          <br><br>
+                          <div class="form-group">
+                            <label for="players">Players</label>
+                            <textarea class="form-control" id="players" rows="2" placeholder="Split by row"></textarea>
+                          </div>
+                          <button type="submit" class="btn btn-primary" id="new-game">New Game</button>
+                      </form>
+                      <br>
+                      <p> </p>
                     </div>
                 </div>
             </div>
@@ -71,10 +102,10 @@
     <!-- /#wrapper -->
 
     <!-- jQuery -->
-    <script src="static/js/jquery.js"></script>
+    <script src={{ url_for('static', filename='js/jquery.js') }}></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="static/js/bootstrap.min.js"></script>
+    <script src={{ url_for('static', filename='js/bootstrap.min.js') }}></script>
 
     <!-- Menu Toggle Script -->
     <script>
@@ -82,8 +113,65 @@
         e.preventDefault();
         $("#wrapper").toggleClass("toggled");
     });
-    </script>
+    $("#update-setting").click(function(e) {
+        e.preventDefault();
+        var settingRef = firebase.database().ref('settings');
+        var delay = $('#delay').val();
+        var timeout = $('#timeout').val();
+        settingRef.update({
+            "delay": delay,
+            "timeout": timeout
+        }, function(error) {
+            if (error) {
+              alert("Data could not be saved." + error);
+            } else {
+              alert("Settings updated");
+            }
+        });
+    });
+    $("#new-game").click(function(e) {
+        e.preventDefault();
+        console.log("Clicked");
+        var players = $('#players').val().split("\n");
+        var playerNames = []
+        for(k in players) {
+          playerNames.push(players[k]);
+        }
 
+        var playersRef = firebase.database().ref('players');
+        var playerKeys = [];
+        function updateGame(playerKeys) {
+            var newGameKey = firebase.database().ref().child('games').push().key;
+            var gameData = {
+              player1:playerKeys[0],
+              player2:playerKeys[1],
+              score:"None"
+            };
+            var updates = {};
+            updates['/games/' + newGameKey] = gameData;
+
+            return firebase.database().ref().update(updates);
+        }
+        for (var i = 0; i < playerNames.length; i++) {
+            playersRef.orderByChild('name').equalTo(playerNames[i]).once('value').then( function(snapshot) {
+                 snapshot.forEach(function(childSnapshot) {
+                    playerKeys.push(childSnapshot.key);
+                    console.log(playerKeys.length);
+                    if (playerKeys.length === 2) {
+                        updateGame(playerKeys);
+                        return true;
+                    }
+                });
+           });
+        }
+
+        firebase.database().ref('games/').on('child_added', function(snapshot) {
+            $( "p:first" ).html( snapshot.key + " created" );
+            console.log(snapshot.key + " created");
+        });
+
+    });
+    </script>
 </body>
 
 </html>
