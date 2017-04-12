@@ -27,21 +27,27 @@ namespace Morphling::ServerState {
   class Game_instance {
   public:
     typedef Gamelogic::Controller* controller_t;
+    static const size_t MAX_ATTEMPTS = 2;
 
     Game_instance(controller_t c, std::string gameid, std::string name1, std::string name2);
 
+    controller_t controller;
     std::atomic_bool running;
+
     std::string gameid;
     Player player1; // White
     Player player2; // Black
 
+    // State variables for lock-step
     std::mutex move_mutex;
     std::condition_variable move_cv;
     std::mutex move_post_mutex;
     std::condition_variable move_post_cv;
+
+    // The player's current move
     PlayerSide player_turn;
-    controller_t controller;
     std::string player_move;
+    size_t invalid_moves;
 
     std::tuple<bool,Player*> check_player_name(std::string name);
     void stop_game();

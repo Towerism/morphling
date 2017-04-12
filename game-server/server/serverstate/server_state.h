@@ -12,7 +12,7 @@ namespace Morphling::ServerState {
     typedef std::shared_ptr<Game_instance> game_instance_t;
     typedef std::shared_ptr<Gamelogic::Game_engine> engine_t;
 
-    Server_state(Gamelogic::Game_engine* engine) : engine(engine) {}
+    Server_state(Gamelogic::Game_engine* engine);
 
     // Given a game id string, search for the game if it exists 
     // locally in the game_map cache or in firebase. If it exists 

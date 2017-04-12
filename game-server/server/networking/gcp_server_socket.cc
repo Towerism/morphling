@@ -10,21 +10,9 @@ GCPServerSocket::GCPServerSocket(Server_state* ss, int sockfd):
 
 
 GCPServerSocket::~GCPServerSocket() {
-    disconnect();
-}
-
-// ======================================================================
-// Socket Direct Access Functions
-// ======================================================================
-
-// Send a proper "BYE" to before closing the connection
-void GCPServerSocket::send_close() {
-    // Send the disconnect code: BYE
-    auto ret = swrite("BYE\n");
-    // doesn't truly matter if the response was received, the client may
-    // disconnect automatically.
-    if (std::get<0>(ret) != Ok)
-        return;
+    if (_connected) {
+        disconnect();
+    }
 }
 
 // ======================================================================
@@ -36,6 +24,7 @@ void GCPServerSocket::send_close() {
 // server state.
 GCPServerSocket::ServerState GCPServerSocket::server_verify_auth() {
     auto auth = read_tags("GAME","NAME");
+    response = std::make_tuple(std::get<0>(auth),std::get<1>(auth));
     // if the read_tag failed, disconnect
     if (std::get<0>(auth) != Ok) {
         //std::cout << std::get<1>(auth) << std::endl;
@@ -58,7 +47,8 @@ GCPServerSocket::ServerState GCPServerSocket::server_verify_auth() {
     player->ready = true;
 
     // send valid authentication
-    auto valid_auth = swrite("VALIDAUTH\n");
+    response = swrite("AUTH:VALID\n");
+    auto valid_auth = response;
     if (std::get<0>(valid_auth) != Ok) {
         return Disconnect;
     }
@@ -111,10 +101,10 @@ GCPServerSocket::ServerState GCPServerSocket::server_send_side() {
     // send the side 
     std::string side;
     if (player->side == White) side = "W"; else side = "B";
-    auto ret = swrite("SIDE:"+side);
+    response = swrite("SIDE:"+side);
 
     // check the send status
-    if (std::get<0>(ret) != Ok) {
+    if (std::get<0>(response) != Ok) {
         // TODO(devincarr): check the reason for the send failure (if needed).
         return Disconnect;
     }
@@ -130,14 +120,17 @@ GCPServerSocket::ServerState GCPServerSocket::server_send_side() {
 
 GCPServerSocket::ServerState GCPServerSocket::server_wait_for_move() {
     // wait for the player to make a move
-    auto move = sread_wait();
+    response = read_tag("MOVE");
     // TODO(devincarr): What happens when a Timeout occurs, is it different from Disconnect?
-    if (std::get<0>(move) == Timeout) {
+    if (std::get<0>(response) == Timeout) {
         return Disconnect;
     }
-    if (std::get<0>(move) != Ok) {
+    if (std::get<0>(response) != Ok) {
         return Disconnect;
     }
+
+    // assign the move to the game player move
+    game->player_move = std::get<1>(response);
 
     // Everything is okay, verify the move
     return VerifyMove;
@@ -150,21 +143,106 @@ GCPServerSocket::ServerState GCPServerSocket::server_wait_for_other_move() {
         wait_for_player(game->player2);
     }
 
+    if (game->controller->is_game_over()) {
+        return GameOver;
+    }
+
     return SendMove;
 }
 
+GCPServerSocket::ServerState GCPServerSocket::server_verify_move() {
+    // check for a valid move by the user
+    if (not game->controller->receive_action(game->player_move)) {
+        return InvalidMove;
+    }
+    // the move is valid, continue to send the move to the other player
+    // Set the other player as not ready before setting up them up to 
+    // make a move
+    if (player->side == White) {
+        game->player2.ready = false;
+        game->player_turn = Black;
+    } else {
+        game->player1.ready = false;
+        game->player_turn = White;
+    }
+    // reset the invalid_moves for the next player
+    game->invalid_moves = 0;
+    // set this player's move to ready to trigger the other player to send 
+    // the previous player's move.
+    player->ready = true;
+    game->move_cv.notify_all();
+
+    // check for end of game
+    if (game->controller->is_game_over()) {
+        return GameOver;
+    }
+
+    return WaitForOtherMove;
+}
+
+GCPServerSocket::ServerState GCPServerSocket::server_send_move() {
+    response = swrite("MOVE:"+game->player_move);
+    // if the move cannot be send, Disconnect
+    if (std::get<0>(response) != Ok) {
+        return Disconnect;
+    }
+
+    return WaitForMove;
+}
+
+GCPServerSocket::ServerState GCPServerSocket::server_send_gameover() {
+    PlayerSide winner;
+    if (game->controller->get_result() == Gamelogic::Game_result::Player_one) {
+        winner = White;
+    } else {
+        winner = Black;
+    }
+    if (player->side == winner) {
+        response = swrite("GAMEOVER:WIN");
+    } else {
+        response = swrite("GAMEOVER:LOSE");
+    }
+    // if the move cannot be send, Disconnect
+    if (std::get<0>(response) != Ok) {
+        return Disconnect;
+    }
+
+    return Disconnect;
+}
+
+// ======================================================================
+// Invalid State Functions
+// ======================================================================
+
 GCPServerSocket::ServerState GCPServerSocket::server_invalid_auth_game() {
-    auto ret = swrite("INVALIDAUTH: GAME\n");
+    response = swrite("AUTH:INVALIDGAME\n");
     // doesn't truly matter if the response was received, the client may
     // disconnect automatically.
     return Disconnect;
 }
 
 GCPServerSocket::ServerState GCPServerSocket::server_invalid_auth_name() {
-    auto ret = swrite("INVALIDAUTH: NAME\n");
+    response = swrite("AUTH:INVALIDNAME\n");
     // doesn't truly matter if the response was received, the client may
     // disconnect automatically.
     return Disconnect;
+}
+
+GCPServerSocket::ServerState GCPServerSocket::server_invalid_move() {
+    if (game->invalid_moves >= Morphling::ServerState::Game_instance::MAX_ATTEMPTS) {
+        // the client is stuck and must disconnect and end game
+        return Disconnect;
+    }
+    // increment the total number of invalid moves
+    game->invalid_moves++;
+
+    // Send that the move was invalid
+    response = swrite("MOVE:INVALID("+game->player_move+")\n");
+    if (std::get<0>(response) != Ok) {
+        return Disconnect;
+    }
+
+    return WaitForMove;
 }
 
 void GCPServerSocket::wait_for_player(Player& other_player) {
@@ -187,7 +265,17 @@ bool GCPServerSocket::check_server_status() {
 // ======================================================================
 
 void GCPServerSocket::disconnect() {
+    STATELOG("Disconnect");
     state = Disconnect;
+    if (game != nullptr) {
+        game->stop_game();
+        game->move_cv.notify_all();
+        game->move_post_cv.notify_all();
+    }
+    // Print out the previous error if there was one
+    if (std::get<0>(response) != Ok) {
+        std::cerr << "Error: " << std::get<1>(response) << std::endl;
+    }
     GCPSocket::disconnect();
 }
 
@@ -199,46 +287,63 @@ void GCPServerSocket::start() {
         // process and transistion to the next state
         switch (state) {
             case VerifyAuth: {
-                //std::cout << "VerifyAuth" << std::endl;
+                STATELOG("VerifyAuth");
                 state = server_verify_auth();
                 break;
             }
             case WaitForOtherConnect: {
-                //std::cout << "WaitForOtherConnect" << std::endl;
+                STATELOG("WaitForOtherConnect");
                 state = server_wait_for_other();
                 break;
             }
             case SendWB: {
-                //std::cout << "player: " << player->side << ", ready to send WB" << std::endl;
+                std::string msg = "SendWB: player: ";
+                msg += (player->side==White?"W":"B");
+                STATELOG(msg);
                 state = server_send_side();
                 break;
             }
             case WaitForMove: {
-                // TODO(devincarr): fall through for now
+                std::string msg = (player->side==White?"W":"B");
+                STATELOG("WaitForMove as "+msg);
                 state = server_wait_for_move();
                 break;
             }
             case WaitForOtherMove: {
-                // TODO(devincarr): fall through for now
+                std::string msg = (player->side==White?"W":"B");
+                STATELOG("WaitForOtherMove as "+msg);
                 state = server_wait_for_other_move();
                 break;
             }
             case VerifyMove: {
-                // TODO(devincarr): fall through for now
-                state = Disconnect;
+                STATELOG("VerifyMove: "+game->player_move);
+                state = server_verify_move();
                 break;
             }
             case SendMove: {
-                // TODO(devincarr): fall through for now
-                state = Disconnect;
+                std::string msg = (player->side==White?"W":"B");
+                STATELOG("SendMove ("+game->player_move+") to "+msg);
+                state = server_send_move();
+                break;
+            }
+            case GameOver: {
+                STATELOG("GameOver");
+                state = server_send_gameover();
                 break;
             }
             case InvalidAuthGame: {
+                STATELOG("InvalidAuthGame");
                 state = server_invalid_auth_game();
                 break;
             }
             case InvalidAuthName: {
+                STATELOG("InvalidAuthName");
                 state = server_invalid_auth_name();
+                break;
+            }
+            case InvalidMove: {
+                STATELOG("InvalidMove");
+                state = server_invalid_move();
                 break;
             }
             default:
@@ -246,7 +351,7 @@ void GCPServerSocket::start() {
                 // A disconnect was called
                 // TODO(devincarr): Verify if it was a hard disconnect or error in response
                 // Assume safe disconnect and send message
-                if (_connected) send_close();
+
                 disconnect();
                 return;
             }

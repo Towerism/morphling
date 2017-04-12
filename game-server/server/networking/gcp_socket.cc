@@ -15,8 +15,8 @@ GCPSocket::GCPSocket(): _connected(false) {
         exit(-1);
     }
 
-    fcntl(_sockfd, F_SETFL, O_NONBLOCK);
-    fcntl(_sockfd, F_SETFL, O_ASYNC);
+    // fcntl(_sockfd, F_SETFL, O_NONBLOCK);
+    // fcntl(_sockfd, F_SETFL, O_ASYNC);
 }
 
 GCPSocket::GCPSocket(int sockfd): _sockfd(sockfd), _connected(true) {}
@@ -107,6 +107,7 @@ GCPSocket::RET GCPSocket::sread()
             return std::make_tuple(Ok,read_s);
         } else {
             // bad read
+            _connected = false;
             return std::make_tuple(Error,"Error: Bad socket read");
         }
     } else if (rv == 0) {
@@ -114,6 +115,7 @@ GCPSocket::RET GCPSocket::sread()
         return std::make_tuple(Timeout,"");
     } else {
         // error occured
+        _connected = false;
         return std::make_tuple(Error,"Error: Socket select returned "+std::to_string(rv));
     }
 }
@@ -149,11 +151,12 @@ GCPSocket::RET GCPSocket::sread_wait(time_t seconds, size_t tries)
             int res = recv(_sockfd, buffer, MAX_MESSAGE, MSG_WAITALL);
             if (res > 0) {
                 std::string read_s = std::string(buffer);
-                //std::cerr << "Msg: " << read_s << std::endl;
+                std::cerr << "Msg: " << read_s << std::endl;
                 // normal read
                 return std::make_tuple(Ok,read_s);
             } else {
                 // bad read
+                _connected = false;
                 return std::make_tuple(Error,"Error: Bad socket read");
             }
         } else if (rv == 0) {
@@ -161,7 +164,8 @@ GCPSocket::RET GCPSocket::sread_wait(time_t seconds, size_t tries)
             tries--;
         } else {
             // error occured
-            return std::make_tuple(Error,"Error: Socket select returned "+std::to_string(rv));
+            _connected = false;
+            return std::make_tuple(Error,"Error: Socket select returned "+std::string(strerror(errno)));
         }
     }
     return std::make_tuple(Timeout,"Timeout exceeded: duration = "+std::to_string(seconds*total_tries));
@@ -185,6 +189,7 @@ GCPSocket::RET GCPSocket::swrite(std::string msg)
         }
 
         if (n == -1) {
+            _connected = false;
             return std::make_tuple(Error,std::string(strerror(errno)));
         }
     } else {
@@ -198,7 +203,7 @@ GCPSocket::RET GCPSocket::swrite(std::string msg)
 // Example socket read: "AUTH:asdf"
 // will return "asdf" for input of Tag: "AUTH"
 GCPSocket::RET GCPSocket::read_tag(std::string tag) {
-    auto response = sread_wait();
+    response = sread_wait();
     // check if the response is Ok
     if (std::get<0>(response) != Ok)
         return std::make_tuple(Error,std::get<1>(response));
@@ -208,9 +213,19 @@ GCPSocket::RET GCPSocket::read_tag(std::string tag) {
     if (colon == std::string::npos)
         return std::make_tuple(Error,"Error: no tag sent");
 
+    size_t bn = msg.find("\n",colon+1);
+
     // parse the received tag
     std::string recv_tag = msg.substr(0,colon);
-    std::string value = msg.substr(colon+1);
+    std::string value;
+    if (bn == std::string::npos) {
+        // if they didn't end with \n
+        value = msg.substr(colon+1);
+    } else {
+        // if they did end with \n
+        value = msg.substr(colon+1,bn-colon-1);
+    }
+
     // verify the tag
     if (recv_tag == tag) {
         // return the value
@@ -225,7 +240,7 @@ GCPSocket::RET GCPSocket::read_tag(std::string tag) {
 // Example socket read: "AUTH:asdf"
 // will return "asdf" for input of Tag: "AUTH"
 GCPSocket::RTAGS GCPSocket::read_tags(std::string tag1, std::string tag2) {
-    auto response = sread_wait(20);
+    auto response = sread_wait();
     // check if the response is Ok
     if (std::get<0>(response) != Ok)
         return std::make_tuple(Error,std::get<1>(response),"");
