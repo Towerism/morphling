@@ -26,6 +26,7 @@ public:
     ~GCPServerSocket();
 
     void disconnect() override;
+    void baddisconnect();
     void start();
 private:
     ServerState::Server_state* serverstate;
@@ -45,7 +46,8 @@ private:
         InvalidAuthGame,
         InvalidAuthName,
         InvalidMove,
-        Disconnect
+        BadDisconnect,
+        GoodDisconnect
     };
     ServerState state;
     std::mutex m_player;
@@ -53,7 +55,6 @@ private:
 
     // Normal States
     ServerState server_verify_auth();
-    ServerState server_wait_for_other();
     ServerState server_send_side();
     ServerState server_wait_for_move();
     ServerState server_wait_for_other_move();
@@ -66,6 +67,7 @@ private:
     ServerState server_invalid_auth_name();
     ServerState server_invalid_move();
 
+    ServerState barrier(ServerState next_state);
     void wait_for_player(Morphling::ServerState::Player& player);
     bool check_server_status();
 

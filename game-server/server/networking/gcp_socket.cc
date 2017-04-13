@@ -151,7 +151,7 @@ GCPSocket::RET GCPSocket::sread_wait(time_t seconds, size_t tries)
             int res = recv(_sockfd, buffer, MAX_MESSAGE, MSG_WAITALL);
             if (res > 0) {
                 std::string read_s = std::string(buffer);
-                std::cerr << "Msg: " << read_s << std::endl;
+                //std::cerr << "Msg: " << read_s << std::endl;
                 // normal read
                 return std::make_tuple(Ok,read_s);
             } else {
