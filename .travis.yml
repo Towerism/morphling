@@ -9,8 +9,12 @@ addons:
     - cmake
     - gcc-6
     - g++-6
+    - python-pip
+    - python2.7
+    - pypy
 env:
 - COMPONENT=game-server
+install: "pip install -r web-server/requirements.txt"
 script: ci/script.sh
 notifications:
   email: false

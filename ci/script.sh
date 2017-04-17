@@ -10,3 +10,7 @@ if [ "${COMPONENT}" == "game-server" ]; then
     make build-tests
     make test ARGS=-VV
 fi
+
+cd web-server
+make test
+make clean

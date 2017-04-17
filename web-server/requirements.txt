@@ -1,4 +1,4 @@
-Flask==0.12.1:
+Flask==0.12.1
 requests==2.13.0
-python-firebase=1.2
+python-firebase==1.2
 pytest==3.0.7
