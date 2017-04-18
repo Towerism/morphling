@@ -85,7 +85,13 @@
                           <button type="submit" class="btn btn-primary" id="update-setting">Submit</button>
                           <br><br>
                           <div class="form-group">
-                            <label for="players">Players</label>
+                            <label for="names">Names</label>
+                            <textarea class="form-control" id="names" rows="4" placeholder="Split by row"></textarea>
+                          </div>
+                          <button type="submit" class="btn btn-primary" id="add-player">Add players</button>
+                          <br><br>
+                          <div class="form-group">
+                            <label for="players">1 vs 1</label>
                             <textarea class="form-control" id="players" rows="2" placeholder="Split by row"></textarea>
                           </div>
                           <button type="submit" class="btn btn-primary" id="new-game">New Game</button>
@@ -109,10 +115,6 @@
 
     <!-- Menu Toggle Script -->
     <script>
-    $("#menu-toggle").click(function(e) {
-        e.preventDefault();
-        $("#wrapper").toggleClass("toggled");
-    });
     $("#update-setting").click(function(e) {
         e.preventDefault();
         var settingRef = firebase.database().ref('settings');
@@ -128,6 +130,23 @@
               alert("Settings updated");
             }
         });
+    });
+    $("#add-player").click(function(e) {
+      e.preventDefault();
+      var players = $('#names').val().split("\n");
+      for(k in players) {
+        var newPlayerKey = firebase.database().ref().child('players').push().key;
+        var playerData = {
+           name:players[k],
+           score:0
+        };
+        var updates = {};
+        updates['/players/' + newPlayerKey] = playerData;
+        firebase.database().ref().update(updates);
+      }
+      console.log('add players');
+      console.log(players);
+      alert('Players added');
     });
     $("#new-game").click(function(e) {
         e.preventDefault();
