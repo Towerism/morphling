@@ -15,3 +15,15 @@
     border-top:1px solid #000;
     border-bottom:1px solid #000;
 }
+
+.X{
+    background: url('../images/piece_x.png') no-repeat center center;
+}
+
+.O{
+    background: url('../images/piece_o.png') no-repeat center center;
+}
+
+.gb{
+    background: url('../images/background.png') repeat;
+}

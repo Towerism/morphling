@@ -33,7 +33,12 @@ function updateBoard(snapshot) {
     console.log(board);
     for (var i = 0; i < board.length; i++) {
       var cell = $('#gameboard td:eq('+i+')');
-      console.log(i, board[i], cell.text())
-      cell.html(board[i])
+      console.log(i, board[i], cell.text());
+      // cell.html(board[i]);
+      if (cell.hasClass( "X" )) cell.removeClass( "X" );
+      if (cell.hasClass( "O" )) cell.removeClass( "O" );
+
+      if(board[i] === 'X') cell.toggleClass( "X" );
+      else if(board[i] === 'O') cell.toggleClass( "O" );
 		}
 }
