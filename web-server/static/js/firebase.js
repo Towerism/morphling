@@ -6,9 +6,39 @@ var statesRef = firebase.database().ref('states/'+gameId.trim());
 console.log('states/'+gameId.trim());
 // console.log(statesRef.child(gameId).push().key);
 var count = 0;
+var settingsRef = firebase.database().ref('settings');
+var piece_x, piece_o, background;
+
+//Credits to http://stackoverflow.com/questions/10958869/jquery-get-css-properties-values-for-a-not-yet-applied-class
+var getCSS = function (prop, fromClass) {
+    var $inspector = $("<div>").css('display', 'none').addClass(fromClass);
+    $("body").append($inspector); // add to DOM, in order to read the CSS property
+    try {
+        return $inspector.css(prop);
+    } finally {
+        $inspector.remove(); // and remove from DOM
+    }
+};
+
+settingsRef.once('value').then(function(snapshot) {
+  var background_url = snapshot.child("board/image").val();
+  var piece_x_url =  snapshot.child("tokens/x/image").val();
+  var piece_o_url =  snapshot.child("tokens/o/image").val();
+
+  background = 'url(' + background_url + ') ' + 'repeat';
+  piece_x = 'url(' + piece_x_url + ') ' + 'no-repeat center center';
+  piece_o = 'url(' + piece_o_url + ') ' + 'no-repeat center center';
+});
+
 statesRef.orderByKey().on('child_added', function(snapshot) {
+    if(!background) background = getCSS('background','gb');
+    if(!piece_o) piece_o = getCSS('background','O');
+    if(!piece_x) piece_x = getCSS('background','X');
+    $('#gameboard').css('background',background);
+
     updateBoard(snapshot);
 });
+
 function updateBoard(snapshot) {
     "use strict";
     count += 1;
@@ -35,10 +65,10 @@ function updateBoard(snapshot) {
       var cell = $('#gameboard td:eq('+i+')');
       console.log(i, board[i], cell.text());
       // cell.html(board[i]);
-      if (cell.hasClass( "X" )) cell.removeClass( "X" );
-      if (cell.hasClass( "O" )) cell.removeClass( "O" );
+      // if (cell.hasClass( "X" )) cell.removeClass( "X" );
+      // if (cell.hasClass( "O" )) cell.removeClass( "O" );
 
-      if(board[i] === 'X') cell.toggleClass( "X" );
-      else if(board[i] === 'O') cell.toggleClass( "O" );
+      if(board[i] === 'X') cell.css( 'background', piece_x );
+      else if(board[i] === 'O') cell.css( 'background', piece_o );
 		}
 }
