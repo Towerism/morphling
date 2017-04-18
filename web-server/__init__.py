@@ -1,1 +1,1 @@
-import .morphling
+import morphling
