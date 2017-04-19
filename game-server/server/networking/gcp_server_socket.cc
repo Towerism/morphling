@@ -38,15 +38,27 @@ GCPServerSocket::ServerState GCPServerSocket::server_verify_auth() {
         return InvalidAuthGame;
     }
     game = check;
+
+    // Check to make sure that the player's aren't already 
+    // connected to the game.
+    if (game->players_connected) {
+        return InvalidAuthGameInSession;
+    }
+
     auto check_player = game->check_player_name(std::get<2>(auth));
     if (std::get<0>(check_player) == false) {
         // the player was not valid (should not happed as previous
         // 'check' does the same operation)
         return InvalidAuthName;
     }
+
     player = std::get<1>(check_player);
-    // player->ready = true;
-    // game->move_cv.notify_all();
+
+    // Verify that the player isn't already ready: this would mean 
+    // that the player has already connected with that name
+    if (player->barrier_ready) {
+        return InvalidAuthGameInSession;
+    }
 
     // send valid authentication
     response = swrite("AUTH:VALID\n");
@@ -192,6 +204,13 @@ GCPServerSocket::ServerState GCPServerSocket::server_invalid_auth_name() {
     return GoodDisconnect;
 }
 
+GCPServerSocket::ServerState GCPServerSocket::server_invalid_auth_game_in_session() {
+    response = swrite("AUTH:INVALIDGAMEINSESSION\n");
+    // doesn't truly matter if the response was received, the client may
+    // disconnect automatically.
+    return GoodDisconnect;
+}
+
 GCPServerSocket::ServerState GCPServerSocket::server_invalid_move() {
     if (game->invalid_moves >= Morphling::ServerState::Game_instance::MAX_ATTEMPTS) {
         // the client is stuck and must disconnect and end game
@@ -208,6 +227,10 @@ GCPServerSocket::ServerState GCPServerSocket::server_invalid_move() {
 
     return WaitForMove;
 }
+
+// ======================================================================
+// Locking State Functions
+// ======================================================================
 
 // Locks both of the threads at this point to create a barrier for
 // the two running threads
@@ -316,6 +339,8 @@ void GCPServerSocket::start() {
             case WaitForOtherConnect: {
                 STATELOG("WaitForOtherConnect");
                 state = barrier(SendWB);
+                // set that both players are connected and playing
+                game->players_connected = true;
                 break;
             }
             case SendWB: {
@@ -356,6 +381,11 @@ void GCPServerSocket::start() {
             case InvalidAuthName: {
                 STATELOG("InvalidAuthName");
                 state = server_invalid_auth_name();
+                break;
+            }
+            case InvalidAuthGameInSession: {
+                STATELOG("InvalidAuthGameInSession");
+                state = server_invalid_auth_game_in_session();
                 break;
             }
             case InvalidMove: {

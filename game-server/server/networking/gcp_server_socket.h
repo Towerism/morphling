@@ -45,6 +45,7 @@ private:
         GameOver,
         InvalidAuthGame,
         InvalidAuthName,
+        InvalidAuthGameInSession,
         InvalidMove,
         BadDisconnect,
         GoodDisconnect
@@ -65,6 +66,7 @@ private:
     // Invalid States
     ServerState server_invalid_auth_game();
     ServerState server_invalid_auth_name();
+    ServerState server_invalid_auth_game_in_session();
     ServerState server_invalid_move();
 
     ServerState barrier(ServerState next_state);

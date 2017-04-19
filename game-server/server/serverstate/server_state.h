@@ -2,8 +2,12 @@
 
 #include <unordered_map>
 #include <memory>
+#include <mutex>
 
 #include <serverstate/game_instance.h>
+#include <database/firebase.h>
+
+using namespace Morphling::Database;
 
 namespace Morphling::ServerState {
 
@@ -23,7 +27,10 @@ namespace Morphling::ServerState {
     void disconnect_all_games();
 
   private:
+    std::mutex map_mutex;
     std::unordered_map<std::string, game_instance_t> game_map;
     engine_t engine;
+
+    firebase fb;
   };
 }

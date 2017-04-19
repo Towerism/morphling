@@ -35,6 +35,7 @@ namespace Morphling::ServerState {
 
     controller_t controller;
     std::atomic_bool running;
+    std::atomic_bool players_connected;
 
     std::string gameid;
     Player player1; // White

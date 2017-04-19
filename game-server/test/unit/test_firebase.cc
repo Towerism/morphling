@@ -40,3 +40,19 @@ TEST(FIREBASETest, GetShallowCheck) {
     ASSERT_EQ(fe.res_json,99);
 }
 
+TEST(FIREBASETest, GetValidGame) {
+    firebase f("morphling-50028");
+    fire_err fe = f.get_json("games/validgame.json");
+    ASSERT_EQ(fe.res_code,CURLE_OK);
+    EXPECT_EQ(fe.res_json["player1"],"player1");
+    EXPECT_EQ(fe.res_json["player2"],"player2");
+    EXPECT_EQ(fe.res_json["score"],nullptr);
+}
+
+TEST(FIREBASETest, GetInvalidGame) {
+    firebase f("morphling-50028");
+    fire_err fe = f.get_json("games/invalidgame.json");
+    ASSERT_EQ(fe.res_code,CURLE_OK);
+    EXPECT_EQ(fe.res_json,nullptr);
+}
+

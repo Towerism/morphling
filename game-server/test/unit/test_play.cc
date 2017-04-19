@@ -18,12 +18,12 @@ protected:
 
         // Send Auth for client1
         EXPECT_TRUE(client1.connected());
-        auto res = client1.send_auth("game","player1");
+        auto res = client1.send_auth("validgame","player1");
         EXPECT_EQ(std::get<0>(res),GCPSocket::SocketReturn::Ok);
 
         // Send Auth for client2
         EXPECT_TRUE(client2.connected());
-        res = client2.send_auth("game","player2");
+        res = client2.send_auth("validgame","player2");
         EXPECT_EQ(std::get<0>(res),GCPSocket::SocketReturn::Ok);
 
         // Recieve Auth for both clients

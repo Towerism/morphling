@@ -5,6 +5,7 @@ namespace Morphling::ServerState {
     Game_instance::Game_instance(controller_t c, std::string id, std::string name1, std::string name2) :
         controller(c),
         running(true),
+        players_connected(false),
         gameid(id),
         player1{name1,White},
         player2{name2,Black},
