@@ -57,9 +57,6 @@
                 <li>
                     <a href={{ url_for('ranking') }}>Ranking</a>
                 </li>
-                <li>
-                    <a href={{ url_for('bracket') }}>Bracket</a>
-                </li>
             </ul>
         </div>
         <!-- /#sidebar-wrapper -->
@@ -80,7 +77,7 @@
                             </tr>
                           </thead>
                           <tbody id="ranking-body">
-                            <!---ranking--->
+                    
                           </tbody>
                       </table>
                     </div>
@@ -98,7 +95,6 @@
     <!-- Bootstrap Core JavaScript -->
     <script src="static/js/bootstrap.min.js"></script>
 
-    <!-- Menu Toggle Script -->
     <script>
     var playersRef = firebase.database().ref('players/');
     var rank = 1;

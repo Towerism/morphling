@@ -58,9 +58,6 @@
                 <li>
                     <a href={{ url_for('ranking') }}>Ranking</a>
                 </li>
-                <li>
-                    <a href={{ url_for('bracket') }}>Bracket</a>
-                </li>
             </ul>
         </div>
         <!-- /#sidebar-wrapper -->
@@ -77,7 +74,7 @@
                           <table id = "gameboard" class="gb">
                               {% for row in boardHeight %}
                                 <tr>
-                                {% for col in boardHeight %}
+                                {% for col in boardWidth %}
                                   <td class="square v h"></td>
                                 {% endfor %}
                                 </tr>
@@ -101,7 +98,6 @@
     <!-- Bootstrap Core JavaScript -->
     <script src={{ url_for('static', filename='js/bootstrap.min.js') }}></script>
 
-    <!-- Menu Toggle Script -->
     {% if token and token in session and session[token] %}
       <script src={{ url_for('static', filename='js/firebase.js') }}></script>
     {% endif %}
