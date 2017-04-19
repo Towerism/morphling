@@ -216,10 +216,10 @@ GCPServerSocket::ServerState GCPServerSocket::barrier(GCPServerSocket::ServerSta
     // figure who is the other player
     Player* other_player = nullptr;
     if (player->side == White) {
-        std::cout << "White and other is Black" << std::endl;
+        //std::cout << "White and other is Black" << std::endl;
         other_player = &game->player2;
     } else {
-        std::cout << "Black and other is White" << std::endl;
+        //std::cout << "Black and other is White" << std::endl;
         other_player = &game->player1;
     }
 
