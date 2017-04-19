@@ -8,7 +8,9 @@ app.config['SECRET_KEY'] = 'secret key'
 firebase = firebase.FirebaseApplication('https://flask-experiment-e7196.firebaseio.com', None)
 new_user = 'abc abc'
 games = firebase.get('/games', None)
-tokens = json.dumps(games.keys())
+tokens = json.dumps(firebase.get('/states', None).keys())
+boardWidth = xrange(int(firebase.get('/settings/board/height', None)))
+boardHeight = xrange(int(firebase.get('/settings/board/width', None)))
 
 # @app.route('/')
 # def index():
@@ -65,9 +67,11 @@ def login():
 @app.route('/Game.html')
 @app.route('/game/<token>')
 def show_game(token=None):
+    global tokens
+    tokens = json.dumps(firebase.get('/states', None).keys())
     if (token in tokens):
         session[token] = True
-    if token and session[token]:
+    if token:
         state = firebase.get('/states/'+token, '0')
         players = firebase.get('/games/'+token, None)
         player1 = firebase.get('/players/'+players['player1'], None)
@@ -78,8 +82,14 @@ def show_game(token=None):
         rows = str(boardData).split(',')
         for r in rows:
             processRow(r,gameState)
+        if (boardWidth is None):
+            global boardWidth
+            boardWidth = xrange(3)
+        if (boardHeight is None):
+            global boardHeight
+            boardHeight = xrange(3)
 
-        return render_template('Game.html', token=token, session=session, gameState=gameState, player1=player1, player2=player2)
+        return render_template('Game.html', token=token, session=session, player1=player1, player2=player2, boardWidth=boardWidth, boardHeight=boardHeight)
     else:
         return redirect(url_for('login'))
 
