@@ -69,3 +69,11 @@ TEST_F(TictactoeTests, UndeterminedGame) {
   EXPECT_FALSE(controller->is_game_over());
   EXPECT_EQ(Game_result::Undetermined, controller->get_result());
 }
+
+// TEST_F(TictactoeTests, InvalidMove) {
+//   EXPECT_FALSE(controller->receive_action("3 0"));
+//   EXPECT_FALSE(controller->receive_action("0 3"));
+//   EXPECT_FALSE(controller->receive_action("3 4"));
+//   EXPECT_FALSE(controller->receive_action("0 -1"));
+//   EXPECT_FALSE(controller->receive_action("-1 -1"));
+// }

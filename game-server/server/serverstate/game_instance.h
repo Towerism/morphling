@@ -17,10 +17,12 @@ namespace Morphling::ServerState {
 
   class Player {
   public:
-    Player(std::string n, PlayerSide ps) : name(n), ready(false), side(ps) {}
+    Player(std::string n, PlayerSide ps):
+      name(n), ready(false), barrier_ready(false), side(ps) {}
 
     std::string name;
-    bool ready;
+    std::atomic_bool ready;
+    std::atomic_bool barrier_ready;
     PlayerSide side;
   };
 
@@ -39,6 +41,7 @@ namespace Morphling::ServerState {
     Player player2; // Black
 
     // State variables for lock-step
+    std::mutex barrier_mutex;
     std::mutex move_mutex;
     std::condition_variable move_cv;
     std::mutex move_post_mutex;

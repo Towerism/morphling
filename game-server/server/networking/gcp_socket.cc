@@ -168,7 +168,12 @@ GCPSocket::RET GCPSocket::sread_wait(time_t seconds, size_t tries)
             return std::make_tuple(Error,"Error: Socket select returned "+std::string(strerror(errno)));
         }
     }
-    return std::make_tuple(Timeout,"Timeout exceeded: duration = "+std::to_string(seconds*total_tries));
+
+    if (!_connected) {
+        return std::make_tuple(Error,"Error: no longer connected");
+    } else {
+        return std::make_tuple(Timeout,"Timeout exceeded: duration = "+std::to_string(seconds*total_tries));
+    }
 }
 
 GCPSocket::RET GCPSocket::swrite(std::string msg)
@@ -177,16 +182,8 @@ GCPSocket::RET GCPSocket::swrite(std::string msg)
         char buf[MAX_MESSAGE];
         memset(buf,'\0',MAX_MESSAGE);
         memcpy(buf,msg.c_str(),msg.size());
-        int total = 0;                  // how many bytes we've sent
-        int bytesleft = MAX_MESSAGE;  // how many we have left to send
-        int n;
 
-        while(total < MAX_MESSAGE) {
-            n = send(_sockfd, buf+total, bytesleft, 0);
-            if (n == -1) { break; }
-            total += n;
-            bytesleft -= n;
-        }
+        int n = send(_sockfd, buf, MAX_MESSAGE, 0);
 
         if (n == -1) {
             _connected = false;
@@ -202,28 +199,22 @@ GCPSocket::RET GCPSocket::swrite(std::string msg)
 // Read a line from the GCP socket and parse the sent Tag.
 // Example socket read: "AUTH:asdf"
 // will return "asdf" for input of Tag: "AUTH"
-GCPSocket::RET GCPSocket::read_tag(std::string tag) {
-    response = sread_wait();
-    // check if the response is Ok
-    if (std::get<0>(response) != Ok)
-        return std::make_tuple(Error,std::get<1>(response));
-    
-    std::string msg = std::get<1>(response);
-    size_t colon = msg.find(":");
+GCPSocket::RET GCPSocket::read_tag(std::string input, std::string tag) {
+    size_t colon = input.find(":");
     if (colon == std::string::npos)
         return std::make_tuple(Error,"Error: no tag sent");
 
-    size_t bn = msg.find("\n",colon+1);
+    size_t bn = input.find("\n",colon+1);
 
     // parse the received tag
-    std::string recv_tag = msg.substr(0,colon);
+    std::string recv_tag = input.substr(0,colon);
     std::string value;
     if (bn == std::string::npos) {
         // if they didn't end with \n
-        value = msg.substr(colon+1);
+        value = input.substr(colon+1);
     } else {
         // if they did end with \n
-        value = msg.substr(colon+1,bn-colon-1);
+        value = input.substr(colon+1,bn-colon-1);
     }
 
     // verify the tag
@@ -239,39 +230,33 @@ GCPSocket::RET GCPSocket::read_tag(std::string tag) {
 // Read a line from the GCP socket and parse the sent Tag.
 // Example socket read: "AUTH:asdf"
 // will return "asdf" for input of Tag: "AUTH"
-GCPSocket::RTAGS GCPSocket::read_tags(std::string tag1, std::string tag2) {
-    auto response = sread_wait();
-    // check if the response is Ok
-    if (std::get<0>(response) != Ok)
-        return std::make_tuple(Error,std::get<1>(response),"");
-    
-    std::string msg = std::get<1>(response);
+GCPSocket::RTAGS GCPSocket::read_tags(std::string input, std::string tag1, std::string tag2) {
     // find the first colon
-    size_t colon1 = msg.find(":");
+    size_t colon1 = input.find(":");
     if (colon1 == std::string::npos)
         return std::make_tuple(Error,"Error: no tags","");
     // find the ~ divider
-    size_t sq = msg.find("~",colon1+1);
+    size_t sq = input.find("~",colon1+1);
     if (sq == std::string::npos)
         return std::make_tuple(Error,"Error: not two msgs sent","");
     // find the second colon
-    size_t colon2 = msg.find(":",sq+1);
+    size_t colon2 = input.find(":",sq+1);
     if (colon2 == std::string::npos)
         return std::make_tuple(Error,"Error: no second tag","");
 
-    size_t bn = msg.find("\n",colon2+1); 
+    size_t bn = input.find("\n",colon2+1); 
 
     // parse the received tag
-    std::string rtag1 = msg.substr(0,colon1);
-    std::string val1 = msg.substr(colon1+1,sq-colon1-1);
-    std::string rtag2 = msg.substr(sq+1,colon2-sq-1);
+    std::string rtag1 = input.substr(0,colon1);
+    std::string val1 = input.substr(colon1+1,sq-colon1-1);
+    std::string rtag2 = input.substr(sq+1,colon2-sq-1);
     std::string val2;
     if (bn == std::string::npos) {
         // if they didn't end with \n
-        val2 = msg.substr(colon2+1);
+        val2 = input.substr(colon2+1);
     } else {
         // if they did end with \n
-        val2 = msg.substr(colon2+1,bn-colon2-1);
+        val2 = input.substr(colon2+1,bn-colon2-1);
     }
     // verify the tag
     if (rtag1 == tag1 and rtag2 == tag2) {

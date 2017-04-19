@@ -23,13 +23,14 @@ GCPServerSocket::~GCPServerSocket() {
 // Process the Authentication to connect the client to the proper game
 // server state.
 GCPServerSocket::ServerState GCPServerSocket::server_verify_auth() {
-    auto auth = read_tags("GAME","NAME");
-    response = std::make_tuple(std::get<0>(auth),std::get<1>(auth));
+    response = sread_wait();
     // if the read_tag failed, disconnect
-    if (std::get<0>(auth) != Ok) {
+    if (std::get<0>(response) != Ok) {
         //std::cout << std::get<1>(auth) << std::endl;
         return BadDisconnect;
     }
+    auto auth = read_tags(std::get<1>(response),"GAME","NAME");
+    response = std::make_tuple(std::get<0>(auth),std::get<1>(auth));
     
     Server_state::game_instance_t check = serverstate->get_game(std::get<1>(auth),std::get<2>(auth));
     if (check == nullptr) {
@@ -44,12 +45,12 @@ GCPServerSocket::ServerState GCPServerSocket::server_verify_auth() {
         return InvalidAuthName;
     }
     player = std::get<1>(check_player);
-    player->ready = true;
+    // player->ready = true;
+    // game->move_cv.notify_all();
 
     // send valid authentication
     response = swrite("AUTH:VALID\n");
-    auto valid_auth = response;
-    if (std::get<0>(valid_auth) != Ok) {
+    if (std::get<0>(response) != Ok) {
         return BadDisconnect;
     }
     
@@ -82,14 +83,15 @@ GCPServerSocket::ServerState GCPServerSocket::server_send_side() {
 
 GCPServerSocket::ServerState GCPServerSocket::server_wait_for_move() {
     // wait for the player to make a move
-    response = read_tag("MOVE");
+    response = sread_wait();
     // TODO(devincarr): What happens when a Timeout occurs, is it different from Disconnect?
     if (std::get<0>(response) == Timeout) {
         return BadDisconnect;
     }
-    if (std::get<0>(response) != Ok) {
+    if (std::get<0>(response) == Error) {
         return BadDisconnect;
     }
+    response = read_tag(std::get<1>(response),"MOVE");
 
     // assign the move to the game player move
     game->player_move = std::get<1>(response);
@@ -99,10 +101,10 @@ GCPServerSocket::ServerState GCPServerSocket::server_wait_for_move() {
 }
 
 GCPServerSocket::ServerState GCPServerSocket::server_wait_for_other_move() {
-    if (game->player_turn == White) {
-        wait_for_player(game->player1);
-    } else {
+    if (player->side == White) {
         wait_for_player(game->player2);
+    } else {
+        wait_for_player(game->player1);
     }
 
     if (game->controller->is_game_over()) {
@@ -169,8 +171,6 @@ GCPServerSocket::ServerState GCPServerSocket::server_send_gameover() {
         return BadDisconnect;
     }
 
-    player->ready = true;
-
     return GoodDisconnect;
 }
 
@@ -212,29 +212,48 @@ GCPServerSocket::ServerState GCPServerSocket::server_invalid_move() {
 // Locks both of the threads at this point to create a barrier for
 // the two running threads
 GCPServerSocket::ServerState GCPServerSocket::barrier(GCPServerSocket::ServerState next_state) {
+    std::unique_lock<std::mutex> barrier_lock(game->barrier_mutex);
     // figure who is the other player
     Player* other_player = nullptr;
     if (player->side == White) {
+        std::cout << "White and other is Black" << std::endl;
         other_player = &game->player2;
     } else {
+        std::cout << "Black and other is White" << std::endl;
         other_player = &game->player1;
     }
 
     // check if the other player has already reached the barrier
-    if (other_player->ready) {
+    if (other_player->barrier_ready) {
         //std::cout << "both ready" << std::endl;
+        player->barrier_ready = true;
+        // release the barrier mutex to allow the other thread to check
+        // if the player is ready.
+        barrier_lock.unlock();
+        // notify the other player that we have connected
         game->move_cv.notify_all();
+        // wait for the other user to set both barriers to false
         std::unique_lock<std::mutex> lkpost(game->move_post_mutex);
-        game->move_post_cv.wait(lkpost, [&]{return not game->player1.ready and not game->player2.ready;});
+        game->move_post_cv.wait(lkpost, [&]{return not game->player1.barrier_ready and not game->player2.barrier_ready;});
     } else {
         // otherwise wait for the other player to be ready
         //std::cout << "waiting for other" << std::endl;
-        wait_for_player(*other_player);
-        // Set both players to false
-        game->player2.ready = false;
-        game->player1.ready = false;
+        player->barrier_ready = true;
+        // release the barrier mutex to allow the other thread to check
+        // if the player is ready.
+        barrier_lock.unlock();
+        // Wait for the other player to connect
+        std::unique_lock<std::mutex> lk(game->move_mutex);
+        game->move_cv.wait(lk, [&] {
+            return other_player->barrier_ready or not _connected or not game->running;
+        });
+        // Set both players to false in lock-step
+        game->player2.barrier_ready = false;
+        game->player1.barrier_ready = false;
+        // notify other player that we can both continue to next state
         game->move_post_cv.notify_all();
     }
+    //std::cout << "going" << std::endl;
     
     // continue to the next state provided
     return next_state;

@@ -6,8 +6,8 @@ namespace Morphling::ServerState {
         controller(c),
         running(true),
         gameid(id),
-        player1(Player(name1,White)),
-        player2(Player(name2,Black)),
+        player1{name1,White},
+        player2{name2,Black},
         player_turn(White),
         invalid_moves(0)
     { }

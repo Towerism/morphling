@@ -27,13 +27,13 @@ namespace Morphling::Networking {
 
 class GCPSocket {
 private:
-    // Max time to wait before a timeout (seconds)
-    const time_t MAX_TIMEOUT = 10;
-    // Maximum amount of times to wait
-    const size_t MAX_TRIES = 10;
     int _sockfd;
 
 protected:
+    // Max time to wait before a timeout (seconds)
+    const time_t MAX_TIMEOUT = 20;
+    // Maximum amount of times to wait
+    const size_t MAX_TRIES = 10;
     std::atomic_bool _connected;
     bool dns(std::string hostname, int port, struct sockaddr_in* server);
 
@@ -60,8 +60,8 @@ public:
     RET sread();
     RET sread_wait(time_t seconds = 2, size_t tries = 10);
     RET swrite(std::string msg);
-    RET read_tag(std::string tag);
-    RTAGS read_tags(std::string tag1, std::string tag2);
+    RET read_tag(std::string input, std::string tag);
+    RTAGS read_tags(std::string input, std::string tag1, std::string tag2);
 
 }; //end class GCPSocket
 
