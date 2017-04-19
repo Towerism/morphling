@@ -25,7 +25,7 @@ namespace Morphling::Gamelogic::Tictactwo {
   }
 
   const Player* Tictactwo_model::get_player_owning_gamepiece(Board2D::gamepiece_t game_object) {
-    auto gamepiece = dynamic_cast<Gamepiece*>(game_object.get());
+    auto gamepiece = game_object.get();
     auto player_one = dynamic_cast<const Tictactwo_player*>(get_player_one());
     auto player_two = dynamic_cast<const Tictactwo_player*>(get_player_two());
     if (!gamepiece || !player_one || !player_two)

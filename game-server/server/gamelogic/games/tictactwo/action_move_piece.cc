@@ -25,7 +25,7 @@ namespace Morphling::Gamelogic::Tictactwo {
 
   bool Action_move_piece::from_location_belongs_to_current_player(Tictactwo_model* model) {
     auto player = dynamic_cast<Tictactwo_player*>(model->get_current_player());
-    auto piece = dynamic_cast<Gamepiece*>(model->get_element(from_location).get());
+    auto piece = model->get_element(from_location).get();
     if (player == nullptr || piece == nullptr)
       return false;
     return player->owns_gamepiece(piece);

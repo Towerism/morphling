@@ -6,12 +6,14 @@
 #include <gamelogic/games/tictactwo/tictactwo_player.h>
 
 using namespace Morphling::Gamelogic::Tictactwo;
+
 using Morphling::Gamelogic::Point2D;
+using Morphling::Gamelogic::Game_object;
 
 class MovePieceActionTests : public ::testing::Test {
 public:
   MovePieceActionTests()
-      : piece_x(new Gamepiece('X')), piece_o(new Gamepiece('O')),
+      : piece_x(new Game_object('X')), piece_o(new Game_object('O')),
         player1("playerone", piece_x), player2("playertwo", piece_o),
         model({2, 2}), from_location(2, 2), to_location(3, 3),
         other_player_piece_location(1, 1) {
@@ -28,8 +30,8 @@ public:
       model.to_next_player();
   }
 
-  Gamepiece *piece_x;
-  Gamepiece *piece_o;
+  Game_object *piece_x;
+  Game_object *piece_o;
   Tictactwo_player player1;
   Tictactwo_player player2;
   Tictactwo_model model;
