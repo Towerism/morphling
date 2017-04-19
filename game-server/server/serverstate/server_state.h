@@ -31,6 +31,6 @@ namespace Morphling::ServerState {
     std::unordered_map<std::string, game_instance_t> game_map;
     engine_t engine;
 
-    firebase fb;
+    Database::firebase fb;
   };
 }
