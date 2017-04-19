@@ -1,5 +1,6 @@
 add_library(networking
+  gcp_socket.cc
+  gcp_client.cc
   gcp_server.cc
   gcp_server_socket.cc
-  gcp_socket.cc
   )

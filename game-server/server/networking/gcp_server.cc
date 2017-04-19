@@ -1,11 +1,13 @@
 #include <networking/gcp_server.h>
 
 using namespace Morphling::Networking;
+using namespace Morphling::ServerState;
 
-GCPServer::GCPServer(): 
+GCPServer::GCPServer(Gamelogic::Game_engine* engine):
     running(false),
     port(55555),
     sockfd(-1),
+    serverstate(new Server_state(engine)),
     connection_thread()
 { }
 
@@ -97,31 +99,54 @@ void GCPServer::connection_handler()
     socklen_t sin_size;
     int newfd;
 
+    struct timeval r_timeout;
+    r_timeout.tv_sec = 1;
+    r_timeout.tv_usec = 0;
+
+    fd_set read_fd;
+
     while (running) {  // main accept() loop
+
+        FD_ZERO(&read_fd);
+        FD_SET(sockfd, &read_fd);
+
         sin_size = sizeof(their_addr);
-        newfd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
-        if (newfd == -1) {
-            // only print an error if the server is still running
-            if (running) {
-                perror("accept");
+        int rv = select(sockfd+1, &read_fd, nullptr, nullptr, &r_timeout);
+        if (rv > 0) {
+            newfd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
+            if (newfd == -1) {
+                // only print an error if the server is still running
+                if (running) {
+                    perror("accept");
+                }
+                continue;
             }
-            continue;
-        }
-        printf("accepted new client: %d\n", newfd);
-        { // lock access to the client list during addition
-            std::unique_lock<std::mutex> lock(client_list_mutex);
-            client_list.push_back(std::thread(&GCPServer::client_handler,this,newfd));
+            { // lock access to the client list during addition
+                std::unique_lock<std::mutex> lock(client_list_mutex);
+                socket_list.push_back(new GCPServerSocket(serverstate,newfd));
+                client_list.push_back(std::thread(&GCPServer::client_handler,this,socket_list.back()));
+            }
+        } else if (rv == 0) {
+            // timeout occured
+        } else {
+            // error occured
+            running = false;
         }
     }
 }
 
-void GCPServer::client_handler(int fd) {
-    GCPServerSocket gcp(fd);
-    gcp.start();
+void GCPServer::client_handler(GCPServerSocket* gcp) {
+    gcp->start();
 }
 
 void GCPServer::client_wait() {
     std::unique_lock<std::mutex> lock(client_list_mutex);
+    // send disconnect to all games
+    serverstate->disconnect_all_games();
+    for (auto& s: socket_list) {
+        s->disconnect();
+    }
+    // rejoin all serving threads
     for (auto& t: client_list) {
         t.join();
     }

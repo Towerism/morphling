@@ -1,6 +1,9 @@
 // GCPServerSocket - Game Client Protocol Socket Library for Server-side
 #pragma once
 
+#include <networking/gcp_socket.h>
+#include <serverstate/server_state.h>
+
 #include <atomic>
 #include <condition_variable>
 #include <memory>
@@ -9,56 +12,27 @@
 #include <string>
 #include <tuple>
 
-#include <arpa/inet.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <fcntl.h>
-#include <cerrno>
-#include <cstdlib>
-#include <cstdio>
-#include <cassert>
-#include <cstring>
-
-#define RET std::tuple<Morphling::Networking::GCPServerSocket::SocketReturn,std::string>
+#if 0
+#define STATELOG(t) std::cerr << "State: " << t << std::endl;
+#else
+#define STATELOG(t) ;
+#endif
 
 namespace Morphling::Networking {
 
-enum PlayerSide {
-    White,
-    Black
-};
+class GCPServerSocket : public GCPSocket {
+public:
+    GCPServerSocket(Morphling::ServerState::Server_state* serverstate, int sockfd);
+    ~GCPServerSocket();
 
-// TODO(devincarr): Make this a part of the Game state later
-struct players_ready {
-    bool player1;
-    bool player2;
-};
-
-class GCPServerSocket {
+    void disconnect() override;
+    void baddisconnect();
+    void start();
 private:
-    const int MAX_MESSAGE = 2048;
+    ServerState::Server_state* serverstate;
+    ServerState::Server_state::game_instance_t game;
+    ServerState::Player* player;
     
-    int _sockfd;
-    std::atomic_bool _connected;
-    std::string playerid;
-    PlayerSide playerside;
-
-    // Direct Socket Functions
-    enum SocketReturn {
-        Ok,
-        Error,
-        Timeout
-    };
-
-    RET sread();
-    RET swrite(std::string msg);
-    RET read_tag(std::string tag);
-    void send_close();
-
     // State functions
     enum ServerState {
         VerifyAuth,
@@ -68,22 +42,34 @@ private:
         WaitForOtherMove,
         VerifyMove,
         SendMove,
-        Disconnect
+        GameOver,
+        InvalidAuthGame,
+        InvalidAuthName,
+        InvalidMove,
+        BadDisconnect,
+        GoodDisconnect
     };
+    ServerState state;
     std::mutex m_player;
     std::condition_variable cv_player;
+
+    // Normal States
     ServerState server_verify_auth();
-    ServerState server_wait_for_other(players_ready* rdy);
     ServerState server_send_side();
+    ServerState server_wait_for_move();
+    ServerState server_wait_for_other_move();
+    ServerState server_verify_move();
+    ServerState server_send_move();
+    ServerState server_send_gameover();
 
-public:
-    GCPServerSocket(int sockfd);
-    ~GCPServerSocket();
+    // Invalid States
+    ServerState server_invalid_auth_game();
+    ServerState server_invalid_auth_name();
+    ServerState server_invalid_move();
 
-    bool connected() { return _connected; }
-    void disconnect();
-
-    void start();
+    ServerState barrier(ServerState next_state);
+    void wait_for_player(Morphling::ServerState::Player& player);
+    bool check_server_status();
 
 }; //end class GCPServerSocket
 

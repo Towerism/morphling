@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <serverstate/server_state.h>
+#include <gamelogic/controller/game_engine.h>
 #include <networking/gcp_server_socket.h>
 
 #include <atomic>
@@ -37,18 +39,21 @@ private:
     int port;
     int sockfd;
 
+    ServerState::Server_state* serverstate;
+
     std::thread connection_thread;
     std::mutex client_list_mutex;
+    std::vector<GCPServerSocket*> socket_list;
     std::vector<std::thread> client_list;
 
     // Functions
     void connection_handler();
-    void client_handler(int fd);
+    void client_handler(GCPServerSocket* gcp);
     void client_wait();
 
     bool send(std::string msg);
 public:
-    GCPServer();
+    GCPServer(Gamelogic::Game_engine* engine);
     ~GCPServer();
 
     bool start(int port_no = 55555);
