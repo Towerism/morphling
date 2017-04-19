@@ -18,7 +18,7 @@ void repl(GCPClient& gcp) {
     while (input != "EXIT") {
         // process user input
         std::cout << "< ";
-        std::cin >> input;
+        std::getline(std::cin,input);
         auto res = gcp.swrite(input);
         if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
             std::cout << "> Error Write: " << std::get<1>(res) << std::endl;
@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
         std::cout << "> Error Write: " << std::get<1>(res) << std::endl;
         return shutdown(gcp,1);
     }
-    res = gcp.sread_wait();
+    res = gcp.recv_auth();
     if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
         std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
         return shutdown(gcp,1);
@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
     std::cout << "> " << std::get<1>(res) << std::endl;
 
     // Wait for which side
-    res = gcp.read_tag("SIDE");
+    res = gcp.recv_side();
     if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
         std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
         return shutdown(gcp,1);
@@ -88,48 +88,48 @@ int main(int argc, char** argv) {
 
     // If we are Black wait
     if (std::get<1>(res) == "B") {
-        res = gcp.read_tag("MOVE");
-        if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
-            std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
-            return shutdown(gcp,1);
-        }
-        std::cout << "> " << std::get<1>(res) << std::endl;
-        // Send a move
-        std::cout << "< MOVE:0 1" << std::endl;
-        res = gcp.send_move("0 1");
-        if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
-            std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
-            return shutdown(gcp,1);
-        }
-        std::cout << "> " << std::get<1>(res) << std::endl;
+        // res = gcp.recv_move();
+        // if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
+        //     std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
+        //     return shutdown(gcp,1);
+        // }
+        // std::cout << "> " << std::get<1>(res) << std::endl;
+        // // Send a move
+        // std::cout << "< MOVE:0 1" << std::endl;
+        // res = gcp.send_move("0 1");
+        // if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
+        //     std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
+        //     return shutdown(gcp,1);
+        // }
+        // std::cout << "> " << std::get<1>(res) << std::endl;
 
-        // Read a move
-        res = gcp.read_tag("MOVE");
-        if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
-            std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
-            return shutdown(gcp,1);
-        }
-        std::cout << "> " << std::get<1>(res) << std::endl;
-        // Send a move
-        std::cout << "< MOVE:0 2" << std::endl;
-        res = gcp.send_move("0 2");
-        if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
-            std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
-            return shutdown(gcp,1);
-        }
-        std::cout << "> " << std::get<1>(res) << std::endl;
+        // // Read a move
+        // res = gcp.recv_move();
+        // if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
+        //     std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
+        //     return shutdown(gcp,1);
+        // }
+        // std::cout << "> " << std::get<1>(res) << std::endl;
+        // // Send a move
+        // std::cout << "< MOVE:0 2" << std::endl;
+        // res = gcp.send_move("0 2");
+        // if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
+        //     std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
+        //     return shutdown(gcp,1);
+        // }
+        // std::cout << "> " << std::get<1>(res) << std::endl;
 
-        // Read a move
-        res = gcp.sread_wait();
-        if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
-            std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
-            return shutdown(gcp,1);
-        }
-        std::cout << "> " << std::get<1>(res) << std::endl;
+        // // Read a move
+        // res = gcp.recv_move();
+        // if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
+        //     std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
+        //     return shutdown(gcp,1);
+        // }
+        // std::cout << "> " << std::get<1>(res) << std::endl;
     } else {
         // Send a move
-        std::cout << "< MOVE:0 0" << std::endl;
-        res = gcp.send_move("0 0");
+        std::cout << "< MOVE:3 4" << std::endl;
+        res = gcp.send_move("3 4");
         if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
             std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
             return shutdown(gcp,1);
@@ -137,14 +137,14 @@ int main(int argc, char** argv) {
         std::cout << "> " << std::get<1>(res) << std::endl;
 
         // Read a move
-        res = gcp.read_tag("MOVE");
+        res = gcp.recv_move();
         if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
             std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
             return shutdown(gcp,1);
         }
         std::cout << "> " << std::get<1>(res) << std::endl;
         // Send a move
-        std::cout << "< MOVE:1 0" << std::endl;
+        std::cout << "< MOVE:4 3" << std::endl;
         res = gcp.send_move("1 0");
         if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
             std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
@@ -153,31 +153,31 @@ int main(int argc, char** argv) {
         std::cout << "> " << std::get<1>(res) << std::endl;
 
         // Read a move
-        res = gcp.read_tag("MOVE");
+        res = gcp.recv_move();
         if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
             std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
             return shutdown(gcp,1);
         }
         std::cout << "> " << std::get<1>(res) << std::endl;
         // Send a move
-        std::cout << "< MOVE:2 0" << std::endl;
-        res = gcp.send_move("2 0");
-        if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
-            std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
-            return shutdown(gcp,1);
-        }
-        std::cout << "> " << std::get<1>(res) << std::endl;
+        // std::cout << "< MOVE:2 0" << std::endl;
+        // res = gcp.send_move("2 0");
+        // if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
+        //     std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
+        //     return shutdown(gcp,1);
+        // }
+        // std::cout << "> " << std::get<1>(res) << std::endl;
 
-        // Read a move
-        res = gcp.sread_wait();
-        if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
-            std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
-            return shutdown(gcp,1);
-        }
-        std::cout << "> " << std::get<1>(res) << std::endl;
+        // // Read a move
+        // res = gcp.recv_move();
+        // if (std::get<0>(res) != GCPSocket::SocketReturn::Ok) {
+        //     std::cout << "> Error Read: " << std::get<1>(res) << std::endl;
+        //     return shutdown(gcp,1);
+        // }
+        // std::cout << "> " << std::get<1>(res) << std::endl;
     }
 
-    //repl();
+    // repl(gcp);
 
     return shutdown(gcp,0);
 }
