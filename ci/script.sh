@@ -11,6 +11,9 @@ if [ "${COMPONENT}" == "game-server" ]; then
     make test ARGS=-VV
 fi
 
-cd web-server
-make test
-make clean
+if [ "${COMPONENT}" == "web-server" ]; then
+    # build, and test web server here
+    cd web-server
+    make test
+    make clean
+fi

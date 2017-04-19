@@ -14,7 +14,7 @@ addons:
     - pypy
 env:
 - COMPONENT=game-server
-install: "pip install -r web-server/requirements.txt"
+install: ci/install.sh
 script: ci/script.sh
 notifications:
   email: false
