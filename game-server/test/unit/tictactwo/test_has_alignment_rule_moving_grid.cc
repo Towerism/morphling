@@ -7,13 +7,15 @@
 
 using namespace Morphling::Gamelogic::Tictactwo;
 
+using Morphling::Gamelogic::Game_object;
+
 class HasAlignmentRuleMovingGridTests : public ::testing::Test {
 public:
   HasAlignmentRuleMovingGridTests()
-    : piece_x(new Gamepiece('X')) {
+    : piece_x(new Game_object('X')) {
   }
 
-  Gamepiece* piece_x;
+  Game_object* piece_x;
 };
 
 TEST_F(HasAlignmentRuleMovingGridTests, CheckReturnsFalseWhenPiecesAlignButAreOutsideOfGrid) {

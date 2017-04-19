@@ -2,7 +2,7 @@
 ## Requirements
 - CMake 2.8.12
 - GCC 6
-- libcurl
+- libcurl development headers
 
 ## Building
 To build the game server, you must create the build tree, generate the build
@@ -11,6 +11,12 @@ files, and then run `make`.
 $ mkdir build && cd build
 $ cmake ..
 $ make
+```
+
+By default the server is compiled using `Release` flags. To compile with debug
+flags, generate the build files like so:
+```
+$ cmake -DCMAKE_BUILD_TYPE=Debug
 ```
 
 ## Running

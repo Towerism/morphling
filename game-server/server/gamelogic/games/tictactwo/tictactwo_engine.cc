@@ -6,8 +6,11 @@
 
 namespace Morphling::Gamelogic::Tictactwo {
   Controller* Tictactwo_engine::initialize(std::string p1_name, std::string p2_name) {
-    auto p1 = new Tictactwo_player(p1_name, new Gamepiece('X'));
-    auto p2 = new Tictactwo_player(p2_name, new Gamepiece('O'));
+    auto p1 = new Tictactwo_player(p1_name, new Game_object('X'));
+    auto p2 = new Tictactwo_player(p2_name, new Game_object('O'));
+
+    token_to_url_mapper.add_url('X', "/assets/X.png");
+    token_to_url_mapper.add_url('O', "/assets/O.png");
 
     Tictactwo_model* model = new Tictactwo_model({0, 0});
     Tictactwo_controller* controller = new Tictactwo_controller(model);

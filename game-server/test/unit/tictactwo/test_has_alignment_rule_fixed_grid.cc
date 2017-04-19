@@ -7,14 +7,16 @@
 
 using namespace Morphling::Gamelogic::Tictactwo;
 
+using Morphling::Gamelogic::Game_object;
+
 class HasAlignmentRuleFixedGridTests : public ::testing::Test {
 public:
   HasAlignmentRuleFixedGridTests()
-    : piece_x(new Gamepiece('X')), player("playerone", piece_x), model({ 0, 0 }) {
+    : piece_x(new Game_object('X')), player("playerone", piece_x), model({ 0, 0 }) {
     model.set_player_one(&player);
   }
 
-  Gamepiece* piece_x;
+  Game_object* piece_x;
   Tictactwo_player player;
   Tictactwo_model model;
 };
