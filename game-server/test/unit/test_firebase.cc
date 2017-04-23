@@ -3,16 +3,47 @@
 
 using namespace Morphling::Database;
 
-TEST(FIREBASETest, WriteCheck) {
-    firebase f("morphling-50028");
+class FirebaseTest : public ::testing::Test {
+protected:
+    FirebaseTest(): f{"morphling-50028"} {
+        // Initialize the firebase with a game
+        fire_err fe = f.write_json(".json",json(R"(
+            {
+                "games": {
+                    "validgame": {
+                        "player1": "player1",
+                        "player2": "player2"
+                    }
+                },
+                "players": {
+                    "player1": {
+                        "name": "player1",
+                        "score": 0
+                    },
+                    "player2": {
+                        "name": "player2",
+                        "score": 0
+                    }
+                },
+                "test": {
+                    "Test": 15
+                }
+            }
+        )"_json));
+        EXPECT_EQ(fe.res_code,CURLE_OK);
+    }
+
+    firebase f;
+};
+
+TEST_F(FirebaseTest, WriteCheck) {
     fire_err fe = f.write_json("test.json",json::parse("{\"Test\":15}"));
     ASSERT_EQ(fe.res_code,CURLE_OK);
     EXPECT_TRUE(fe.res_json["Test"].is_number());
     ASSERT_EQ(fe.res_json["Test"],15);
 }
 
-TEST(FIREBASETest, WriteMultiCheck) {
-    firebase f("morphling-50028");
+TEST_F(FirebaseTest, WriteMultiCheck) {
     fire_err fe = f.write_json("test.json",json::parse("{\"Test\":15}"));
     ASSERT_EQ(fe.res_code,CURLE_OK);
     EXPECT_TRUE(fe.res_json["Test"].is_number());
@@ -24,24 +55,21 @@ TEST(FIREBASETest, WriteMultiCheck) {
     ASSERT_EQ(fe.res_json["Test"],99);
 }
 
-TEST(FIREBASETest, GetCheck) {
-    firebase f("morphling-50028");
+TEST_F(FirebaseTest, GetCheck) {
     fire_err fe = f.get_json("test.json");
     ASSERT_EQ(fe.res_code,CURLE_OK);
     EXPECT_TRUE(fe.res_json["Test"].is_number());
-    ASSERT_EQ(fe.res_json["Test"],99);
+    ASSERT_EQ(fe.res_json["Test"],15);
 }
 
-TEST(FIREBASETest, GetShallowCheck) {
-    firebase f("morphling-50028");
+TEST_F(FirebaseTest, GetShallowCheck) {
     fire_err fe = f.get_json("test/Test.json",true);
     ASSERT_EQ(fe.res_code,CURLE_OK);
     EXPECT_TRUE(fe.res_json.is_number());
-    ASSERT_EQ(fe.res_json,99);
+    ASSERT_EQ(fe.res_json,15);
 }
 
-TEST(FIREBASETest, GetValidGame) {
-    firebase f("morphling-50028");
+TEST_F(FirebaseTest, GetValidGame) {
     fire_err fe = f.get_json("games/validgame.json");
     ASSERT_EQ(fe.res_code,CURLE_OK);
     EXPECT_EQ(fe.res_json["player1"],"player1");
@@ -49,10 +77,16 @@ TEST(FIREBASETest, GetValidGame) {
     EXPECT_EQ(fe.res_json["score"],nullptr);
 }
 
-TEST(FIREBASETest, GetInvalidGame) {
-    firebase f("morphling-50028");
+TEST_F(FirebaseTest, GetInvalidGame) {
     fire_err fe = f.get_json("games/invalidgame.json");
     ASSERT_EQ(fe.res_code,CURLE_OK);
     EXPECT_EQ(fe.res_json,nullptr);
+}
+
+TEST_F(FirebaseTest, GetPlayers) {
+    fire_err fe = f.get_json("players.json");
+    ASSERT_EQ(fe.res_code,CURLE_OK);
+    EXPECT_EQ(fe.res_json["player1"]["name"],"player1");
+    EXPECT_EQ(fe.res_json["player2"]["name"],"player2");
 }
 

@@ -23,11 +23,11 @@ namespace Morphling::ServerState {
     // in firebase but not locally, create it, store it, and 
     // return it.
     game_instance_t get_game(std::string gameid, std::string name);
-    void end_game(std::string id);
+    void end_game(std::string id, PlayerSide winner);
     void disconnect_all_games();
 
   private:
-    std::mutex map_mutex;
+    std::mutex state_mutex;
     std::unordered_map<std::string, game_instance_t> game_map;
     engine_t engine;
 
