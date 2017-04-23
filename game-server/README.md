@@ -4,6 +4,10 @@
 - GCC 6
 - libcurl development headers
 
+## Sample games
+Tictactwo and Tictactoe have been written as sample games and can be found in
+the `games` folder.
+
 ## Building
 To build the game server, you must create the build tree, generate the build
 files, and then run `make`.
