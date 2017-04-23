@@ -14,9 +14,9 @@ namespace Morphling::ServerState {
     { }
 
     std::tuple<bool,Player*> Game_instance::check_player_name(std::string name) {
-        if (name == player1.name) {
+        if (name == "player1") {
             return std::make_tuple(true,&player1);
-        } else if (name == player2.name) {
+        } else if (name == "player2") {
             return std::make_tuple(true,&player2);
         } else {
             return std::make_tuple(false,nullptr);
