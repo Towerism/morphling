@@ -1,0 +1,72 @@
+# Game Logic
+The game logic layer is a framework that allows you to write the logic for your
+board game in a very object oriented manner.
+
+## High-level Overview
+The three main components of any game are the `Game_engine`, `Controller`, and the
+`Model`.
+
+### Game_engine
+The engine is responsible for constructing the model and the controller
+components, mapping game object tokens to asset urls, as well as mapping the
+model to an easy-to-store format.
+
+### Controller
+The controller is primarily responsible for parsing and validating moves. When a
+move is parsed and validated successfully, a corresponding `Action` is created
+and is executed on the model. The controller specifies the interface for
+creating these `Actions`.
+
+### Model
+The model encapsulates the main game logic for the board game. The model makes
+use of `Rules` for monitoring the game state and determining who the winner is
+after a game is over. 
+
+## In-depth
+Putting together a complete board game starts with the engine and ends with the
+controller and the model. The engine creates the player objects which are given
+to the model, the mapping between game object and image url, the algorithm for
+serializing the model, and the controller.
+
+The model's main job is simple: to monitor the game state in between moves. It does this
+via `Rules`. Rules simply encapsulate checks on the model to determine whether a
+particular game condition is met.
+
+The controller's job is to receive actions in form of a string, parse the
+strings into actions, and execute those actions on the model. 
+
+For simple examples of games created using this framework, see the
+`game-server/games` directory.
+
+## Game_engine
+The engine must initialize model, controller, and model serialization algorithm.
+It must also construct the players and give them to the model. All of this is
+done in the `initialize` method of `Game_engine`. `Tictactwo_engine` is an example
+subclass of `Game_engine`. Here is what its `initialize` function look like.
+```c++
+Controller* Tictactwo_engine::initialize(std::string p1_name, std::string p2_name) {
+  auto p1 = new Tictactwo_player(p1_name, new Game_object('X'));
+  auto p2 = new Tictactwo_player(p2_name, new Game_object('O'));
+
+  token_to_url_mapper.add_url('X', "/assets/X.png");
+  token_to_url_mapper.add_url('O', "/assets/O.png");
+
+  Tictactwo_model* model = new Tictactwo_model({0, 0});
+  Tictactwo_controller* controller = new Tictactwo_controller(model);
+
+  model_to_strings_mapper = new Board2D_to_strings_mapper(model->get_board());
+
+  model->set_player_one(p1);
+  model->set_player_two(p2);
+
+  return controller;
+}
+``` 
+As you can see, the players are initialized with
+player 1 controller X and player 2 controlling O. The players are passed to
+the controller at the end of the function. Then, the mapping is provided that
+specifies the urls for the images of the X and O game objects. They are used
+in the web front end for rendering game states. Next, the model and controller
+are constructed. Finally the algorithm for serializing the model is specified.
+Since tictactwo represents board state using `Board2D` it specifies the built
+in `Board2D_to_strings_mapper` as the serialization algorithm.
