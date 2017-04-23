@@ -56,7 +56,7 @@ Controller* Tictactwo_engine::initialize(std::string p1_name, std::string p2_nam
   Tictactwo_model* model = new Tictactwo_model({0, 0});
   Tictactwo_controller* controller = new Tictactwo_controller(model);
 
-  model_to_strings_mapper = new Board2D_to_strings_mapper(model->get_board());
+  controller->set_model_serializer(new Board2D_to_strings_mapper(model->get_board()));
 
   model->set_player_one(p1);
   model->set_player_two(p2);
@@ -80,4 +80,44 @@ methods and optionally the `get_result()` method. By default `get_result()`
 designates the player who made the game-ending move as the winner. This may not
 be desirable as is the case in tictactwo in which moving the grid into a
 position which would give the other player three-in-a-row resulting in a loss
-for the player who made that move. As such, `get_result()` is overridden in `Tictactwo_model`.
+for the player who made that move. As such, `get_result()` is overridden in
+`Tictactwo_model`. 
+
+In addition to overriding those methods, the model should also keep track of any
+other state that captures the current board state. For example, the tictactwo
+model keeps track of board state using the built in `Board2D` class and the
+origin of the moveable grid using the built in `Point2D` class. Note that
+`Board2D` which is just an extension of `Game_object` is just one way to
+encapsulate board state. For example, for a card game, you would extend
+`Game_object` and also create a serializer for it extending
+`Model_to_strings_mapper`.
+
+Finally, the model should keep track of any `Rules` it uses in determining game
+over and/or the game result. A rule simply checks whether a particular game
+condition is met. For example, in tictactwo `Rule_board_is_full` checks to see
+if the board has been completely filled.
+
+```c++
+  bool Rule_board_is_full::check_board_is_full(Tictactwo_model* model) {
+    bool result = true;
+    for (int i = 0; i < 5; ++i) {
+      for (int j = 0; j < 5; ++j) {
+        if (model->get_element({i, j}) == nullptr)
+          return false;
+      }
+    }
+    return result;
+  }
+```
+
+This rule along with any rules that determine a win condition for a player are
+utilized in the model to determine if the game is over.
+
+```c++
+  bool Tictactwo_model::check_win_condition() {
+    bool result = has_alignment.check(this);
+    winner = has_alignment.get_causal_player();
+    return result;
+  }
+
+```
