@@ -44,10 +44,11 @@ endif()
 add_subdirectory(samples)
 add_executable(gcp-test-client samples/test_gcp_socket.cc)
 target_link_libraries(gcp-test-client
-  serverstate
-  database
   gamelogic
   networking
+  database
+  serverstate
+  ${GTEST_LIBS}
   ${THIRD_PARTY_LIBS}
   )
 

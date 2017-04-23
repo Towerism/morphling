@@ -7,10 +7,7 @@ set(GTEST_LIBS
   )
 
 set(TEST_LIBS
-  gamelogic
   networking
-  database
-  serverstate
   gamelogic_games
   ${GTEST_LIBS}
   ${THIRD_PARTY_LIBS}
