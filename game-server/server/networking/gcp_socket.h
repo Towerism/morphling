@@ -33,7 +33,7 @@ protected:
     // Max time to wait before a timeout (seconds)
     const time_t MAX_TIMEOUT = 20;
     // Maximum amount of times to wait
-    const size_t MAX_TRIES = 10;
+    const size_t MAX_TRIES = 60;
     std::atomic_bool _connected;
     bool dns(std::string hostname, int port, struct sockaddr_in* server);
 
@@ -58,7 +58,7 @@ public:
     // Socket Direct Access Functions
     RET response;
     RET sread();
-    RET sread_wait(time_t seconds = 2, size_t tries = 10);
+    RET sread_wait(time_t seconds = 2, size_t tries = 60);
     RET swrite(std::string msg);
     RET read_tag(std::string input, std::string tag);
     RTAGS read_tags(std::string input, std::string tag1, std::string tag2);
