@@ -30,7 +30,7 @@ TEST_F(TictactoeTests, PlayerOneWins) {
   EXPECT_TRUE(controller->is_game_over());
   EXPECT_EQ(Game_result::Player_one, controller->get_result());
 
-  auto board = engine.map_model_to_strings();
+  auto board = controller->serialize_model();
   EXPECT_EQ("X,X,X", board[0]);
   EXPECT_EQ("O,_,_", board[1]);
   EXPECT_EQ("O,_,_", board[2]);

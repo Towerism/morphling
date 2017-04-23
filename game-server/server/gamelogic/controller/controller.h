@@ -5,6 +5,7 @@
 
 #include <gamelogic/model/model.h>
 #include <gamelogic/model/player.h>
+#include <gamelogic/view/model_to_strings_mapper.h>
 #include "action.h"
 
 namespace Morphling::Gamelogic {
@@ -13,7 +14,7 @@ namespace Morphling::Gamelogic {
     typedef std::shared_ptr<Action> action_t;
 
     Controller(Model* model) : model(model) {}
-    virtual ~Controller() = default;
+    virtual ~Controller() { if (model_serializer) delete model_serializer; };
 
     virtual action_t parse_action(std::string action_string) = 0;
 
@@ -30,9 +31,13 @@ namespace Morphling::Gamelogic {
     const Player* get_current_player() const { return model->get_current_player(); }
     Player* get_current_player() { return model->get_current_player(); }
 
+    Model_to_strings_mapper::strings_t serialize_model() { return model_serializer->get_strings(); }
+    void set_model_serializer(Model_to_strings_mapper* mapper) { model_serializer = mapper; }
+
   protected:
     virtual void execute_action(action_t action) = 0;
     Model* model;
+    Model_to_strings_mapper* model_serializer;
   };
 
 }

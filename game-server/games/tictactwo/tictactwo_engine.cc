@@ -17,7 +17,7 @@ namespace Morphling::Gamelogic::Tictactwo {
     Tictactwo_model* model = new Tictactwo_model({0, 0});
     Tictactwo_controller* controller = new Tictactwo_controller(model);
 
-    model_to_strings_mapper = new Board2D_to_strings_mapper(model->get_board());
+    controller->set_model_serializer(new Board2D_to_strings_mapper(model->get_board()));
 
     model->set_player_one(p1);
     model->set_player_two(p2);

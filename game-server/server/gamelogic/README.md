@@ -3,13 +3,13 @@ The game logic layer is a framework that allows you to write the logic for your
 board game in a very object oriented manner.
 
 ## High-level Overview
-The three main components of any game are the `Game_engine`, `Controller`, and the
-`Model`.
+The three main components of any game are the `Game_engine`, `Controller`, and
+the `Model`.
 
 ### Game_engine
 The engine is responsible for constructing the model and the controller
-components, mapping game object tokens to asset urls, as well as mapping the
-model to an easy-to-store format.
+components, mapping game object tokens to asset urls, as well as defining the
+algorithm by which the model is serialized.
 
 ### Controller
 The controller is primarily responsible for parsing and validating moves. When a
@@ -28,9 +28,9 @@ controller and the model. The engine creates the player objects which are given
 to the model, the mapping between game object and image url, the algorithm for
 serializing the model, and the controller.
 
-The model's main job is simple: to monitor the game state in between moves. It does this
-via `Rules`. Rules simply encapsulate checks on the model to determine whether a
-particular game condition is met.
+The model's main job is simple: to monitor the game state in between moves. It
+does this via `Rules`. Rules simply encapsulate checks on the model to determine
+whether a particular game condition is met.
 
 The controller's job is to receive actions in form of a string, parse the
 strings into actions, and execute those actions on the model. 
@@ -39,10 +39,12 @@ For simple examples of games created using this framework, see the
 `game-server/games` directory.
 
 ## Game_engine
-The engine must initialize model, controller, and model serialization algorithm.
-It must also construct the players and give them to the model. All of this is
-done in the `initialize` method of `Game_engine`. `Tictactwo_engine` is an example
-subclass of `Game_engine`. Here is what its `initialize` function look like.
+The engine must initialize the model, controller, and model serialization
+algorithm. It must also construct the players and give them to the model. All of
+this is done in the `initialize` method of `Game_engine`. `Tictactwo_engine` is
+an example subclass of `Game_engine`. Here is what its `initialize` function
+look like:
+
 ```c++
 Controller* Tictactwo_engine::initialize(std::string p1_name, std::string p2_name) {
   auto p1 = new Tictactwo_player(p1_name, new Game_object('X'));
@@ -62,11 +64,20 @@ Controller* Tictactwo_engine::initialize(std::string p1_name, std::string p2_nam
   return controller;
 }
 ``` 
-As you can see, the players are initialized with
-player 1 controller X and player 2 controlling O. The players are passed to
-the controller at the end of the function. Then, the mapping is provided that
-specifies the urls for the images of the X and O game objects. They are used
-in the web front end for rendering game states. Next, the model and controller
-are constructed. Finally the algorithm for serializing the model is specified.
-Since tictactwo represents board state using `Board2D` it specifies the built
-in `Board2D_to_strings_mapper` as the serialization algorithm.
+
+As you can see, the players are initialized with player 1 controlling 'X' and
+player 2 controlling 'O'. The players are passed to the controller at the end of
+the function. Then, the mapping is provided that specifies the urls for the
+images of the X and O game objects. They are used in the web front end for
+rendering game states. Next, the model and controller are constructed. Finally
+the algorithm for serializing the model is specified. Since tictactwo represents
+board state using `Board2D` it specifies the built in
+`Board2D_to_strings_mapper` as the serialization algorithm.
+
+## Model
+The model should override the `is_game_over()` and `check_win_condition()`
+methods and optionally the `get_result()` method. By default `get_result()`
+designates the player who made the game-ending move as the winner. This may not
+be desirable as is the case in tictactwo in which moving the grid into a
+position which would give the other player three-in-a-row resulting in a loss
+for the player who made that move. As such, `get_result()` is overridden in `Tictactwo_model`.
