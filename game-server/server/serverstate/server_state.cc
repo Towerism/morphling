@@ -7,7 +7,7 @@ namespace Morphling::ServerState {
     Server_state::Server_state(Gamelogic::Game_engine* engine) : engine(engine), fb{"morphling-50028"}
     { }
 
-    Server_state::game_instance_t Server_state::get_game(std::string gameid, std::string name) {
+    Server_state::game_instance_t Server_state::get_game(std::string gameid) {
         // Lock the map until finished accessing
         std::unique_lock<std::mutex> lock(state_mutex);
 
@@ -30,22 +30,11 @@ namespace Morphling::ServerState {
                 return nullptr;
             }
 
-            json game = fe.res_json;
-
-            // load the player list from firebase
-            fe = fb.get_json("players.json");
-            // check the error code
-            if (fe.res_code != CURLE_OK) {
-                // return an invalid game
-                return nullptr;
-            }
-            json players = fe.res_json;
-
             // if it does exist, prepare a new Game_instance,
             // put it in the game_map cache and prepare it
             // for return to caller
-            std::string player1 = players[game["player1"].get<std::string>()]["name"];
-            std::string player2 = players[game["player2"].get<std::string>()]["name"];
+            std::string player1 = fe.res_json["player1"].get<std::string>();
+            std::string player2 = fe.res_json["player2"].get<std::string>();
             game_map.insert(std::make_pair(gameid,std::make_shared<Game_instance>(engine->initialize(player1, player2),gameid,player1,player2)));
             
             auto game_inst = game_map.find(gameid);

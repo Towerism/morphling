@@ -22,7 +22,7 @@ namespace Morphling::ServerState {
     // locally in the game_map cache or in firebase. If it exists 
     // in firebase but not locally, create it, store it, and 
     // return it.
-    game_instance_t get_game(std::string gameid, std::string name);
+    game_instance_t get_game(std::string gameid);
     void end_game(std::string id, PlayerSide winner);
     void disconnect_all_games();
 

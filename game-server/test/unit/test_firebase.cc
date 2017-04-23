@@ -11,17 +11,17 @@ protected:
             {
                 "games": {
                     "validgame": {
-                        "player1": "player1",
-                        "player2": "player2"
+                        "player1": "player1_hash",
+                        "player2": "player2_hash"
                     }
                 },
                 "players": {
-                    "player1": {
-                        "name": "player1",
+                    "player1_hash": {
+                        "name": "player1_name",
                         "score": 0
                     },
-                    "player2": {
-                        "name": "player2",
+                    "player2_hash": {
+                        "name": "player2_name",
                         "score": 0
                     }
                 },
@@ -72,8 +72,8 @@ TEST_F(FirebaseTest, GetShallowCheck) {
 TEST_F(FirebaseTest, GetValidGame) {
     fire_err fe = f.get_json("games/validgame.json");
     ASSERT_EQ(fe.res_code,CURLE_OK);
-    EXPECT_EQ(fe.res_json["player1"],"player1");
-    EXPECT_EQ(fe.res_json["player2"],"player2");
+    EXPECT_EQ(fe.res_json["player1"],"player1_hash");
+    EXPECT_EQ(fe.res_json["player2"],"player2_hash");
     EXPECT_EQ(fe.res_json["score"],nullptr);
 }
 
@@ -86,7 +86,7 @@ TEST_F(FirebaseTest, GetInvalidGame) {
 TEST_F(FirebaseTest, GetPlayers) {
     fire_err fe = f.get_json("players.json");
     ASSERT_EQ(fe.res_code,CURLE_OK);
-    EXPECT_EQ(fe.res_json["player1"]["name"],"player1");
-    EXPECT_EQ(fe.res_json["player2"]["name"],"player2");
+    EXPECT_EQ(fe.res_json["player1_hash"]["name"],"player1_name");
+    EXPECT_EQ(fe.res_json["player2_hash"]["name"],"player2_name");
 }
 

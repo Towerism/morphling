@@ -32,7 +32,7 @@ GCPServerSocket::ServerState GCPServerSocket::server_verify_auth() {
     auto auth = read_tags(std::get<1>(response),"GAME","NAME");
     response = std::make_tuple(std::get<0>(auth),std::get<1>(auth));
     
-    Server_state::game_instance_t check = serverstate->get_game(std::get<1>(auth),std::get<2>(auth));
+    Server_state::game_instance_t check = serverstate->get_game(std::get<1>(auth));
     if (check == nullptr) {
         // the game was invalid
         return InvalidAuthGame;
@@ -175,6 +175,7 @@ GCPServerSocket::ServerState GCPServerSocket::server_send_gameover() {
     }
     if (player->side == winner) {
         response = swrite("GAMEOVER:WIN");
+        serverstate->end_game(game->gameid,player->side);
     } else {
         response = swrite("GAMEOVER:LOSE");
     }
