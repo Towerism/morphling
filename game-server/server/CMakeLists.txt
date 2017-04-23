@@ -6,5 +6,5 @@ add_subdirectory(networking)
 add_executable(${PROJECT_NAME} main.cc)
 target_link_libraries(${PROJECT_NAME}
   networking
-  gamelogic_games
+  games
   )

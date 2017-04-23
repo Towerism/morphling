@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <gamelogic/controller/controller.h>
-#include <gamelogic/games/tictactoe/tictactoe_engine.h>
+#include <games/tictactoe/tictactoe_engine.h>
 
 using namespace Morphling::Gamelogic;
 

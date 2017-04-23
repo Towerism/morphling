@@ -8,7 +8,7 @@ set(GTEST_LIBS
 
 set(TEST_LIBS
   networking
-  gamelogic_games
+  games
   ${GTEST_LIBS}
   ${THIRD_PARTY_LIBS}
   )

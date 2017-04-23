@@ -1,4 +1,4 @@
-add_library(gamelogic_games_tictactoe
+add_library(games_tictactoe
   tictactoe_controller.cc
   tictactoe_engine.cc
   tictactoe_model.cc
@@ -7,6 +7,6 @@ add_library(gamelogic_games_tictactoe
   action_mark.cc
   )
 
-target_link_libraries(gamelogic_games_tictactoe
+target_link_libraries(games_tictactoe
   gamelogic
   )

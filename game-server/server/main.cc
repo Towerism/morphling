@@ -1,5 +1,5 @@
 #include <networking/gcp_server.h>
-#include <gamelogic/games/tictactoe/tictactoe_engine.h>
+#include <games/tictactoe/tictactoe_engine.h>
 
 #include <iostream>
 

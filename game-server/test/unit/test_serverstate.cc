@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <serverstate/server_state.h>
 #include <database/firebase.h>
-#include <gamelogic/games/tictactoe/tictactoe_engine.h>
+#include <games/tictactoe/tictactoe_engine.h>
 
 #include <string>
 

@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include <gamelogic/games/tictactwo/tictactwo_model.h>
-#include <gamelogic/games/tictactwo/action_place_piece.h>
-#include <gamelogic/games/tictactwo/tictactwo_player.h>
-#include <gamelogic/games/tictactwo/rule_has_alignment.h>
+#include <games/tictactwo/tictactwo_model.h>
+#include <games/tictactwo/action_place_piece.h>
+#include <games/tictactwo/tictactwo_player.h>
+#include <games/tictactwo/rule_has_alignment.h>
 
 using namespace Morphling::Gamelogic::Tictactwo;
 

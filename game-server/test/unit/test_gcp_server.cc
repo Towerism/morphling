@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <networking/gcp_server.h>
 #include <networking/gcp_client.h>
-#include <gamelogic/games/tictactoe/tictactoe_engine.h>
+#include <games/tictactoe/tictactoe_engine.h>
 
 using namespace Morphling::Networking;
 using namespace Morphling::Gamelogic;

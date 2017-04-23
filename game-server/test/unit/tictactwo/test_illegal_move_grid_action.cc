@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 
-#include <gamelogic/games/tictactwo/action_move_grid.h>
-#include <gamelogic/games/tictactwo/tictactwo_model.h>
+#include <games/tictactwo/action_move_grid.h>
+#include <games/tictactwo/tictactwo_model.h>
 
 using namespace Morphling::Gamelogic::Tictactwo;
 using Morphling::Gamelogic::Point2D;

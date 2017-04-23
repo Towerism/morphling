@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include <gamelogic/games/tictactwo/action_move_piece.h>
-#include <gamelogic/games/tictactwo/action_place_piece.h>
-#include <gamelogic/games/tictactwo/tictactwo_model.h>
-#include <gamelogic/games/tictactwo/tictactwo_player.h>
+#include <games/tictactwo/action_move_piece.h>
+#include <games/tictactwo/action_place_piece.h>
+#include <games/tictactwo/tictactwo_model.h>
+#include <games/tictactwo/tictactwo_player.h>
 
 using namespace Morphling::Gamelogic::Tictactwo;
 

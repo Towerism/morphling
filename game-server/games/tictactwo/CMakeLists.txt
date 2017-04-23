@@ -1,4 +1,4 @@
-add_library(gamelogic_games_tictactwo
+add_library(games_tictactwo
   tictactwo_model.cc
   tictactwo_controller.cc
   tictactwo_engine.cc
@@ -9,6 +9,6 @@ add_library(gamelogic_games_tictactwo
   rule_has_alignment.cc
   )
 
-target_link_libraries(gamelogic_games_tictactwo
+target_link_libraries(games_tictactwo
   gamelogic
   )

@@ -26,8 +26,10 @@ if (CURL_FOUND)
   include_directories(${CURL_INCLUDE_DIRS})
 endif()
 
+include_directories(.)
 include_directories(server)
 add_subdirectory(server)
+add_subdirectory(games)
 
 if (${TEST})
   enable_testing()
@@ -41,10 +43,8 @@ endif()
 add_subdirectory(samples)
 add_executable(gcp-test-client samples/test_gcp_socket.cc)
 target_link_libraries(gcp-test-client
-  gamelogic
   networking
-  database
-  serverstate
+  games
   ${GTEST_LIBS}
   )
 

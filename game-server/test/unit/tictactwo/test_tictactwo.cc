@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <gamelogic/games/tictactwo/tictactwo_engine.h>
+#include <games/tictactwo/tictactwo_engine.h>
 
 using namespace Morphling::Gamelogic;
 
