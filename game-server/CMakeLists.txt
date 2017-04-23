@@ -24,10 +24,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(CURL REQUIRED)
 if (CURL_FOUND)
   include_directories(${CURL_INCLUDE_DIRS})
-  set(THIRD_PARTY_LIBS ${CURL_LIBRARIES})
 endif()
-
-set(THIRD_PARTY_LIBS ${THIRD_PARTY_LIBS} pthread)
 
 include_directories(server)
 add_subdirectory(server)
@@ -49,6 +46,5 @@ target_link_libraries(gcp-test-client
   database
   serverstate
   ${GTEST_LIBS}
-  ${THIRD_PARTY_LIBS}
   )
 

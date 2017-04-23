@@ -8,4 +8,5 @@ add_library(networking
 target_link_libraries(networking
   gamelogic
   serverstate
+  pthread
   )
