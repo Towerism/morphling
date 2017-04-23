@@ -15,6 +15,7 @@ firebase::firebase
             "Transfer-Encoding: chunked");
     // init the curl objects
     init_put();
+    init_patch();
     init_get();
 }
 
@@ -23,6 +24,7 @@ firebase::~firebase
 {
     // clean up the CURL objects
     curl_easy_cleanup(curlPUT);
+    curl_easy_cleanup(curlPATCH);
     curl_easy_cleanup(curlGET);
     // free the custom headers
     curl_slist_free_all(curl_chunk);
@@ -61,6 +63,37 @@ fire_err firebase::write_json(std::string path, json data_json) {
     // preform http call
     fire_err fe;
     fe.res_code = curl_easy_perform(curlPUT);
+    
+    // check for errors
+    if (fe.res_code != CURLE_OK) {
+        fe.res_json = json::parse("{}");
+    } else {
+        fe.res_json = json::parse(response);
+    }
+
+    return fe;
+}
+
+fire_err firebase::update_json(std::string path, json data_json) {
+    struct write_object wo;
+
+    std::string data = data_json.dump();
+    wo.readptr = data.c_str();
+    wo.sizeleft = data.size();
+
+    // specify which file to upload
+    curl_easy_setopt(curlPATCH, CURLOPT_READDATA, &wo);
+
+    std::string response;
+    curl_easy_setopt(curlPATCH, CURLOPT_WRITEDATA, &response);
+
+    // set target url
+    std::string target_url = base_url + path;
+    curl_easy_setopt(curlPATCH, CURLOPT_URL, target_url.c_str());
+
+    // preform http call
+    fire_err fe;
+    fe.res_code = curl_easy_perform(curlPATCH);
     
     // check for errors
     if (fe.res_code != CURLE_OK) {
@@ -127,6 +160,28 @@ void firebase::init_put
                 CURLOPT_READFUNCTION, curl_readfunc);
         // set http header for chunked responses
         res = curl_easy_setopt(curlPUT, CURLOPT_HTTPHEADER, curl_chunk);
+    }
+}
+
+void firebase::init_patch
+()
+{
+    CURLcode res;
+    // initialize curl object
+    curlPATCH = curl_easy_init();
+    if (curlPATCH) {
+        // set return options
+        res = curl_easy_setopt(curlPATCH, 
+                CURLOPT_WRITEFUNCTION, curl_writefunc);
+        // Enable uploading
+        res = curl_easy_setopt(curlPATCH, CURLOPT_UPLOAD, 1L);
+        // HTTP PATCH
+        res = curl_easy_setopt(curlPATCH, CURLOPT_CUSTOMREQUEST, "PATCH");
+        // set read function
+        res = curl_easy_setopt(curlPATCH, 
+                CURLOPT_READFUNCTION, curl_readfunc);
+        // set http header for chunked responses
+        res = curl_easy_setopt(curlPATCH, CURLOPT_HTTPHEADER, curl_chunk);
     }
 }
 

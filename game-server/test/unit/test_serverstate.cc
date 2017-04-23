@@ -39,6 +39,15 @@ protected:
                         "name": "player2_name",
                         "score": 0
                     }
+                },
+                "states": {
+                    "validgame": {
+                        "0": {
+                            "0": "_,_,_",
+                            "1": "_,x,_",
+                            "2": "_,_,_"
+                        }
+                    }
                 }
             }
         )"_json));
@@ -89,4 +98,16 @@ TEST_F(ServerStateTest, CheckEndGameBlack) {
     serverstate.end_game(validgame,PlayerSide::Black);
     fe = fb.get_json("games/"+validgame+".json");
     ASSERT_EQ(fe.res_code,CURLE_OK);
+}
+
+TEST_F(ServerStateTest, CheckUpdatedState) {
+    auto game = serverstate.get_game(validgame);
+    ASSERT_NE(game,nullptr);
+    EXPECT_EQ(game->gameid,validgame);
+
+    auto board_state = std::vector<std::string>{"_,_,_","o,x,_","_,_,_"};
+    serverstate.send_move(validgame,board_state);
+    fire_err fe = fb.get_json("states/"+validgame+"/1.json");
+    ASSERT_EQ(fe.res_code,CURLE_OK);
+    ASSERT_EQ(fe.res_json[0],board_state[0]);
 }

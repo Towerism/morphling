@@ -24,10 +24,12 @@ private:
 
     // Curl objects for PUT, POST, GET, PATCH
     CURL* curlPUT;
+    CURL* curlPATCH;
     CURL* curlGET;
 
     // initialization functions for CURL HTTP calls
     void init_put();
+    void init_patch();
     void init_get();
 
     // project id in firebase
@@ -94,6 +96,20 @@ public:
     // How path is appended to the base_url:
     //     https://project_id.firebaseio.com/<path>.json
     fire_err write_json
+    (
+        std::string path, 
+        json data_json
+    );
+
+    // Update a json object to the associated path in the firebase 
+    // database.
+    //
+    // This will override any current object in-place for the current 
+    // <path> presented, but not delete any objects that are omitted.
+    //
+    // How path is appended to the base_url:
+    //     https://project_id.firebaseio.com/<path>.json
+    fire_err update_json
     (
         std::string path, 
         json data_json

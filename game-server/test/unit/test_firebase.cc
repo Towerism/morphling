@@ -27,6 +27,15 @@ protected:
                 },
                 "test": {
                     "Test": 15
+                },
+                "states": {
+                    "validgame": {
+                        "0": {
+                            "0": "_,_,_",
+                            "1": "_,x,_",
+                            "2": "_,_,_"
+                        }
+                    }
                 }
             }
         )"_json));
@@ -53,6 +62,29 @@ TEST_F(FirebaseTest, WriteMultiCheck) {
     ASSERT_EQ(fe.res_code,CURLE_OK);
     EXPECT_TRUE(fe.res_json["Test"].is_number());
     ASSERT_EQ(fe.res_json["Test"],99);
+}
+
+TEST_F(FirebaseTest, UpdateCheck) {
+    fire_err fe = f.update_json("test/.json",json::parse("{\"Test\":15}"));
+    ASSERT_EQ(fe.res_code,CURLE_OK);
+    EXPECT_TRUE(fe.res_json["Test"].is_number());
+    ASSERT_EQ(fe.res_json["Test"],15);
+    fe = f.update_json("test/.json",json::parse("{\"Tests\":35}"));
+    ASSERT_EQ(fe.res_code,CURLE_OK);
+    EXPECT_TRUE(fe.res_json["Tests"].is_number());
+    ASSERT_EQ(fe.res_json["Tests"],35);
+}
+
+TEST_F(FirebaseTest, SendMoveCheck) {
+    // update the state with the next board state
+    auto board_state = std::vector<std::string>{"_,_,_","o,x,_","_,_,_"};
+    json board_json;
+    for (size_t i = 0; i < board_state.size(); i++) {
+        board_json["1"][std::to_string(i)] = board_state[i];
+    }
+    fire_err fe = f.update_json("states/validgame/.json",board_json);
+    ASSERT_EQ(fe.res_code,CURLE_OK);
+    ASSERT_EQ(fe.res_json["1"][0],board_state[0]);
 }
 
 TEST_F(FirebaseTest, GetCheck) {

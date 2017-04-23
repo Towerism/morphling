@@ -96,6 +96,35 @@ namespace Morphling::ServerState {
         }
     }
 
+    void Server_state::send_move(std::string gameid, std::vector<std::string> board_state) {
+        // Lock the Server_state until finished accessing firebase and/or game_map
+        std::unique_lock<std::mutex> lock(state_mutex);
+
+        // get the game_state from firebase
+        fire_err fe_state = fb.get_json("states/"+gameid+".json",true);
+        // check the error code
+        if (fe_state.res_code != CURLE_OK) {
+            // failed to load
+            return;
+        }
+
+        // get the next board state number
+        size_t board_states = fe_state.res_json.size();
+
+        // update the state with the next board state
+        json board_json;
+        std::string num = std::to_string(board_states);
+        for (size_t i = 0; i < board_state.size(); i++) {
+            board_json[num][i] = board_state[i];
+        }
+        fire_err fe = fb.update_json("states/"+gameid+"/.json",board_json);
+        // check the error code
+        if (fe.res_code != CURLE_OK) {
+            // failed to load
+            return;
+        }
+    }
+
     void Server_state::disconnect_all_games() {
         // Lock the map until finished accessing
         std::unique_lock<std::mutex> lock(state_mutex);
