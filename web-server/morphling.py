@@ -32,9 +32,12 @@ def bootstrap():
     player1 = []
     player2 = []
     for k in key:
-        players = firebase.get('/games/'+k, None)
-        player1.append(str(firebase.get('/players/'+players['player1']+'/name', None)))
-        player2.append(str(firebase.get('/players/'+players['player2']+'/name', None)))
+        score = firebase.get('/games/'+k+'/score', None)
+        if (score is None):
+            players = firebase.get('/games/'+k, None)
+            player1.append(str(firebase.get('/players/'+players['player1']+'/name', None)))
+            player2.append(str(firebase.get('/players/'+players['player2']+'/name', None)))
+
     return render_template('index.html',gameInfo=zip(player1,player2,key))
 
 @app.route('/Settings.html')
