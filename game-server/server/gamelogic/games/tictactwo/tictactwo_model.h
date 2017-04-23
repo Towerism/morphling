@@ -32,6 +32,8 @@ namespace Morphling::Gamelogic::Tictactwo {
 
     const Player* get_player_owning_gamepiece(Board2D::gamepiece_t game_object);
 
+    const Board2D& get_board() const { return board; }
+
   private:
     Board2D board;
     Point2D grid_origin;

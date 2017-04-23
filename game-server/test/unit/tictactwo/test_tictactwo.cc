@@ -23,6 +23,13 @@ TEST_F(TictactwoTests, PlayerOneWinsPlacementActionsOnly) {
 
   EXPECT_TRUE(controller->is_game_over());
   EXPECT_EQ(Game_result::Player_one, controller->get_result());
+
+  auto board = engine.map_model_to_strings();
+  EXPECT_EQ("X,X,X,_,_", board[0]);
+  EXPECT_EQ("O,_,_,_,_", board[1]);
+  EXPECT_EQ("O,_,_,_,_", board[2]);
+  EXPECT_EQ("_,_,_,_,_", board[3]);
+  EXPECT_EQ("_,_,_,_,_", board[4]);
 }
 
 TEST_F(TictactwoTests, PlayerTwoWinsPlacementActionsOnly) {

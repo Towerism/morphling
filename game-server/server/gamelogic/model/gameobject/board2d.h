@@ -16,6 +16,7 @@ namespace Morphling::Gamelogic {
     virtual ~Board2D() = default;
 
     gamepiece_t get(Point2D coordinates);
+    const gamepiece_t get(Point2D coordinates) const ;
     void set(Point2D coordinates, Game_object* game_object) { set(coordinates, gamepiece_t(game_object)); }
     void set(Point2D coordinates, gamepiece_t game_object);
 
@@ -26,7 +27,7 @@ namespace Morphling::Gamelogic {
     int height, width;
     board_t board;
 
-    bool check_dimensions(Point2D coordinates);
+    bool check_dimensions(Point2D coordinates) const;
   };
 
 }

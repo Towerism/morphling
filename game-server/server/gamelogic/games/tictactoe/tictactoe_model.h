@@ -22,6 +22,8 @@ namespace Morphling::Gamelogic::Tictactoe {
 
     bool check_win_condition() override;
 
+    const Board2D& get_board() const { return board; }
+
   private:
     Board2D board;
     Rule_board_is_full board_is_full;
