@@ -132,7 +132,8 @@ GCPServerSocket::ServerState GCPServerSocket::server_verify_move() {
         return InvalidMove;
     }
     // send the move to the server
-    // TODO(devincarr): send move from controller (serverstate->send_move(game->controller))
+    auto board_state = game->controller->serialize_model();
+    serverstate->send_move(game->gameid,board_state);
 
     // the move is valid, continue to send the move to the other player
     // Set the other player as not ready before setting up them up to 

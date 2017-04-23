@@ -73,6 +73,13 @@ TEST_F(FirebaseTest, UpdateCheck) {
     ASSERT_EQ(fe.res_code,CURLE_OK);
     EXPECT_TRUE(fe.res_json["Tests"].is_number());
     ASSERT_EQ(fe.res_json["Tests"],35);
+
+    fe = f.get_json("test.json");
+    ASSERT_EQ(fe.res_code,CURLE_OK);
+    EXPECT_TRUE(fe.res_json["Test"].is_number());
+    ASSERT_EQ(fe.res_json["Test"],15);
+    EXPECT_TRUE(fe.res_json["Tests"].is_number());
+    ASSERT_EQ(fe.res_json["Tests"],35);
 }
 
 TEST_F(FirebaseTest, SendMoveCheck) {
@@ -85,6 +92,10 @@ TEST_F(FirebaseTest, SendMoveCheck) {
     fire_err fe = f.update_json("states/validgame/.json",board_json);
     ASSERT_EQ(fe.res_code,CURLE_OK);
     ASSERT_EQ(fe.res_json["1"][0],board_state[0]);
+
+    fe = f.get_json("states/validgame/1.json");
+    ASSERT_EQ(fe.res_code,CURLE_OK);
+    ASSERT_EQ(fe.res_json[0],board_state[0]);
 }
 
 TEST_F(FirebaseTest, GetCheck) {
