@@ -5,7 +5,7 @@ pieceUrls = jQuery.parseJSON(pieceUrls);
 console.log(pieceUrls);
 var pieces = []
 var pieceCSS = {}
-for (var k in pieceUrls){
+for (var k in pieceUrls) {
   pieces.push(k);
   pieceCSS[k] = 'url(' + pieceUrls[k] + ') ' + 'no-repeat center center'
 }
