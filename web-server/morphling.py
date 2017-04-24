@@ -8,12 +8,6 @@ firebase = firebase.FirebaseApplication(app.config['FIREBASE_URL'], None)
 boardWidth = xrange(int(firebase.get('/settings/board/height', None)))
 boardHeight = xrange(int(firebase.get('/settings/board/width', None)))
 
-@app.route('/testing')
-def testing():
-    data = {'name': 'a', 'id': '0'}
-    result = firebase.post('/users', data)
-    return '<h3>' + str(result) + '<h3>'
-
 @app.route('/bootstrap')
 @app.route('/')
 def bootstrap():
@@ -41,7 +35,10 @@ def bootstrap():
 
 @app.route('/Settings.html')
 def settings():
-    return render_template('Settings.html')
+    delay = firebase.get('/settings/delay', None)
+    timeout = firebase.get('/settings/timeout', None)
+
+    return render_template('Settings.html',delay=delay,timeout=timeout)
 
 @app.route('/Ranking.html')
 def ranking():
