@@ -10,5 +10,5 @@ if [ "${COMPONENT}" == "web-server" ]; then
     # run any install commands necessary for web-server here
     # e.g. pip install -r requirements.txt
     cd web-server
-    pip install -r requirements.txt
+    sudo pip install -r requirements.txt
 fi
