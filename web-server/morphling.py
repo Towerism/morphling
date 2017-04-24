@@ -14,15 +14,12 @@ boardHeight = xrange(int(firebase.get('/settings/board/width', None))) if fireba
 def bootstrap():
     player1 = []
     player2 = []
-    gameKeys = []
+    keys = []
 
     if (firebase.get('/games', None) is None):
         return render_template('index.html',gameInfo=zip(player1,player2,keys))
 
     gameKeys = firebase.get('/games', None).keys()
-    player1 = []
-    player2 = []
-    keys = []
 
     for k in gameKeys:
         score = firebase.get('/games/'+k+'/score', None)
@@ -43,27 +40,32 @@ def settings():
 
 @app.route('/Ranking.html')
 def ranking():
-    return render_template('Ranking.html')
+    players = firebase.get('/players', None)
+    playersSorted = []
+    if (players is None):
+        return render_template('Ranking.html',players=playersSorted)
+    players = sorted(players.items(), key=lambda i:operator.itemgetter(1)(i)['score'], reverse=True)
+    for item in players:
+        player = {'name':operator.itemgetter(1)(item)['name'],'score':operator.itemgetter(1)(item)['score']}
+        playersSorted.append(player)
+    return render_template('Ranking.html',players=playersSorted)
 
 @app.route('/Bracket.html')
 def bracket():
     return render_template('Bracket.html')
 
-@app.route('/game')
-@app.route('/Game')
-@app.route('/Game.html')
 @app.route('/game/<token>')
 def show_game(token=None):
+    if token is None:
+        return redirect(url_for('/'))
     players = firebase.get('/games/'+token, None)
-    player1 = firebase.get('/players/'+players['player1'], None)
-    player2 = firebase.get('/players/'+players['player2'], None)
-    player1['id'] = players['player1']
-    player2['id'] = players['player2']
+    player1, player2 = {}, {}
+    if players is not None:
+        player1 = firebase.get('/players/'+players['player1'], None)
+        player2 = firebase.get('/players/'+players['player2'], None)
+        player1['id'] = players['player1']
+        player2['id'] = players['player2']
 
-    if (firebase.get('/states', None) is None):
-        return render_template('Game.html', token=token, session=session, player1=player1, player2=player2, boardWidth=boardWidth, boardHeight=boardHeight)
-
-    tokens = json.dumps(firebase.get('/states', None).keys())
     pieces = firebase.get('/settings/tokens', None).keys()
     urls = []
     pieceUrls = {}
@@ -74,19 +76,14 @@ def show_game(token=None):
         urls.append(url)
         pieceUrls[p] = url
 
+    if (firebase.get('/states', None) is None):
+        return render_template('Game.html', token=token, session=session, player1=player1, player2=player2, boardWidth=boardWidth, boardHeight=boardHeight, pieceUrls=pieceUrls, backgroundUrl=backgroundUrl)
+
+    tokens = json.dumps(firebase.get('/states', None).keys())
     if (token in tokens):
         session[token] = True
-    if token:
-        if (boardWidth is None):
-            global boardWidth
-            boardWidth = xrange(3)
-        if (boardHeight is None):
-            global boardHeight
-            boardHeight = xrange(3)
 
-        return render_template('Game.html', token=token, session=session, player1=player1, player2=player2, boardWidth=boardWidth, boardHeight=boardHeight, pieceUrls=pieceUrls, backgroundUrl=backgroundUrl)
-    else:
-        return redirect(url_for('login'))
+    return render_template('Game.html', token=token, session=session, player1=player1, player2=player2, boardWidth=boardWidth, boardHeight=boardHeight, pieceUrls=pieceUrls, backgroundUrl=backgroundUrl)
 
 if __name__ == '__main__':
     app.run(debug=True)
