@@ -2,12 +2,36 @@
 
 var gameId = $('#token').text();
 console.log(gameId);
+
+var pieceUrls = String($( '#piece_urls' ).data( "pieceurls" ))
+            .replace(/(u)'([^']*)'/g, "\"$2\"")
+            .replace(/'([^']*)'/g, "\"$1\"");
+pieceUrls = jQuery.parseJSON(pieceUrls);
+console.log(pieceUrls);
+var pieces = []
+var pieceCSS = {}
+for (var k in pieceUrls){
+  pieces.push(k);
+  pieceCSS[k] = 'url(' + pieceUrls[k] + ') ' + 'no-repeat center center'
+}
+console.log(pieceCSS);
+console.log(pieces);
+var bg = String($( '#piece_urls' ).data( "bg" ));
+var background = 'url(' + bg + ') ' + 'repeat';
+
 var statesRef = firebase.database().ref('states/'+gameId.trim());
 console.log('states/'+gameId.trim());
-// console.log(statesRef.child(gameId).push().key);
 var count = 0;
-var settingsRef = firebase.database().ref('settings');
-var piece_x, piece_o, background;
+
+firebase.database().ref('games/'+gameId.trim()).child('score').on('value', function(snapshot) {
+  if (snapshot.val() !== null) {
+    console.log(snapshot.val());
+    var winner = snapshot.val();
+    $( '#' + winner ).toggleClass('winner');
+    statesRef.off();
+    return true;
+  }
+});
 
 //Credits to http://stackoverflow.com/questions/10958869/jquery-get-css-properties-values-for-a-not-yet-applied-class
 var getCSS = function (prop, fromClass) {
@@ -20,20 +44,8 @@ var getCSS = function (prop, fromClass) {
     }
 };
 
-settingsRef.once('value').then(function(snapshot) {
-  var background_url = snapshot.child("board/image").val();
-  var piece_x_url =  snapshot.child("tokens/x/image").val();
-  var piece_o_url =  snapshot.child("tokens/o/image").val();
-
-  background = 'url(' + background_url + ') ' + 'repeat';
-  piece_x = 'url(' + piece_x_url + ') ' + 'no-repeat center center';
-  piece_o = 'url(' + piece_o_url + ') ' + 'no-repeat center center';
-});
-
 statesRef.orderByKey().on('child_added', function(snapshot) {
     if(!background) background = getCSS('background','gb');
-    if(!piece_o) piece_o = getCSS('background','O');
-    if(!piece_x) piece_x = getCSS('background','X');
     $('#gameboard').css('background',background);
 
     updateBoard(snapshot);
@@ -42,9 +54,9 @@ statesRef.orderByKey().on('child_added', function(snapshot) {
 function updateBoard(snapshot) {
     "use strict";
     count += 1;
-    console.log("update board");
-    console.log(count);
-    console.log(snapshot.key);
+    // console.log("update board");
+    // console.log(count);
+    // console.log(snapshot.key);
     var last = snapshot.val();
     // console.log(snapshot.key + ' ' + snapshot.val());
     var board = [];
@@ -54,21 +66,18 @@ function updateBoard(snapshot) {
       var row = last[key].split(',')
       // console.log(row);
       for (var i in row) {
-        if (row[i] === '_') board.push(' ');
-        else if (row[i] === 'x') board.push('X');
-        else if (row[i] === 'o') board.push('O');
-        // console.log(row[i]);
+        for (var p in pieces) {
+          if (row[i] === pieces[p]) {
+            board.push(pieces[p]);
+            break;
+          }
+        }
       }
     }
+
     console.log(board);
     for (var i = 0; i < board.length; i++) {
       var cell = $('#gameboard td:eq('+i+')');
-      console.log(i, board[i], cell.text());
-      // cell.html(board[i]);
-      // if (cell.hasClass( "X" )) cell.removeClass( "X" );
-      // if (cell.hasClass( "O" )) cell.removeClass( "O" );
-
-      if(board[i] === 'X') cell.css( 'background', piece_x );
-      else if(board[i] === 'O') cell.css( 'background', piece_o );
+      cell.css( 'background', pieceCSS[board[i]]);
 		}
 }

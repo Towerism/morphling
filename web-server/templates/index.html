@@ -67,12 +67,12 @@
                               </tr>
                             </thead>
                             <tbody>
-                              {% for player1,player2,key in gameInfo %}
+                              {% for player1,player2,keys in gameInfo %}
                                 <tr>
                                   <td>{{ loop.index }}</td>
                                   <td>{{ player1 }}</td>
                                   <td>{{ player2 }}</td>
-                                  <td> <a href={{ url_for('show_game',token=key) }} > Watch </a></td>
+                                  <td> <a href={{ url_for('show_game',token=keys) }} > Watch </a></td>
                                 </tr>
                               {% endfor %}
                             </tbody>

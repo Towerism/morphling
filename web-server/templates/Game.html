@@ -24,17 +24,7 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
-    <script>
-      // Initialize Firebase
-      var config = {
-        apiKey: "AIzaSyAA5mXv5xQiWS1kbnkz8gV6mgNPb3ttVf0",
-        authDomain: "flask-experiment-e7196.firebaseapp.com",
-        databaseURL: "https://flask-experiment-e7196.firebaseio.com",
-        storageBucket: "flask-experiment-e7196.appspot.com",
-        messagingSenderId: "771513661920"
-      };
-      firebase.initializeApp(config);
-    </script>
+    <script src={{ url_for('static', filename='js/firebase_config.js') }}></script>
 </head>
 
 <body>
@@ -69,6 +59,7 @@
                     <div class="col-lg-12">
                         <h1>Game</h1>
                         <!-- <p> a page for showing the game </p> -->
+                        <meta id="piece_urls" data-bg="{{ backgroundUrl }}" data-pieceurls="{{ pieceUrls }}">
                         <p> Token: </p>
                         <div id="token">{{ token }}</div>
                         <div id="board">
@@ -82,8 +73,8 @@
                               {% endfor%}
                           </table>
                         </div>
-                        <h3> Player 1: {{ player1.get('name', 'default result') }} </h3>
-                        <h3> Player 2: {{ player2.get('name', 'default result') }} </p>
+                        <div id={{ player1.get('id', 'default result') }}> <h3> Player 1: {{ player1.get('name', 'default result') }} </h3> </div>
+                        <div id={{ player2.get('id', 'default result') }}> <h3> Player 2: {{ player2.get('name', 'default result') }} </p> </div>
                     </div>
                 </div>
             </div>
