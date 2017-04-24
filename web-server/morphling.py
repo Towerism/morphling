@@ -1,12 +1,13 @@
 from flask import Flask, render_template, request, session, url_for, redirect, flash
 from firebase import firebase
 import json
+import operator
 
 app = Flask(__name__)
 app.config.from_pyfile('config.cfg')
 firebase = firebase.FirebaseApplication(app.config['FIREBASE_URL'], None)
-boardWidth = xrange(int(firebase.get('/settings/board/height', None)))
-boardHeight = xrange(int(firebase.get('/settings/board/width', None)))
+boardWidth = xrange(int(firebase.get('/settings/board/height', None))) if firebase.get('/settings/board/height', None) else xrange(app.config['BOARD_HEIGHT'])
+boardHeight = xrange(int(firebase.get('/settings/board/width', None))) if firebase.get('/settings/board/width', None) else xrange(app.config['BOARD_WIDTH'])
 
 @app.route('/bootstrap')
 @app.route('/')
