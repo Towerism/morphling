@@ -3,22 +3,6 @@
 var gameId = $('#token').text();
 console.log(gameId);
 
-var pieceUrls = String($( '#piece_urls' ).data( "pieceurls" ))
-            .replace(/(u)'([^']*)'/g, "\"$2\"")
-            .replace(/'([^']*)'/g, "\"$1\"");
-pieceUrls = jQuery.parseJSON(pieceUrls);
-console.log(pieceUrls);
-var pieces = []
-var pieceCSS = {}
-for (var k in pieceUrls){
-  pieces.push(k);
-  pieceCSS[k] = 'url(' + pieceUrls[k] + ') ' + 'no-repeat center center'
-}
-console.log(pieceCSS);
-console.log(pieces);
-var bg = String($( '#piece_urls' ).data( "bg" ));
-var background = 'url(' + bg + ') ' + 'repeat';
-
 var statesRef = firebase.database().ref('states/'+gameId.trim());
 console.log('states/'+gameId.trim());
 var count = 0;
@@ -33,21 +17,7 @@ firebase.database().ref('games/'+gameId.trim()).child('score').on('value', funct
   }
 });
 
-//Credits to http://stackoverflow.com/questions/10958869/jquery-get-css-properties-values-for-a-not-yet-applied-class
-var getCSS = function (prop, fromClass) {
-    var $inspector = $("<div>").css('display', 'none').addClass(fromClass);
-    $("body").append($inspector); // add to DOM, in order to read the CSS property
-    try {
-        return $inspector.css(prop);
-    } finally {
-        $inspector.remove(); // and remove from DOM
-    }
-};
-
 statesRef.orderByKey().on('child_added', function(snapshot) {
-    if(!background) background = getCSS('background','gb');
-    $('#gameboard').css('background',background);
-
     updateBoard(snapshot);
 });
 

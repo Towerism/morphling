@@ -63,7 +63,7 @@
                         <p> Token: </p>
                         <div id="token">{{ token }}</div>
                         <div id="board">
-                          <table id = "gameboard" class="gb">
+                          <table id = "gameboard">
                               {% for row in boardHeight %}
                                 <tr>
                                 {% for col in boardWidth %}
@@ -89,7 +89,8 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src={{ url_for('static', filename='js/bootstrap.min.js') }}></script>
-
+    
+    <script src={{ url_for('static', filename='js/settings.js') }}></script>
     {% if token and token in session and session[token] %}
       <script src={{ url_for('static', filename='js/firebase.js') }}></script>
     {% endif %}
