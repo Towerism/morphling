@@ -23,17 +23,8 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
-    <script>
-        // Initialize Firebase
-        var config = {
-          apiKey: "AIzaSyAA5mXv5xQiWS1kbnkz8gV6mgNPb3ttVf0",
-          authDomain: "flask-experiment-e7196.firebaseapp.com",
-          databaseURL: "https://flask-experiment-e7196.firebaseio.com",
-          storageBucket: "flask-experiment-e7196.appspot.com",
-          messagingSenderId: "771513661920"
-        };
-        firebase.initializeApp(config);
-    </script>
+
+    <script src={{ url_for('static', filename='js/firebase_config.js') }}></script>
 </head>
 
 <body>
@@ -77,7 +68,7 @@
                             </tr>
                           </thead>
                           <tbody id="ranking-body">
-                    
+
                           </tbody>
                       </table>
                     </div>

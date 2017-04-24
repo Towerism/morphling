@@ -25,17 +25,7 @@
     <![endif]-->
 
     <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
-      <script>
-        // Initialize Firebase
-        var config = {
-          apiKey: "AIzaSyAA5mXv5xQiWS1kbnkz8gV6mgNPb3ttVf0",
-          authDomain: "flask-experiment-e7196.firebaseapp.com",
-          databaseURL: "https://flask-experiment-e7196.firebaseio.com",
-          storageBucket: "flask-experiment-e7196.appspot.com",
-          messagingSenderId: "771513661920"
-        };
-        firebase.initializeApp(config);
-    </script>
+    <script src={{ url_for('static', filename='js/firebase_config.js') }}></script>
 </head>
 
 <body>
@@ -187,12 +177,8 @@
     $("#new-game").click(function(e) {
         var updated = false;
         e.preventDefault();
-        console.log("Clicked");
-        var players = $('#players').val().split("\n");
-        var playerNames = []
-        for(k in players) {
-          playerNames.push(players[k]);
-        }
+        console.log("New game Clicked");
+        var playerNames = $('#players').val().split("\n");
 
         var playersRef = firebase.database().ref('players');
         var playerKeys = [];
@@ -210,25 +196,22 @@
         }
 
         playersRef.once('value').then( function(snapshot) {
-             snapshot.forEach(function(childSnapshot) {
-                for (var i = 0; i < playerNames.length; i ++) {
-                  if (childSnapshot.val().name === playerNames[i]) {
-                      console.log(childSnapshot.val().name === playerNames[i])
-                      console.log(childSnapshot.val().name);
-                      console.log(playerNames[i]);
-                      if ((playerKeys.indexOf(childSnapshot.key) == -1)) playerKeys.push(childSnapshot.key);
-                      console.log(playerKeys.length);
-                      if (playerKeys.length === 2) {
-                          updateGame(playerKeys);
-                          return true;
-                      }
-                  }
+            for (var i = 0; i < playerNames.length; i ++) {
+              snapshot.forEach(function(childSnapshot) {
+                if (childSnapshot.val().name === playerNames[i] && playerKeys.indexOf(childSnapshot.key) === -1) {
+                    playerKeys.push(childSnapshot.key);
+                    console.log(playerKeys.length);
+                    return true;
                 }
-
-            });
+              });
+            }
 
             if (playerKeys.length !== 2)
                 alert("Name not existed or two names duplicated");
+            else {
+                updateGame(playerKeys);
+                return true;
+            }
             return false;
        });
 
