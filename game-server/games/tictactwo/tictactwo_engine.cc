@@ -11,11 +11,11 @@ namespace Morphling::Gamelogic::Tictactwo {
     auto p1 = new Tictactwo_player(p1_name, new Game_object('X'));
     auto p2 = new Tictactwo_player(p2_name, new Game_object('O'));
 
-    token_to_url_mapper.add_url('X', "/assets/X.png");
-    token_to_url_mapper.add_url('O', "/assets/O.png");
-
     Tictactwo_model* model = new Tictactwo_model({0, 0});
     Tictactwo_controller* controller = new Tictactwo_controller(model);
+
+    controller->add_url('X', "/assets/X.png");
+    controller->add_url('O', "/assets/O.png");
 
     controller->set_model_serializer(new Board2D_to_strings_mapper(model->get_board()));
 
