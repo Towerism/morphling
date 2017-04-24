@@ -27,6 +27,18 @@ protected:
                     "validgame2": {
                         "player1": "player3_hash",
                         "player2": "player4_hash"
+                    },
+                    "validgame3": {
+                        "player1": "player5_hash",
+                        "player2": "player6_hash"
+                    },
+                    "validgame4": {
+                        "player1": "player7_hash",
+                        "player2": "player8_hash"
+                    },
+                    "validgame5": {
+                        "player1": "player9_hash",
+                        "player2": "player10_hash"
                     }
                 },
                 "players": {
@@ -44,6 +56,30 @@ protected:
                     },
                     "player4_hash": {
                         "name": "player4_name",
+                        "score": 0
+                    },
+                    "player5_hash": {
+                        "name": "player5_name",
+                        "score": 0
+                    },
+                    "player6_hash": {
+                        "name": "player6_name",
+                        "score": 0
+                    },
+                    "player7_hash": {
+                        "name": "player7_name",
+                        "score": 0
+                    },
+                    "player8_hash": {
+                        "name": "player8_name",
+                        "score": 0
+                    },
+                    "player9_hash": {
+                        "name": "player9_name",
+                        "score": 0
+                    },
+                    "player10_hash": {
+                        "name": "player10_name",
                         "score": 0
                     }
                 },
@@ -147,8 +183,6 @@ protected:
         EXPECT_FALSE(client1.connected());
         client2.disconnect();
         EXPECT_FALSE(client2.connected());
-        server.stop();
-        EXPECT_FALSE(server.is_running());
     }
 
 };
@@ -162,4 +196,34 @@ TEST_F(ServerStressTest, TwoGames) {
     });
     game1.join();
     game2.join();
+
+    server.stop();
+    EXPECT_FALSE(server.is_running());
+}
+
+TEST_F(ServerStressTest, FiveGames) {
+    std::thread game1([&]{
+        start_game("validgame1");
+    });
+    std::thread game2([&]{
+        start_game("validgame2");
+    });
+    std::thread game3([&]{
+        start_game("validgame3");
+    });
+    std::thread game4([&]{
+        start_game("validgame4");
+    });
+    std::thread game5([&]{
+        start_game("validgame5");
+    });
+
+    game1.join();
+    game2.join();
+    game3.join();
+    game4.join();
+    game5.join();
+    
+    server.stop();
+    EXPECT_FALSE(server.is_running());
 }
