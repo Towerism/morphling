@@ -2,13 +2,44 @@
 #include <networking/gcp_server.h>
 #include <networking/gcp_client.h>
 #include <games/tictactoe/tictactoe_engine.h>
+#include <database/firebase.h>
 
+using namespace Morphling::Database;
 using namespace Morphling::Networking;
 using namespace Morphling::Gamelogic;
 
 class TicTacToePlayTest : public ::testing::Test {
 protected:
-    TicTacToePlayTest(): server(new Tictactoe::Tictactoe_engine(),"morphling-50028") {
+    TicTacToePlayTest():
+        server(new Tictactoe::Tictactoe_engine(),"morphling-50028"),
+        fb{"morphling-50028"}
+    {
+        // Initialize the firebase with a game
+        fire_err fe = fb.write_json(".json",json(R"(
+            {
+                "games": {
+                    "validgame": {
+                        "player1": "player1_hash",
+                        "player2": "player2_hash"
+                    }
+                },
+                "players": {
+                    "player1_hash": {
+                        "name": "player1_name",
+                        "score": 0
+                    },
+                    "player2_hash": {
+                        "name": "player2_name",
+                        "score": 0
+                    }
+                },
+                "settings": {
+                    "timeout": 20
+                }
+            }
+        )"_json));
+        EXPECT_EQ(fe.res_code,CURLE_OK);
+
         EXPECT_TRUE(server.start(0));
         EXPECT_TRUE(server.is_running());
         // Connect clients
@@ -48,6 +79,7 @@ protected:
     GCPServer server;
     GCPClient client1;
     GCPClient client2;
+    firebase fb;
     std::string moves1[6] =  {
         "0 0",
         "0 1",

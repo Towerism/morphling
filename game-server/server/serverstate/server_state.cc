@@ -1,10 +1,13 @@
 #include <serverstate/server_state.h>
 
 using namespace Morphling::Database;
+using namespace Morphling::Networking;
 
 namespace Morphling::ServerState {
 
-    Server_state::Server_state(Gamelogic::Game_engine* engine, std::string db): 
+    Server_state::Server_state(Gamelogic::Game_engine* engine, std::string db):
+        tries(GCPSocket::NORMAL_TRIES),
+        sock_wait(GCPSocket::NORMAL_TIMEOUT),
         engine(engine),
         fb{db}
     { }
@@ -45,6 +48,11 @@ namespace Morphling::ServerState {
             } else {
                 gi = nullptr;
             }
+        }
+
+        if (gi != nullptr) {
+            // if the game exists, check settings to update values
+            update_settings();
         }
         
         // return the game
@@ -134,5 +142,16 @@ namespace Morphling::ServerState {
         for (auto& game : game_map) {
             game.second->stop_game();
         }
+    }
+
+    void Server_state::update_settings() {
+        // Check if the game exists in firebase
+        fire_err fe = fb.get_json("settings.json");
+        // check the error code
+        if (fe.res_code != CURLE_OK) {
+            // return an invalid game
+            return;
+        }
+        tries = fe.res_json["timeout"].get<size_t>();
     }
 }

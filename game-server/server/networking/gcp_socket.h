@@ -30,14 +30,19 @@ private:
     int _sockfd;
 
 protected:
-    // Max time to wait before a timeout (seconds)
-    const time_t MAX_TIMEOUT = 20;
-    // Maximum amount of times to wait
-    const size_t MAX_TRIES = 60;
     std::atomic_bool _connected;
     bool dns(std::string hostname, int port, struct sockaddr_in* server);
 
+    size_t _tries;
+    time_t _sock_wait;
+
 public:
+    // Max time to wait before a timeout (seconds)
+    static const time_t MAX_TIMEOUT = 20;
+    static const size_t NORMAL_TIMEOUT = 2;
+    // Maximum amount of times to wait
+    static const size_t MAX_TRIES = 60;
+    static const size_t NORMAL_TRIES = 20;
 
     enum SocketReturn {
         Ok,
@@ -47,8 +52,8 @@ public:
     typedef std::tuple<GCPSocket::SocketReturn,std::string> RET;
     typedef std::tuple<GCPSocket::SocketReturn,std::string,std::string> RTAGS;
 
-    GCPSocket();
-    GCPSocket(int _sockfd);
+    GCPSocket(int tries = NORMAL_TRIES, int seconds = NORMAL_TIMEOUT);
+    GCPSocket(int _sockfd, int tries = NORMAL_TRIES, int seconds = NORMAL_TIMEOUT);
     ~GCPSocket();
 
     bool connected() { return _connected; }
@@ -58,7 +63,7 @@ public:
     // Socket Direct Access Functions
     RET response;
     RET sread();
-    RET sread_wait(time_t seconds = 2, size_t tries = 60);
+    RET sread_wait();
     RET swrite(std::string msg);
     RET read_tag(std::string input, std::string tag);
     RTAGS read_tags(std::string input, std::string tag1, std::string tag2);

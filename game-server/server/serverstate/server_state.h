@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <unordered_map>
 #include <memory>
 #include <mutex>
@@ -7,6 +8,7 @@
 
 #include <serverstate/game_instance.h>
 #include <database/firebase.h>
+#include <networking/gcp_socket.h>
 
 using namespace Morphling::Database;
 
@@ -37,11 +39,18 @@ namespace Morphling::ServerState {
     // in the game_map
     void disconnect_all_games();
 
+    // Atomic public variables for server settings
+    std::atomic<size_t> tries;
+    std::atomic<time_t> sock_wait;
+
   private:
     std::mutex state_mutex;
     std::unordered_map<std::string, game_instance_t> game_map;
     engine_t engine;
 
     Database::firebase fb;
+
+    // Check firebase for settings variables to update
+    void update_settings();
   };
 }

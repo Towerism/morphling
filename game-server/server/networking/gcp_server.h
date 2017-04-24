@@ -58,6 +58,7 @@ public:
 
     bool start(int port_no = 55555);
     bool stop();
+    bool initialize_firebase();
     bool is_running() { return running; }
     int get_port() const { return port; }
 

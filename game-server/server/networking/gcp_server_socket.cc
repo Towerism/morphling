@@ -4,7 +4,7 @@ using namespace Morphling::Networking;
 using namespace Morphling::ServerState;
 
 GCPServerSocket::GCPServerSocket(Server_state* ss, int sockfd): 
-    GCPSocket(sockfd),
+    GCPSocket(sockfd,ss->tries,ss->sock_wait),
     serverstate(ss)
 { }
 
@@ -65,6 +65,10 @@ GCPServerSocket::ServerState GCPServerSocket::server_verify_auth() {
     if (std::get<0>(response) != Ok) {
         return BadDisconnect;
     }
+
+    // Update the tries and wait for sockets
+    _tries = serverstate->tries;
+    _sock_wait = serverstate->sock_wait;
     
     return WaitForOtherConnect;
 }

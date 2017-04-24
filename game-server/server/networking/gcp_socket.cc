@@ -2,8 +2,11 @@
 
 using namespace Morphling::Networking;
 
-GCPSocket::GCPSocket(): _connected(false) {
-
+GCPSocket::GCPSocket(int tries, int seconds):
+    _connected(false),
+    _tries(tries),
+    _sock_wait(seconds)
+{
     if ((_sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
         printf("Socket create failure.");
         exit(-1);
@@ -15,11 +18,31 @@ GCPSocket::GCPSocket(): _connected(false) {
         exit(-1);
     }
 
-    // fcntl(_sockfd, F_SETFL, O_NONBLOCK);
-    // fcntl(_sockfd, F_SETFL, O_ASYNC);
+    // make sure upper bound set for max_tries
+    if (_tries > MAX_TRIES) {
+        _tries = MAX_TRIES;
+    }
+    // make sure to set an upper bound for the MAX_TIMEOUT
+    if (_sock_wait > MAX_TIMEOUT) {
+        _sock_wait = MAX_TIMEOUT;
+    }
 }
 
-GCPSocket::GCPSocket(int sockfd): _sockfd(sockfd), _connected(true) {}
+GCPSocket::GCPSocket(int sockfd, int tries, int seconds):
+    _sockfd(sockfd),
+    _connected(true),
+    _tries(tries),
+    _sock_wait(seconds)
+{
+    // make sure upper bound set for max_tries
+    if (_tries > MAX_TRIES) {
+        _tries = MAX_TRIES;
+    }
+    // make sure to set an upper bound for the MAX_TIMEOUT
+    if (_sock_wait > MAX_TIMEOUT) {
+        _sock_wait = MAX_TIMEOUT;
+    }
+}
 
 GCPSocket::~GCPSocket() { }
 
@@ -36,7 +59,6 @@ bool GCPSocket::dns(std::string hostname, int port, struct sockaddr_in* server) 
     if (rv != 1) {
         // if not a valid IP, then do a DNS lookup
         if ((remote = gethostbyname(hostname.c_str())) == NULL) {
-            //printf("Invalid string: neither FQDN, nor IP address (%d)\n",WSAGetLastError());
             return false;
         } else {
             // take the first IP address and copy into sin_addr
@@ -91,7 +113,7 @@ GCPSocket::RET GCPSocket::sread()
     memset(buffer, 0, MAX_MESSAGE);
 
     struct timeval r_timeout;
-    r_timeout.tv_sec = MAX_TIMEOUT;
+    r_timeout.tv_sec = _sock_wait;
     r_timeout.tv_usec = 0;
     
     fd_set read_fd;
@@ -120,23 +142,16 @@ GCPSocket::RET GCPSocket::sread()
     }
 }
 
-GCPSocket::RET GCPSocket::sread_wait(time_t seconds, size_t tries)
+GCPSocket::RET GCPSocket::sread_wait()
 {
     char buffer[MAX_MESSAGE];
     memset(buffer, 0, MAX_MESSAGE);
-
-    // make sure to set an upper bound for the MAX_TIMEOUT
-    if (seconds > MAX_TIMEOUT) {
-        seconds = MAX_TIMEOUT;
-    }
-    // make sure upper bound set for max_tries
-    if (tries > MAX_TRIES) {
-        tries = MAX_TRIES;
-    }
+    
+    size_t tries = _tries;
     size_t total_tries = tries;
 
     struct timeval r_timeout;
-    r_timeout.tv_sec = seconds;
+    r_timeout.tv_sec = _sock_wait;
     r_timeout.tv_usec = 0;
 
     fd_set read_fd;
@@ -172,7 +187,7 @@ GCPSocket::RET GCPSocket::sread_wait(time_t seconds, size_t tries)
     if (!_connected) {
         return std::make_tuple(Error,"Error: no longer connected");
     } else {
-        return std::make_tuple(Timeout,"Timeout exceeded: duration = "+std::to_string(seconds*total_tries));
+        return std::make_tuple(Timeout,"Timeout exceeded: duration = "+std::to_string(_sock_wait*total_tries));
     }
 }
 

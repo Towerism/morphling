@@ -44,7 +44,7 @@ GCPSocket::RET GCPClient::send_auth(std::string gameid, std::string name) {
 GCPSocket::RET GCPClient::recv_auth() {
     // make sure we are still connected
     if (_connected) {
-        auto ret = sread_wait(2,GCPSocket::MAX_TIMEOUT);
+        auto ret = sread_wait();
         if (std::get<0>(ret) != Ok) {
             return ret;
         } else {
@@ -62,7 +62,7 @@ GCPSocket::RET GCPClient::recv_auth() {
 GCPSocket::RET GCPClient::recv_side() {
     // make sure we are still connected
     if (_connected) {
-        auto ret = sread_wait(2,GCPSocket::MAX_TIMEOUT);
+        auto ret = sread_wait();
         if (std::get<0>(ret) != Ok) {
             return ret;
         } else {
@@ -89,7 +89,7 @@ GCPSocket::RET GCPClient::send_move(std::string move) {
 GCPSocket::RET GCPClient::recv_move() {
     // make sure we are still connected
     if (_connected) {
-        auto ret = sread_wait(2,GCPSocket::MAX_TIMEOUT);
+        auto ret = sread_wait();
         if (std::get<0>(ret) != Ok) {
             return ret;
         } else {

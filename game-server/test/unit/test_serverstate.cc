@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <networking/gcp_socket.h>
 #include <serverstate/server_state.h>
 #include <database/firebase.h>
 #include <games/tictactoe/tictactoe_engine.h>
@@ -8,6 +9,7 @@
 using namespace Morphling::Database;
 using namespace Morphling::Gamelogic;
 using namespace Morphling::ServerState;
+using namespace Morphling::Networking;
 
 class ServerStateTest : public ::testing::Test {
 protected:
@@ -51,6 +53,9 @@ protected:
                             "2": "_,_,_"
                         }
                     }
+                },
+                "settings": {
+                    "timeout": 20
                 }
             }
         )"_json));
@@ -113,4 +118,19 @@ TEST_F(ServerStateTest, CheckUpdatedState) {
     fire_err fe = fb.get_json("states/"+validgame+"/1.json");
     ASSERT_EQ(fe.res_code,CURLE_OK);
     ASSERT_EQ(fe.res_json[0],board_state[0]);
+}
+
+TEST_F(ServerStateTest, CheckUpdatedSettings) {
+    auto game = serverstate.get_game(validgame);
+    ASSERT_NE(game,nullptr);
+    EXPECT_EQ(game->gameid,validgame);
+
+    // Update settings
+    fire_err fe = fb.write_json("settings.json",json::parse("{\"timeout\":30}"));
+    ASSERT_EQ(fe.res_code,CURLE_OK);
+
+    // Check updated settings
+    game = serverstate.get_game(validgame);
+    ASSERT_NE(game,nullptr);
+    ASSERT_EQ(serverstate.tries,(size_t)30);
 }

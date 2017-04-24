@@ -36,6 +36,9 @@ protected:
                             "2": "_,_,_"
                         }
                     }
+                },
+                "settings": {
+                    "timeout": 20
                 }
             }
         )"_json));
