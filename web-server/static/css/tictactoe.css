@@ -27,3 +27,7 @@
 .gb{
     background: url('../images/background.png') repeat;
 }
+
+.winner{
+    color: red;
+}
