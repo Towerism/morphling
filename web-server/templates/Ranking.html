@@ -23,8 +23,6 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
-
-    <script src={{ url_for('static', filename='js/firebase_config.js') }}></script>
 </head>
 
 <body>
@@ -68,7 +66,13 @@
                             </tr>
                           </thead>
                           <tbody id="ranking-body">
-
+                            {% for player in players %}
+                              <tr>
+                                <th scope="row">{{ loop.index }}</td>
+                                <td>{{ player.get('name', 'default') }}</td>
+                                <td>{{ player.get('score', '0') }}</td>
+                              </tr>
+                            {% endfor %}
                           </tbody>
                       </table>
                     </div>
@@ -85,23 +89,6 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="static/js/bootstrap.min.js"></script>
-
-    <script>
-    var playersRef = firebase.database().ref('players/');
-    var rank = 1;
-    playersRef.orderByValue().once('value').then(function(snapshot) {
-        snapshot.forEach(function(childSnapshot) {
-            console.log(childSnapshot.val().score);
-            var $tr =  $('<tr>').append(
-                $('<th scope="row">').text(rank),
-                $('<td>').text(childSnapshot.val().name),
-                $('<td>').text(childSnapshot.val().score)
-              );
-            $('#ranking-body').append($tr);
-            rank += 1;
-        });
-    });
-    </script>
 
 </body>
 
