@@ -3,8 +3,8 @@ from firebase import firebase
 import json
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret key'
-firebase = firebase.FirebaseApplication('https://flask-experiment-e7196.firebaseio.com', None)
+app.config.from_pyfile('config.cfg')
+firebase = firebase.FirebaseApplication(app.config['FIREBASE_URL'], None)
 boardWidth = xrange(int(firebase.get('/settings/board/height', None)))
 boardHeight = xrange(int(firebase.get('/settings/board/width', None)))
 
