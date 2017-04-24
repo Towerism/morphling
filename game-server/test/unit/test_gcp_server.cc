@@ -8,7 +8,7 @@ using namespace Morphling::Gamelogic;
 
 class GCPServerTest : public ::testing::Test {
 protected:
-    GCPServerTest(): server(new Tictactoe::Tictactoe_engine()) {
+    GCPServerTest(): server(new Tictactoe::Tictactoe_engine(),"morphling-50028") {
         EXPECT_TRUE(server.start(0));
         EXPECT_TRUE(server.is_running());
     }

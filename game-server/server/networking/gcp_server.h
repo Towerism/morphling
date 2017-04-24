@@ -53,7 +53,7 @@ private:
 
     bool send(std::string msg);
 public:
-    GCPServer(Gamelogic::Game_engine* engine);
+    GCPServer(Gamelogic::Game_engine* engine, std::string firebase_proj);
     ~GCPServer();
 
     bool start(int port_no = 55555);

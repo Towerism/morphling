@@ -3,11 +3,11 @@
 using namespace Morphling::Networking;
 using namespace Morphling::ServerState;
 
-GCPServer::GCPServer(Gamelogic::Game_engine* engine):
+GCPServer::GCPServer(Gamelogic::Game_engine* engine, std::string firebase_proj):
     running(false),
     port(55555),
     sockfd(-1),
-    serverstate(new Server_state(engine)),
+    serverstate(new Server_state(engine,firebase_proj)),
     connection_thread()
 { }
 

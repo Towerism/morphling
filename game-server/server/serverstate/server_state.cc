@@ -4,7 +4,9 @@ using namespace Morphling::Database;
 
 namespace Morphling::ServerState {
 
-    Server_state::Server_state(Gamelogic::Game_engine* engine) : engine(engine), fb{"morphling-50028"}
+    Server_state::Server_state(Gamelogic::Game_engine* engine, std::string db): 
+        engine(engine),
+        fb{db}
     { }
 
     Server_state::game_instance_t Server_state::get_game(std::string gameid) {

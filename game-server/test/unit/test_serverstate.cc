@@ -20,7 +20,10 @@ protected:
     std::string player1_hash = "player1_hash";
     std::string player2_hash = "player2_hash";
 
-    ServerStateTest(): serverstate(new Tictactoe::Tictactoe_engine()), fb{"morphling-50028"} {
+    ServerStateTest():
+        serverstate(new Tictactoe::Tictactoe_engine(),"morphling-50028"),
+        fb{"morphling-50028"}
+    {
         // Initialize the firebase with a game
         fire_err fe = fb.write_json(".json",json(R"(
             {

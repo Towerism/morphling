@@ -8,7 +8,7 @@ using namespace Morphling::Gamelogic;
 
 int main(int argc, char** argv) {
 
-    GCPServer server(new Tictactoe::Tictactoe_engine());
+    GCPServer server(new Tictactoe::Tictactoe_engine(),"flask-experiment-e7196");
 
     int port;
     if (argc > 1) {
