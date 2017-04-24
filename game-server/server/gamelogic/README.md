@@ -114,10 +114,7 @@ This rule along with any rules that determine a win condition for a player are
 utilized in the model to determine if the game is over.
 
 ```c++
-  bool Tictactwo_model::check_win_condition() {
-    bool result = has_alignment.check(this);
-    winner = has_alignment.get_causal_player();
-    return result;
+  bool Tictactwo_model::is_game_over() {
+    return check_win_condition() || board_is_full.check(this);
   }
-
 ```
