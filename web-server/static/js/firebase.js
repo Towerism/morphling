@@ -1,6 +1,6 @@
 'use strict';
 
-var gameId = $('#token').text();
+var gameId = String($( '#gameId' ).data( "tk" ));
 console.log(gameId);
 
 var statesRef = firebase.database().ref('states/'+gameId.trim());
