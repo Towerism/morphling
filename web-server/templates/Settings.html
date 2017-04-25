@@ -82,6 +82,13 @@
                             <textarea class="form-control" id="players" rows="2" placeholder="Split by row"></textarea>
                           </div>
                           <button type="submit" class="btn btn-primary" id="new-game">New Game</button>
+                          <br><br>
+                          <div class="form-group">
+                          <label for="selectPlayers">Remove players</label>
+                          <select multiple class="form-control" id="select-players">
+                          </select>
+                          </div>
+                          <button type="submit" class="btn btn-primary" id="remove-players">Remove</button>
                       </form>
                       <br>
                       <p> </p>
@@ -101,6 +108,20 @@
     <script src={{ url_for('static', filename='js/bootstrap.min.js') }}></script>
 
     <script>
+
+    firebase.database().ref('players').on('value', function(snaptshot) {
+        var players = snaptshot.val();
+        $('#select-players').empty();
+
+        for (var p in players) {
+          var id = p;
+          var name = players[id]['name'];
+          $('#select-players')
+            .append($("<option></option>")
+            .attr("value",id)
+            .text(name));
+        }
+    });
 
     $("#update-setting").click(function(e) {
         e.preventDefault();
@@ -223,6 +244,23 @@
             console.log(snapshot.key + " created");
        });
 
+    });
+
+    $("#remove-players").click(function(e) {
+        e.preventDefault();
+        // console.log($('select#select-players').val());
+        var selected = $('select#select-players').val();
+        for (var p in selected) {
+          console.log(selected[p]);
+          firebase.database().ref('players')
+            .child(selected[p]).remove()
+            .then(function() {
+              console.log(selected[p] + " removed succeeded.");
+            })
+            .catch(function(error) {
+              console.log("Remove failed: " + error.message);
+            });
+        }
     });
     </script>
 </body>
