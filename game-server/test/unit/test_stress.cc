@@ -39,6 +39,26 @@ protected:
                     "validgame5": {
                         "player1": "player9_hash",
                         "player2": "player10_hash"
+                    },
+                    "validgame6": {
+                        "player1": "player11_hash",
+                        "player2": "player12_hash"
+                    },
+                    "validgame7": {
+                        "player1": "player13_hash",
+                        "player2": "player14_hash"
+                    },
+                    "validgame8": {
+                        "player1": "player15_hash",
+                        "player2": "player16_hash"
+                    },
+                    "validgame9": {
+                        "player1": "player17_hash",
+                        "player2": "player18_hash"
+                    },
+                    "validgame10": {
+                        "player1": "player19_hash",
+                        "player2": "player20_hash"
                     }
                 },
                 "players": {
@@ -81,10 +101,51 @@ protected:
                     "player10_hash": {
                         "name": "player10_name",
                         "score": 0
+                    },
+                    "player11_hash": {
+                        "name": "player11_name",
+                        "score": 0
+                    },
+                    "player12_hash": {
+                        "name": "player12_name",
+                        "score": 0
+                    },
+                    "player13_hash": {
+                        "name": "player13_name",
+                        "score": 0
+                    },
+                    "player14_hash": {
+                        "name": "player14_name",
+                        "score": 0
+                    },
+                    "player15_hash": {
+                        "name": "player15_name",
+                        "score": 0
+                    },
+                    "player16_hash": {
+                        "name": "player16_name",
+                        "score": 0
+                    },
+                    "player17_hash": {
+                        "name": "player17_name",
+                        "score": 0
+                    },
+                    "player18_hash": {
+                        "name": "player18_name",
+                        "score": 0
+                    },
+                    "player19_hash": {
+                        "name": "player19_name",
+                        "score": 0
+                    },
+                    "player20_hash": {
+                        "name": "player20_name",
+                        "score": 0
                     }
                 },
                 "settings": {
-                    "timeout": 20
+                    "timeout": 20,
+                    "delay": 0
                 }
             }
         )"_json));
@@ -223,6 +284,53 @@ TEST_F(ServerStressTest, FiveGames) {
     game3.join();
     game4.join();
     game5.join();
+    
+    server.stop();
+    EXPECT_FALSE(server.is_running());
+}
+
+TEST_F(ServerStressTest, TenGames) {
+    std::thread game1([&]{
+        start_game("validgame1");
+    });
+    std::thread game2([&]{
+        start_game("validgame2");
+    });
+    std::thread game3([&]{
+        start_game("validgame3");
+    });
+    std::thread game4([&]{
+        start_game("validgame4");
+    });
+    std::thread game5([&]{
+        start_game("validgame5");
+    });
+    std::thread game6([&]{
+        start_game("validgame6");
+    });
+    std::thread game7([&]{
+        start_game("validgame7");
+    });
+    std::thread game8([&]{
+        start_game("validgame8");
+    });
+    std::thread game9([&]{
+        start_game("validgame9");
+    });
+    std::thread game10([&]{
+        start_game("validgame10");
+    });
+
+    game1.join();
+    game2.join();
+    game3.join();
+    game4.join();
+    game5.join();
+    game6.join();
+    game7.join();
+    game8.join();
+    game9.join();
+    game10.join();
     
     server.stop();
     EXPECT_FALSE(server.is_running());

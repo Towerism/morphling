@@ -8,7 +8,6 @@ GCPServerSocket::GCPServerSocket(Server_state* ss, int sockfd):
     serverstate(ss)
 { }
 
-
 GCPServerSocket::~GCPServerSocket() {
     if (_connected) {
         disconnect();
@@ -137,6 +136,21 @@ GCPServerSocket::ServerState GCPServerSocket::server_verify_move() {
     }
     // send the move to the server
     auto board_state = game->controller->serialize_model();
+
+    // Before we send the move to firebase, check to make sure we have 
+    // waited the minimum delay imposed
+    std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+    std::chrono::seconds move_duration = std::chrono::duration_cast<std::chrono::seconds>(now - game->prev_move_time);
+    
+    // if the duration to make a move is less than the imposed duration 
+    // of the move wait until the rest of the duration.
+    std::chrono::seconds delay_duration = serverstate->get_delay();
+    if (move_duration <= delay_duration) {
+        std::unique_lock<std::mutex> lck(m_delay);
+        cv_delay.wait_for(lck,delay_duration-move_duration);
+    }
+
+    // send the move to firebase
     serverstate->send_move(game->gameid,board_state);
 
     // the move is valid, continue to send the move to the other player
@@ -149,6 +163,8 @@ GCPServerSocket::ServerState GCPServerSocket::server_verify_move() {
         game->player1.ready = false;
         game->player_turn = White;
     }
+    // mark the move as completed for next timestamp
+    game->prev_move_time = std::chrono::steady_clock::now();
     // reset the invalid_moves for the next player
     game->invalid_moves = 0;
     // set this player's move to ready to trigger the other player to send 
@@ -313,6 +329,8 @@ bool GCPServerSocket::check_server_status() {
 void GCPServerSocket::disconnect() {
     state = GoodDisconnect;
     if (game != nullptr) {
+        // notify the thread incase waiting for a "delay"
+        cv_delay.notify_all();
         game->stop_game();
         game->move_cv.notify_all();
         game->move_post_cv.notify_all();
@@ -322,6 +340,8 @@ void GCPServerSocket::disconnect() {
 
 void GCPServerSocket::baddisconnect() {
     if (game != nullptr) {
+        // notify the thread incase waiting for a "delay"
+        cv_delay.notify_all();
         game->stop_game();
         game->move_cv.notify_all();
         game->move_post_cv.notify_all();

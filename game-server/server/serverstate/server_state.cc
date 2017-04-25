@@ -9,7 +9,8 @@ namespace Morphling::ServerState {
         tries(GCPSocket::NORMAL_TRIES),
         sock_wait(GCPSocket::NORMAL_TIMEOUT),
         engine(engine),
-        fb{db}
+        fb{db},
+        delay_duration(std::chrono::seconds(0))
     { }
 
     Server_state::game_instance_t Server_state::get_game(std::string gameid) {
@@ -31,7 +32,7 @@ namespace Morphling::ServerState {
                 return nullptr;
             }
             // if it doesn't exist return nullptr
-            if (fe.res_json == nullptr) {
+            if (fe.res_json.is_null()) {
                 return nullptr;
             }
 
@@ -144,6 +145,18 @@ namespace Morphling::ServerState {
         }
     }
 
+    std::chrono::seconds Server_state::get_delay() {
+        // Lock the delay
+        std::unique_lock<std::mutex> lock(delay_mutex);
+        return delay_duration;
+    }
+
+    void Server_state::set_delay(size_t seconds) {
+        // Lock the delay
+        std::unique_lock<std::mutex> lock(delay_mutex);
+        delay_duration = std::chrono::seconds(seconds);
+    }
+
     void Server_state::update_settings() {
         // Check if the game exists in firebase
         fire_err fe = fb.get_json("settings.json");
@@ -153,5 +166,6 @@ namespace Morphling::ServerState {
             return;
         }
         tries = fe.res_json["timeout"].get<size_t>();
+        set_delay(fe.res_json["delay"].get<size_t>());
     }
 }

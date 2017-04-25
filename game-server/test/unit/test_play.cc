@@ -34,7 +34,8 @@ protected:
                     }
                 },
                 "settings": {
-                    "timeout": 20
+                    "timeout": 20,
+                    "delay": 0
                 }
             }
         )"_json));

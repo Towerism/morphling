@@ -53,6 +53,8 @@ namespace Morphling::ServerState {
     std::string player_move;
     size_t invalid_moves;
 
+    std::chrono::steady_clock::time_point prev_move_time;
+
     std::tuple<bool,Player*> check_player_name(std::string name);
     void stop_game();
   };

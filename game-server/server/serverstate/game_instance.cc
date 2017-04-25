@@ -10,7 +10,8 @@ namespace Morphling::ServerState {
         player1{name1,White},
         player2{name2,Black},
         player_turn(White),
-        invalid_moves(0)
+        invalid_moves(0),
+        prev_move_time(std::chrono::steady_clock::now())
     { }
 
     std::tuple<bool,Player*> Game_instance::check_player_name(std::string name) {

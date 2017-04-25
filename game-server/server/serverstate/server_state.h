@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <chrono>
 #include <unordered_map>
 #include <memory>
 #include <mutex>
@@ -43,12 +44,20 @@ namespace Morphling::ServerState {
     std::atomic<size_t> tries;
     std::atomic<time_t> sock_wait;
 
+    std::chrono::seconds get_delay();
+
   private:
     std::mutex state_mutex;
     std::unordered_map<std::string, game_instance_t> game_map;
     engine_t engine;
 
     Database::firebase fb;
+
+    std::mutex delay_mutex;
+    std::chrono::seconds delay_duration;
+
+    // lock-safe access to set the delay duration
+    void set_delay(size_t seconds);
 
     // Check firebase for settings variables to update
     void update_settings();

@@ -5,6 +5,7 @@
 #include <serverstate/server_state.h>
 
 #include <atomic>
+#include <chrono>
 #include <condition_variable>
 #include <memory>
 #include <mutex>
@@ -53,6 +54,9 @@ private:
     ServerState state;
     std::mutex m_player;
     std::condition_variable cv_player;
+
+    std::mutex m_delay;
+    std::condition_variable cv_delay;
 
     // Normal States
     ServerState server_verify_auth();
