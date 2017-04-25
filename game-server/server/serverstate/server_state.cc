@@ -165,7 +165,9 @@ namespace Morphling::ServerState {
             // return an invalid game
             return;
         }
-        tries = fe.res_json["timeout"].get<size_t>();
-        set_delay(fe.res_json["delay"].get<size_t>());
+        std::string updated_tries = fe.res_json["timeout"].get<std::string>();
+        std::string updated_delay = fe.res_json["delay"].get<std::string>();
+        tries = (size_t)std::stoi(updated_tries);
+        set_delay((size_t)std::stoi(updated_delay));
     }
 }

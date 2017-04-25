@@ -55,8 +55,8 @@ protected:
                     }
                 },
                 "settings": {
-                    "timeout": 20,
-                    "delay": 0
+                    "timeout": "20",
+                    "delay": "0"
                 }
             }
         )"_json));
@@ -127,7 +127,7 @@ TEST_F(ServerStateTest, CheckUpdatedSettings) {
     EXPECT_EQ(game->gameid,validgame);
 
     // Update settings
-    fire_err fe = fb.write_json("settings.json",json::parse("{\"timeout\":30,\"delay\":4}"));
+    fire_err fe = fb.write_json("settings.json",json::parse("{\"timeout\":\"30\",\"delay\":\"4\"}"));
     ASSERT_EQ(fe.res_code,CURLE_OK);
 
     // Check updated settings
