@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, url_for, redirect, flash
+from flask import Flask, render_template, request, session, url_for, redirect
 from firebase import firebase
 import json
 import operator
@@ -6,8 +6,8 @@ import operator
 app = Flask(__name__)
 app.config.from_pyfile('config.cfg')
 firebase = firebase.FirebaseApplication(app.config['FIREBASE_URL'], None)
-boardWidth = xrange(int(firebase.get('/settings/board/height', None))) if firebase.get('/settings/board/height', None) else xrange(app.config['BOARD_HEIGHT'])
-boardHeight = xrange(int(firebase.get('/settings/board/width', None))) if firebase.get('/settings/board/width', None) else xrange(app.config['BOARD_WIDTH'])
+boardHeight = xrange(int(firebase.get('/settings/board/height', None))) if firebase.get('/settings/board/height', None) else xrange(app.config['BOARD_HEIGHT'])
+boardWidth = xrange(int(firebase.get('/settings/board/width', None))) if firebase.get('/settings/board/width', None) else xrange(app.config['BOARD_WIDTH'])
 
 @app.route('/bootstrap')
 @app.route('/')
@@ -56,8 +56,8 @@ def bracket():
 
 @app.route('/game/<token>')
 def show_game(token=None):
-    if token is None:
-        return redirect(url_for('/'))
+    if token is None or firebase.get('/settings/tokens', None) is None:
+        return redirect(url_for('bootstrap'))
     players = firebase.get('/games/'+token, None)
     player1, player2 = {}, {}
     if players is not None:
@@ -67,13 +67,11 @@ def show_game(token=None):
         player2['id'] = players['player2']
 
     pieces = firebase.get('/settings/tokens', None).keys()
-    urls = []
     pieceUrls = {}
     backgroundUrl = firebase.get('/settings/board/image', None)
 
     for p in pieces:
         url = str(firebase.get('/settings/tokens/'+p+'/image', None))
-        urls.append(url)
         pieceUrls[p] = url
 
     if (firebase.get('/states', None) is None):
