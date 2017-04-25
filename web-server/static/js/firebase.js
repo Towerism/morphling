@@ -30,24 +30,18 @@ function updateBoard(snapshot) {
     var last = snapshot.val();
     // console.log(snapshot.key + ' ' + snapshot.val());
     var board = [];
+    var i = 0;
     for (var key in last) {
       // console.log(key)
       //console.log(last[key]);
       var row = last[key].split(',')
       // console.log(row);
-      for (var i in row) {
-        for (var p in pieces) {
-          if (row[i] === pieces[p]) {
-            board.push(pieces[p]);
-            break;
-          }
-        }
+      for (var r in row) {
+        board.push(row[r]);
+        var cell = $('#gameboard td:eq('+i+')');
+        if (row[r] in pieceCSS) cell.css( 'background', pieceCSS[row[r]] );
+        i += 1;
       }
     }
-
     console.log(board);
-    for (var i = 0; i < board.length; i++) {
-      var cell = $('#gameboard td:eq('+i+')');
-      cell.css( 'background', pieceCSS[board[i]]);
-		}
 }
