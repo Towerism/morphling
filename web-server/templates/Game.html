@@ -90,10 +90,21 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src={{ url_for('static', filename='js/bootstrap.min.js') }}></script>
-    
+
     <script src={{ url_for('static', filename='js/settings.js') }}></script>
     {% if token and token in session and session[token] %}
       <script src={{ url_for('static', filename='js/firebase.js') }}></script>
+    {% else %}
+      <script>
+        firebase.database().ref('states').child('{{ token }}').on('value', function(snapshot) {
+          console.log("Waiting...");
+          if (snapshot.val() !== null) {
+            console.log("Game started");
+            location.reload(true);
+            return true;
+          }
+        });
+      </script>
     {% endif %}
 </body>
 
