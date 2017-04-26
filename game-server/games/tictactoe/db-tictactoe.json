@@ -1,0 +1,28 @@
+{
+  "settings" : {
+    "board" : {
+      "height" : 3,
+      "image" : "http://localhost:5000/static/images/background.png",
+      "width" : 3
+    },
+    "delay" : "1",
+    "timeout" : "40",
+    "tokens" : {
+      "O" : {
+        "height" : 1,
+        "image" : "http://localhost:5000/static/images/piece_o_2.png",
+        "width" : 1
+      },
+      "X" : {
+        "height" : 1,
+        "image" : "http://localhost:5000/static/images/piece_x.png",
+        "width" : 1
+      },
+      "_" : {
+        "height" : 1,
+        "image" : "http://localhost:5000/static/images/background.png",
+        "width" : 1
+      }
+    }
+  }
+}
