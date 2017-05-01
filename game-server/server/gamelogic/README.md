@@ -118,3 +118,44 @@ utilized in the model to determine if the game is over.
     return check_win_condition() || board_is_full.check(this);
   }
 ```
+
+## Controller
+The controller defines how actions, or moves, are parsed as well as the game flow. The
+tictactwo controller parses one of three actions which can then be executed if
+it is legal giving the turn to the next player.
+```c++
+Controller::action_t Tictactwo_controller::parse_action(std::string action_string) {
+  std::istringstream iss(action_string);
+  Point2D from_location, to_location;
+  int direction;
+  std::string action_identifier;
+  action_t action;
+  iss >> action_identifier;
+  if (action_identifier == "place") {
+    iss >> to_location;
+    action = action_t(new Action_place_piece(to_location));
+  }
+  else if (action_identifier == "move") {
+    iss >> from_location >> to_location;
+    action = action_t(new Action_move_piece(from_location, to_location));
+  }
+  else if (action_identifier == "grid") {
+    iss >> direction;
+    if (direction >= (int)Action_move_grid::Direction::NUM_DIRECTIONS)
+      return nullptr;
+    auto dir = static_cast<Action_move_grid::Direction>(direction);
+    action = action_t(new Action_move_grid(dir));
+  }
+  if (!iss)
+    return nullptr;
+  return action;
+}
+
+void Tictactwo_controller::execute_action(action_t action) {
+  if (action->is_legal(model)) {
+    action->execute(model);
+    if (!model->is_game_over())
+      model->to_next_player();
+  }
+}
+```
