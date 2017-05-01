@@ -13,8 +13,8 @@ using namespace Morphling::Gamelogic;
 class ServerStressTest : public ::testing::Test {
 protected:
     ServerStressTest():
-        server(new Tictactoe::Tictactoe_engine(),"morphling-50028"),
-        fb{"morphling-50028"}
+        server(new Tictactoe::Tictactoe_engine(),"flask-experiment-e7196"),
+        fb{"flask-experiment-e7196"}
     {
         // Initialize the firebase with a game
         fire_err fe = fb.write_json(".json",json(R"(
@@ -144,8 +144,30 @@ protected:
                     }
                 },
                 "settings": {
+                    "board": {
+                      "height": 3,
+                      "image": "http://localhost:5000/static/images/background.png",
+                      "width": 3
+                    },
                     "timeout": "20",
-                    "delay": "0"
+                    "delay": "0",
+                    "tokens": {
+                      "O": {
+                        "height": 1,
+                        "image": "http://localhost:5000/static/images/piece_o_2.png",
+                        "width": 1
+                      },
+                      "X": {
+                        "height": 1,
+                        "image": "http://localhost:5000/static/images/piece_x.png",
+                        "width": 1
+                      },
+                      "_": {
+                        "height": 1,
+                        "image": "http://localhost:5000/static/images/background.png",
+                        "width": 1
+                      }
+                    }
                 }
             }
         )"_json));
@@ -284,7 +306,7 @@ TEST_F(ServerStressTest, FiveGames) {
     game3.join();
     game4.join();
     game5.join();
-    
+
     server.stop();
     EXPECT_FALSE(server.is_running());
 }
@@ -331,7 +353,7 @@ TEST_F(ServerStressTest, TenGames) {
     game8.join();
     game9.join();
     game10.join();
-    
+
     server.stop();
     EXPECT_FALSE(server.is_running());
 }

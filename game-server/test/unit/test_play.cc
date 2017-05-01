@@ -11,8 +11,8 @@ using namespace Morphling::Gamelogic;
 class TicTacToePlayTest : public ::testing::Test {
 protected:
     TicTacToePlayTest():
-        server(new Tictactoe::Tictactoe_engine(),"morphling-50028"),
-        fb{"morphling-50028"}
+        server(new Tictactoe::Tictactoe_engine(),"flask-experiment-e7196"),
+        fb{"flask-experiment-e7196"}
     {
         // Initialize the firebase with a game
         fire_err fe = fb.write_json(".json",json(R"(
@@ -34,9 +34,31 @@ protected:
                     }
                 },
                 "settings": {
-                    "timeout": "20",
-                    "delay": "0"
-                }
+                    "board": {
+                      "height": 3,
+                      "image": "http://localhost:5000/static/images/background.png",
+                      "width": 3
+                    },
+                    "delay": "0",
+                    "timeout": "40",
+                    "tokens": {
+                      "O": {
+                        "height": 1,
+                        "image": "http://localhost:5000/static/images/piece_o_2.png",
+                        "width": 1
+                      },
+                      "X": {
+                        "height": 1,
+                        "image": "http://localhost:5000/static/images/piece_x.png",
+                        "width": 1
+                      },
+                      "_": {
+                        "height": 1,
+                        "image": "http://localhost:5000/static/images/background.png",
+                        "width": 1
+                      }
+                    }
+                  }
             }
         )"_json));
         EXPECT_EQ(fe.res_code,CURLE_OK);

@@ -7,22 +7,41 @@ var statesRef = firebase.database().ref('states/'+gameId.trim());
 console.log('states/'+gameId.trim());
 var count = 0;
 
-firebase.database().ref('games/'+gameId.trim()).child('score').on('value', function(snapshot) {
-  if (snapshot.val() !== null) {
-    console.log(snapshot.val());
-    var winner = snapshot.val();
-    $( '#' + winner ).toggleClass('winner');
-    statesRef.off();
-    return true;
-  }
-});
+// firebase.database().ref('games/'+gameId.trim()).child('score').on('value', function(snapshot) {
+//   if (snapshot.val() !== null) {
+//     console.log(snapshot.val());
+//     var winner = snapshot.val();
+//     $( '#' + winner ).toggleClass('winner');
+//     statesRef.off();
+//     return true;
+//   }
+// });
 
 statesRef.orderByKey().on('child_added', function(snapshot) {
+    // console.log(new Date().getTime());
     updateBoard(snapshot);
 });
 
 function updateBoard(snapshot) {
     "use strict";
+    // console.log(snapshot.key);
+    if (snapshot.key == 0) {
+      console.time();
+    }
+    else {
+      console.timeEnd();
+      console.time();
+    }
+    // if (count % 2 == 0) {
+    //   console.time();
+    // }
+    // else {
+    //   console.log(count);
+    //   console.timeEnd();
+    // }
+    // console.time();
+    console.log(snapshot.key);
+    console.log(new Date().getTime());
     count += 1;
     // console.log("update board");
     // console.log(count);
@@ -43,5 +62,5 @@ function updateBoard(snapshot) {
         i += 1;
       }
     }
-    console.log(board);
+    // console.log(board);
 }
