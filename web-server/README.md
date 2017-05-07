@@ -1,31 +1,25 @@
-Experiment with Flask and Firebase
+Morphling web server
 
-- Install Flask 
-```
-sudo pip install virtualenv
-virtualenv venv
-. venv/bin/activate
-sudo pip install Flask
-```
+- Environment: Python 2.7, Chrome 58.0
 
-- Install Firebase
+- Requirements: the game server and the Firebase are all already setup.
+
+- Run the web server:
 ```
-sudo pip install requests
-sudo pip install python-firebase
+make
 ```
 
-- To run the app
+- Terminate the server: `Ctrl+C` or enter
 ```
-export FLASK_APP=hello.py
-flask run
+ps -a | grep 'morphling.py'| grep -v 'grep' | awk '{ print $1 }' | xargs kill
 ```
+in another terminal (or tmux).
 
-- Firebase PUT test: open the browser, enter `http://127.0.0.1:5000/testing`. The webpage will show the reponse of PUT request.
+- In browser, enter http://127.0.0.1:5000/ and the Ongoing game will show up.
 
-- Firebase GET test: open the browser, enter `http://127.0.0.1:5000/`.  The webpage will show the reponse of GET request of a nested JSON file. 
-
-- TODOs 
-    - Integrate Flask wtf form to custom PUT requests and GET requests.
-    - Write tests for different requests.
-    - Allow setting sizes of the board and the piece.
-    - Custom board and piece placements.
+- Workflow of creating a game:
+  - Go to http://127.0.0.1:5000/Settings.html and add players, whose names are separated by new line.
+  - In the text area of "1 vs 1", put players' names and click "New Game".
+  - Go to http://127.0.0.1:5000/ and the newly created game with given players is there.
+  - Click "Watch".
+  - Players will get the token from the game page to connect to the server.
