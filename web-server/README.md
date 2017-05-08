@@ -23,3 +23,7 @@ in another terminal (or tmux).
   - Go to http://127.0.0.1:5000/ and the newly created game with given players is there.
   - Click "Watch".
   - Players will get the token from the game page to connect to the server.
+
+- Credits:
+http://startbootstrap.com/
+http://stackoverflow.com/
