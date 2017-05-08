@@ -150,8 +150,7 @@ GCPServerSocket::ServerState GCPServerSocket::server_verify_move() {
         cv_delay.wait_for(lck,delay_duration-move_duration);
     }
 
-    // send the move to firebase
-    serverstate->send_move(game->gameid,board_state);
+    
 
     // the move is valid, continue to send the move to the other player
     // Set the other player as not ready before setting up them up to 
@@ -171,6 +170,8 @@ GCPServerSocket::ServerState GCPServerSocket::server_verify_move() {
     // the previous player's move.
     player->ready = true;
     game->move_cv.notify_all();
+    // send the move to firebase
+    serverstate->send_move(game->gameid,board_state);
 
     // check for end of game
     if (game->controller->is_game_over()) {

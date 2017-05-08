@@ -5,6 +5,7 @@
 #include <database/firebase.h>
 
 #include <thread>
+#include <vector>
 
 using namespace Morphling::Database;
 using namespace Morphling::Networking;
@@ -57,6 +58,86 @@ protected:
                         "player2": "player18_hash"
                     },
                     "validgame10": {
+                        "player1": "player19_hash",
+                        "player2": "player20_hash"
+                    },
+                    "validgame11": {
+                        "player1": "player1_hash",
+                        "player2": "player2_hash"
+                    },
+                    "validgame12": {
+                        "player1": "player3_hash",
+                        "player2": "player4_hash"
+                    },
+                    "validgame13": {
+                        "player1": "player5_hash",
+                        "player2": "player6_hash"
+                    },
+                    "validgame14": {
+                        "player1": "player7_hash",
+                        "player2": "player8_hash"
+                    },
+                    "validgame15": {
+                        "player1": "player9_hash",
+                        "player2": "player10_hash"
+                    },
+                    "validgame16": {
+                        "player1": "player11_hash",
+                        "player2": "player12_hash"
+                    },
+                    "validgame17": {
+                        "player1": "player13_hash",
+                        "player2": "player14_hash"
+                    },
+                    "validgame18": {
+                        "player1": "player15_hash",
+                        "player2": "player16_hash"
+                    },
+                    "validgame19": {
+                        "player1": "player17_hash",
+                        "player2": "player18_hash"
+                    },
+                    "validgame20": {
+                        "player1": "player19_hash",
+                        "player2": "player20_hash"
+                    },
+                    "validgame21": {
+                        "player1": "player1_hash",
+                        "player2": "player2_hash"
+                    },
+                    "validgame22": {
+                        "player1": "player3_hash",
+                        "player2": "player4_hash"
+                    },
+                    "validgame23": {
+                        "player1": "player5_hash",
+                        "player2": "player6_hash"
+                    },
+                    "validgame24": {
+                        "player1": "player7_hash",
+                        "player2": "player8_hash"
+                    },
+                    "validgame25": {
+                        "player1": "player9_hash",
+                        "player2": "player10_hash"
+                    },
+                    "validgame26": {
+                        "player1": "player11_hash",
+                        "player2": "player12_hash"
+                    },
+                    "validgame27": {
+                        "player1": "player13_hash",
+                        "player2": "player14_hash"
+                    },
+                    "validgame28": {
+                        "player1": "player15_hash",
+                        "player2": "player16_hash"
+                    },
+                    "validgame29": {
+                        "player1": "player17_hash",
+                        "player2": "player18_hash"
+                    },
+                    "validgame30": {
                         "player1": "player19_hash",
                         "player2": "player20_hash"
                     }
@@ -331,6 +412,22 @@ TEST_F(ServerStressTest, TenGames) {
     game8.join();
     game9.join();
     game10.join();
+    
+    server.stop();
+    EXPECT_FALSE(server.is_running());
+}
+
+TEST_F(ServerStressTest, ThirtyGames) {
+    std::vector<std::thread> games;
+    for (int i = 1; i <= 30; i++) {
+        games.push_back(std::thread([=]{
+            start_game("validgame"+std::to_string(i));
+        }));
+    }
+    
+    for (auto& game: games) {
+        game.join();
+    }
     
     server.stop();
     EXPECT_FALSE(server.is_running());
